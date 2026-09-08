@@ -29,9 +29,13 @@ jobs:
 
       - name: Setup Qshell
         env:
-          QINIU_AK: ${{ secrets.QINIU_AK }}
-          QINIU_SK: ${{ secrets.QINIU_SK }}
+          QINIU_AK: ${{ secrets.QINIU_AK || vars.QINIU_AK }}
+          QINIU_SK: ${{ secrets.QINIU_SK || vars.QINIU_SK }}
         run: |
+          if [[ -z "$QINIU_AK" || -z "$QINIU_SK" ]]; then
+            echo "QINIU_AK and QINIU_SK must be configured as repository/environment secrets or variables."
+            exit 1
+          fi
           wget -q https://devtools.qiniu.com/qshell-v2.13.0-linux-amd64.tar.gz
           tar -zxf qshell-v2.13.0-linux-amd64.tar.gz
           sudo mv qshell /usr/local/bin/qshell
@@ -39,8 +43,12 @@ jobs:
 
       - name: Upload to Qiniu Kodo
         env:
-          QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
+          QINIU_BUCKET: ${{ secrets.QINIU_BUCKET || vars.QINIU_BUCKET }}
         run: |
+          if [[ -z "$QINIU_BUCKET" ]]; then
+            echo "QINIU_BUCKET must be configured as a repository/environment secret or variable."
+            exit 1
+          fi
           cat > qupload.conf <<EOF
           {
             "src_dir": "dist",
