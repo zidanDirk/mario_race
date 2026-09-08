@@ -49,13 +49,9 @@ jobs:
             echo "QINIU_BUCKET must be configured as a repository/environment secret or variable."
             exit 1
           fi
-          cat > qupload.conf <<EOF
-          {
-            "src_dir": "dist",
-            "bucket": "${QINIU_BUCKET}",
-            "overwrite": true,
-            "rescan_local": true,
-            "skip_fixed_strings": ".DS_Store"
-          }
-          EOF
-          qshell qupload2 --config=qupload.conf
+          qshell qupload2 \
+            --src-dir=dist \
+            --bucket="$QINIU_BUCKET" \
+            --overwrite \
+            --rescan-local \
+            --skip-fixed-strings=".DS_Store"
