@@ -1,0 +1,113 @@
+{
+  "url": "http://127.0.0.1:5173/?test=1",
+  "mode": "desktop",
+  "state": "active-play",
+  "requestedState": "active-play",
+  "appliedState": "active-play",
+  "runId": "pass-3",
+  "seed": 42,
+  "screenshotPath": "artifacts/pass-3/desktop-active-play.png",
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+    "vendor": "Google Inc. (Apple)",
+    "softwareRendered": false
+  },
+  "result": {
+    "ok": true,
+    "reason": "nonblank",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 720
+    },
+    "alphaPixels": 4096,
+    "variance": 255,
+    "colorBuckets": 298,
+    "metrics": {
+      "colorBuckets": 407,
+      "colorEntropyBits": 5.64,
+      "edgeDensity": 0.254,
+      "luminance": {
+        "mean": 188.6,
+        "p5": 109.3,
+        "p95": 234.1,
+        "contrast": 124.8
+      },
+      "dominantColorShare": 0.197,
+      "nonBackgroundShare": 0.803
+    },
+    "renderBudget": {
+      "tier": "desktop",
+      "note": "starting-point budget; adjust per game and document overrides",
+      "rows": [
+        {
+          "metric": "calls",
+          "actual": 185,
+          "limit": 300,
+          "ok": true
+        },
+        {
+          "metric": "triangles",
+          "actual": 294450,
+          "limit": 750000,
+          "ok": true
+        },
+        {
+          "metric": "geometries",
+          "actual": 204,
+          "limit": 300,
+          "ok": true
+        },
+        {
+          "metric": "textures",
+          "actual": 7,
+          "limit": 60,
+          "ok": true
+        }
+      ],
+      "withinBudget": true
+    },
+    "diagnostics": {
+      "mode": "racing",
+      "frame": 37,
+      "raceTime": 12,
+      "coins": 0,
+      "item": null,
+      "boost": 0,
+      "charge": 0,
+      "rank": 5,
+      "lap": 1,
+      "player": {
+        "t": 0.12,
+        "lane": -3,
+        "speed": 48,
+        "x": -74.19824915382223,
+        "y": 0.18000000000000002,
+        "z": 95.57528597672265
+      },
+      "renderer": {
+        "calls": 185,
+        "triangles": 294450,
+        "geometries": 204,
+        "textures": 7
+      },
+      "render": {
+        "calls": 185,
+        "triangles": 294450
+      },
+      "memory": {
+        "geometries": 204,
+        "textures": 7
+      },
+      "drawCalls": 185,
+      "triangles": 294450
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": []
+}

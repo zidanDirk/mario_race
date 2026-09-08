@@ -1,0 +1,127 @@
+{
+  "url": "http://127.0.0.1:5173/?test=1",
+  "mode": "mobile",
+  "state": "active-play",
+  "requestedState": "active-play",
+  "appliedState": "active-play",
+  "runId": "handling-v2",
+  "seed": 42,
+  "screenshotPath": "artifacts/handling-v2/mobile-active-play.png",
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+    "vendor": "Google Inc. (Apple)",
+    "softwareRendered": false
+  },
+  "result": {
+    "ok": true,
+    "reason": "nonblank",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 664
+    },
+    "drawingBuffer": {
+      "width": 585,
+      "height": 996
+    },
+    "alphaPixels": 4097,
+    "variance": 255,
+    "colorBuckets": 335,
+    "metrics": {
+      "colorBuckets": 503,
+      "colorEntropyBits": 5.72,
+      "edgeDensity": 0.321,
+      "luminance": {
+        "mean": 160.6,
+        "p5": 60,
+        "p95": 235,
+        "contrast": 175
+      },
+      "dominantColorShare": 0.148,
+      "nonBackgroundShare": 0.852
+    },
+    "renderBudget": {
+      "tier": "mobile",
+      "note": "starting-point budget; adjust per game and document overrides",
+      "rows": [
+        {
+          "metric": "calls",
+          "actual": 263,
+          "limit": 150,
+          "ok": false
+        },
+        {
+          "metric": "triangles",
+          "actual": 518360,
+          "limit": 300000,
+          "ok": false
+        },
+        {
+          "metric": "geometries",
+          "actual": 285,
+          "limit": 200,
+          "ok": false
+        },
+        {
+          "metric": "textures",
+          "actual": 6,
+          "limit": 40,
+          "ok": true
+        }
+      ],
+      "withinBudget": false
+    },
+    "diagnostics": {
+      "mode": "racing",
+      "frame": 0,
+      "raceTime": 12,
+      "coins": 0,
+      "item": null,
+      "boost": 0,
+      "charge": 0,
+      "rank": 6,
+      "lap": 1,
+      "projectiles": [],
+      "lookBack": false,
+      "trackLength": 814.0587092787521,
+      "player": {
+        "t": 0.12,
+        "lane": -3,
+        "speed": 39,
+        "heading": 0.5892611742533685,
+        "travelHeading": 0.5892611742533685,
+        "hopHeight": 0,
+        "stun": 0,
+        "driftDirection": 0,
+        "driftStage": 0,
+        "nextGate": 1,
+        "routeT": 0.12,
+        "offRoad": false,
+        "wrongWay": false,
+        "driver": "mario",
+        "x": -74.19824915382223,
+        "y": 0.18000000000000002,
+        "z": 95.57528597672265
+      },
+      "renderer": {
+        "calls": 263,
+        "triangles": 518360,
+        "geometries": 285,
+        "textures": 6
+      },
+      "render": {
+        "calls": 263,
+        "triangles": 518360
+      },
+      "memory": {
+        "geometries": 285,
+        "textures": 6
+      },
+      "drawCalls": 263,
+      "triangles": 518360
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": []
+}

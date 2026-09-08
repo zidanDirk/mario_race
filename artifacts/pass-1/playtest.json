@@ -1,0 +1,92 @@
+{
+  "passed": true,
+  "checks": [
+    "real-input start and countdown",
+    "acceleration and progress",
+    "steering",
+    "charged drift release boost",
+    "pause freezes and resumes",
+    "coin pickup",
+    "item pickup and use",
+    "mushroom speed boost",
+    "three-lap finish boundary",
+    "retry state reset",
+    "desktop and mobile captures",
+    "touch acceleration and steering",
+    "mobile no horizontal overflow"
+  ],
+  "desktop": {
+    "mode": "racing",
+    "frame": 547,
+    "raceTime": 12,
+    "coins": 0,
+    "item": null,
+    "boost": 0,
+    "charge": 0,
+    "rank": 4,
+    "lap": 1,
+    "player": {
+      "t": 0.12,
+      "lane": -3,
+      "speed": 48,
+      "x": -72.72805348264932,
+      "y": 0.18000000000000002,
+      "z": 96.00647119381523
+    },
+    "renderer": {
+      "calls": 190,
+      "triangles": 449160,
+      "geometries": 195,
+      "textures": 7
+    },
+    "render": {
+      "calls": 190,
+      "triangles": 449160
+    },
+    "memory": {
+      "geometries": 195,
+      "textures": 7
+    },
+    "drawCalls": 190,
+    "triangles": 449160
+  },
+  "mobile": {
+    "mode": "racing",
+    "frame": 548,
+    "raceTime": 12,
+    "coins": 0,
+    "item": null,
+    "boost": 0,
+    "charge": 0,
+    "rank": 4,
+    "lap": 1,
+    "player": {
+      "t": 0.12,
+      "lane": -3,
+      "speed": 48,
+      "x": -72.72805348264932,
+      "y": 0.18000000000000002,
+      "z": 96.00647119381523
+    },
+    "renderer": {
+      "calls": 160,
+      "triangles": 435846,
+      "geometries": 195,
+      "textures": 7
+    },
+    "render": {
+      "calls": 160,
+      "triangles": 435846
+    },
+    "memory": {
+      "geometries": 195,
+      "textures": 7
+    },
+    "drawCalls": 160,
+    "triangles": 435846
+  },
+  "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+  "errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}

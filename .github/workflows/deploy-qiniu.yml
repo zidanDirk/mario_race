@@ -1,0 +1,53 @@
+name: Build & Deploy H5 Game to Qiniu
+
+on:
+  push:
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build H5 game
+        run: npm run build
+
+      - name: Setup Qshell
+        env:
+          QINIU_AK: ${{ secrets.QINIU_AK }}
+          QINIU_SK: ${{ secrets.QINIU_SK }}
+        run: |
+          wget -q https://devtools.qiniu.com/qshell-v2.13.0-linux-amd64.tar.gz
+          tar -zxf qshell-v2.13.0-linux-amd64.tar.gz
+          sudo mv qshell /usr/local/bin/qshell
+          qshell account "$QINIU_AK" "$QINIU_SK" qiniu-deploy-user
+
+      - name: Upload to Qiniu Kodo
+        env:
+          QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
+        run: |
+          cat > qupload.conf <<EOF
+          {
+            "src_dir": "dist",
+            "bucket": "${QINIU_BUCKET}",
+            "overwrite": true,
+            "rescan_local": true,
+            "skip_fixed_strings": ".DS_Store"
+          }
+          EOF
+          qshell qupload2 --config=qupload.conf

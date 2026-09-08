@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "method": "Injected browser standard Gamepad state, not physical hardware",
+  "checks": [
+    "Nintendo Switch Pro Controller: A accelerates",
+    "Nintendo Switch Pro Controller: B brakes then reverses",
+    "Nintendo Switch Pro Controller: guide blocks gamepad start",
+    "Xbox Controller: A accelerates",
+    "Xbox Controller: B brakes then reverses",
+    "Xbox Controller: guide blocks gamepad start"
+  ]
+}

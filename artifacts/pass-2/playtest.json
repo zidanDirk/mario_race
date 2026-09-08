@@ -1,0 +1,101 @@
+{
+  "passed": true,
+  "checks": [
+    "real-input start and countdown",
+    "acceleration and progress",
+    "steering",
+    "charged drift release boost",
+    "pause freezes and resumes",
+    "coin pickup",
+    "item pickup and use",
+    "mushroom speed boost",
+    "three-lap finish boundary",
+    "full three-lap race using real keyboard input",
+    "retry state reset",
+    "desktop and mobile captures",
+    "touch acceleration and steering",
+    "mobile no horizontal overflow"
+  ],
+  "fullRace": {
+    "time": 44.2833333333321,
+    "rank": 1,
+    "laps": [
+      1,
+      2,
+      3
+    ],
+    "inputSamples": 197
+  },
+  "desktop": {
+    "mode": "racing",
+    "frame": 3416,
+    "raceTime": 12,
+    "coins": 0,
+    "item": null,
+    "boost": 0,
+    "charge": 0,
+    "rank": 5,
+    "lap": 1,
+    "player": {
+      "t": 0.12,
+      "lane": -3,
+      "speed": 48,
+      "x": -74.19824915382223,
+      "y": 0.18000000000000002,
+      "z": 95.57528597672265
+    },
+    "renderer": {
+      "calls": 210,
+      "triangles": 307124,
+      "geometries": 224,
+      "textures": 7
+    },
+    "render": {
+      "calls": 210,
+      "triangles": 307124
+    },
+    "memory": {
+      "geometries": 224,
+      "textures": 7
+    },
+    "drawCalls": 210,
+    "triangles": 307124
+  },
+  "mobile": {
+    "mode": "racing",
+    "frame": 3417,
+    "raceTime": 12,
+    "coins": 0,
+    "item": null,
+    "boost": 0,
+    "charge": 0,
+    "rank": 5,
+    "lap": 1,
+    "player": {
+      "t": 0.12,
+      "lane": -3,
+      "speed": 48,
+      "x": -74.19824915382223,
+      "y": 0.18000000000000002,
+      "z": 95.57528597672265
+    },
+    "renderer": {
+      "calls": 189,
+      "triangles": 305212,
+      "geometries": 224,
+      "textures": 7
+    },
+    "render": {
+      "calls": 189,
+      "triangles": 305212
+    },
+    "memory": {
+      "geometries": 224,
+      "textures": 7
+    },
+    "drawCalls": 189,
+    "triangles": 305212
+  },
+  "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+  "errors": []
+}

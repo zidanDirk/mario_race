@@ -1,0 +1,42 @@
+import { chromium } from '@playwright/test';
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const out='artifacts/handling-v2';await fs.mkdir(out,{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--use-gl=angle','--use-angle=metal']});
+const context=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1});const page=await context.newPage();const errors=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+const read=()=>page.evaluate(()=>window.__THREE_GAME_DIAGNOSTICS__);
+const state=async s=>{await page.keyboard.up('KeyW');await page.keyboard.up('KeyA');await page.keyboard.up('KeyD');await page.keyboard.up('Space');await page.evaluate(s=>window.__THREE_GAME_TEST_HOOKS__.setState(s),s);await page.waitForTimeout(50);};
+const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+const checks=[];let maxDrift=0;
+async function follow(ms,drift=0){const end=Date.now()+ms;let samples=0;const laps=new Set();
+while(Date.now()<end){const d=await read();laps.add(d.lap);if(d.mode==='finished')return {samples,laps:[...laps],finished:true,time:d.raceTime,rank:d.rank};
+const t=d.player.routeT+(9+Math.abs(d.player.speed)*.15)/d.trackLength;const target=await page.evaluate(t=>window.__THREE_GAME_TEST_HOOKS__.trackPoint(t),t);
+const aim=Math.atan2(target.x-d.player.x,target.z-d.player.z)-(drift?drift*.28:0);const error=wrap(aim-d.player.heading);
+let steering=error>.05?-1:error<-.05?1:0;
+if(drift)steering=drift===-1?(error>.04?-1:1):(error<-.04?1:-1);
+await page.keyboard.up('KeyA');await page.keyboard.up('KeyD');if(steering)await page.keyboard.down(steering<0?'KeyA':'KeyD');
+if(!drift&&Math.abs(error)>.5&&d.player.speed>30){await page.keyboard.up('KeyW');await page.keyboard.down('KeyS');}else{await page.keyboard.up('KeyS');await page.keyboard.down('KeyW');}
+maxDrift=Math.max(maxDrift,d.charge);samples++;await page.waitForTimeout(70);}
+const d=await read();return {samples,laps:[...laps],finished:d.mode==='finished',time:d.raceTime,rank:d.rank};}
+try{
+await page.goto('http://127.0.0.1:5173/?test=1',{waitUntil:'networkidle'});await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__);
+await page.click('[data-driver="toad"]');await page.waitForTimeout(70);assert.equal((await read()).player.driver,'toad');assert.equal(await page.getAttribute('[data-driver="toad"]','aria-pressed'),'true');checks.push('selected Toad model is the actual driver');
+await page.click('.garage-help');assert(await page.locator('.driving-guide').evaluate(e=>e.open));await page.keyboard.press('Escape');assert.equal((await read()).mode,'ready');checks.push('guide closes without starting race');
+await page.click('#start');await page.waitForFunction(()=>document.querySelector('#countdown').textContent==='2');await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='racing');let d=await read();assert(d.boost>1,'rocket start timed on two');checks.push('timed rocket start');await page.screenshot({path:`${out}/rocket-start.png`});
+await state('straight');await page.keyboard.down('KeyW');const initial=await read();await page.waitForTimeout(450);d=await read();assert(Math.abs(wrap(d.player.heading-initial.player.heading))<.001,'no automatic turning');assert(d.player.speed>initial.player.speed);checks.push('world-space free heading and acceleration');
+await page.keyboard.down('KeyD');await page.waitForTimeout(220);d=await read();assert(wrap(d.player.heading-initial.player.heading)<-.15);await page.keyboard.up('KeyD');checks.push('right input turns nose right');
+await state('active-play');await page.keyboard.down('KeyW');await page.keyboard.down('KeyA');await page.keyboard.down('Space');await page.waitForTimeout(90);assert((await read()).player.hopHeight>.05);await page.screenshot({path:`${out}/hop.png`});
+const driftDir=(await read()).player.driftDirection;assert.equal(driftDir,-1);await follow(2300,driftDir);d=await read();await page.screenshot({path:`${out}/drift-hold.png`});assert.equal(d.player.driftDirection,driftDir,'countersteering retains drift');assert(maxDrift>.95,`charge reached ${maxDrift}`);await page.keyboard.up('Space');await page.waitForTimeout(60);assert((await read()).boost>0,'release gives turbo');await page.screenshot({path:`${out}/drift-release.png`});checks.push('real hop, latched drift, countersteering, charge and release turbo');
+await page.keyboard.press('Escape');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='paused');const pt=(await read()).raceTime;await page.waitForTimeout(150);assert.equal((await read()).raceTime,pt);await page.click('#resume');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='racing');checks.push('pause freezes and resumes');
+await state('straight');await page.keyboard.down('KeyC');await page.waitForTimeout(80);assert((await read()).lookBack);await page.screenshot({path:`${out}/rear-view.png`});await page.keyboard.up('KeyC');checks.push('rear view follows held key');
+await page.evaluate(()=>window.__THREE_GAME_TEST_HOOKS__.giveItem('green-shell'));await page.keyboard.press('KeyE');await page.waitForTimeout(100);d=await read();assert(d.projectiles.some(p=>p.kind==='green-shell'));assert.equal(d.item,null);checks.push('green shell travels as a projectile');
+await page.evaluate(()=>window.__THREE_GAME_TEST_HOOKS__.giveItem('red-shell'));await page.keyboard.press('KeyQ');await page.waitForTimeout(100);assert((await read()).projectiles.some(p=>p.kind==='red-shell'));checks.push('red shell launches separately');
+await page.evaluate(()=>window.__THREE_GAME_TEST_HOOKS__.placeAtPickup('coin'));await page.keyboard.down('KeyW');await page.waitForTimeout(150);assert((await read()).coins>0);checks.push('physical coin pickup');
+await page.evaluate(()=>window.__THREE_GAME_TEST_HOOKS__.placeAtPickup('item'));await page.waitForTimeout(150);assert((await read()).item);checks.push('physical item pickup');
+await state('near-finish');await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='finished');await page.keyboard.up('KeyW');await page.screenshot({path:`${out}/finished.png`});checks.push('ordered final gate finishes third lap');await page.click('#resume');await page.waitForTimeout(80);d=await read();assert.equal(d.mode,'countdown');assert.equal(d.raceTime,0);assert.equal(d.player.nextGate,0);checks.push('retry resets physics and gates');
+await state('ready');await page.click('[data-driver="mario"]');await page.click('#start');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='racing');const race=await follow(140000);assert(race.finished,JSON.stringify(race));assert.deepEqual(race.laps,[1,2,3]);await page.screenshot({path:`${out}/full-race-finish.png`});checks.push('complete three laps through real steering inputs');await fs.writeFile(`${out}/full-race.json`,JSON.stringify(race,null,2));
+await page.setViewportSize({width:390,height:844});await state('ready');await page.click('#start');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='racing');const b=await page.locator('[data-key="ArrowUp"]').boundingBox();await page.mouse.move(b.x+b.width/2,b.y+b.height/2);await page.mouse.down();await page.waitForTimeout(500);assert((await read()).player.speed>10);await page.mouse.up();const oldHeading=(await read()).player.heading;const left=await page.locator('[data-key="ArrowLeft"]').boundingBox();await page.mouse.move(left.x+left.width/2,left.y+left.height/2);await page.mouse.down();await page.waitForTimeout(200);await page.mouse.up();assert(wrap((await read()).player.heading-oldHeading)>.08);checks.push('touch accelerator and steering share new physics');
+await page.locator('[data-key="ArrowUp"]').dispatchEvent('pointercancel');assert.equal(await page.locator('[data-key="ArrowUp"]').evaluate(e=>e.classList.contains('pressed')),false);checks.push('touch pointer cancellation clears pressed state');
+assert.deepEqual(errors,[]);const report={passed:true,checks,maxDrift,race,errors};await fs.writeFile(`${out}/playtest.json`,JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+}finally{await context.close();await browser.close();}
