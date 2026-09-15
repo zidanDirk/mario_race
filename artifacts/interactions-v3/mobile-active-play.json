@@ -1,0 +1,143 @@
+{
+  "url": "http://127.0.0.1:5173/?test=1",
+  "mode": "mobile",
+  "state": "active-play",
+  "requestedState": "active-play",
+  "appliedState": "active-play",
+  "runId": "interactions-v3",
+  "seed": 42,
+  "screenshotPath": "artifacts/interactions-v3/mobile-active-play.png",
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Max, Unspecified Version)",
+    "vendor": "Google Inc. (Apple)",
+    "softwareRendered": false
+  },
+  "result": {
+    "ok": true,
+    "reason": "nonblank",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 664
+    },
+    "drawingBuffer": {
+      "width": 585,
+      "height": 996
+    },
+    "alphaPixels": 4097,
+    "variance": 255,
+    "colorBuckets": 339,
+    "metrics": {
+      "colorBuckets": 525,
+      "colorEntropyBits": 5.78,
+      "edgeDensity": 0.33,
+      "luminance": {
+        "mean": 160.2,
+        "p5": 58.2,
+        "p95": 235,
+        "contrast": 176.8
+      },
+      "dominantColorShare": 0.148,
+      "nonBackgroundShare": 0.852
+    },
+    "renderBudget": {
+      "tier": "mobile",
+      "note": "starting-point budget; adjust per game and document overrides",
+      "rows": [
+        {
+          "metric": "calls",
+          "actual": 265,
+          "limit": 150,
+          "ok": false
+        },
+        {
+          "metric": "triangles",
+          "actual": 519476,
+          "limit": 300000,
+          "ok": false
+        },
+        {
+          "metric": "geometries",
+          "actual": 286,
+          "limit": 200,
+          "ok": false
+        },
+        {
+          "metric": "textures",
+          "actual": 6,
+          "limit": 40,
+          "ok": true
+        }
+      ],
+      "withinBudget": false
+    },
+    "diagnostics": {
+      "mode": "racing",
+      "frame": 0,
+      "raceTime": 12,
+      "coins": 0,
+      "item": null,
+      "inventory": [],
+      "rolling": false,
+      "interactions": {
+        "railHits": 0,
+        "propHits": 0,
+        "kartHits": 0,
+        "boxes": 0,
+        "itemAwards": 0,
+        "hits": 0,
+        "shellBounces": 0
+      },
+      "shards": 0,
+      "boost": 0,
+      "charge": 0,
+      "rank": 6,
+      "lap": 1,
+      "projectiles": [],
+      "lookBack": false,
+      "trackLength": 814.0587092787521,
+      "player": {
+        "t": 0.12,
+        "lane": -3,
+        "speed": 39,
+        "heading": 0.5892611742533685,
+        "travelHeading": 0.5892611742533685,
+        "hopHeight": 0,
+        "stun": 0,
+        "driftDirection": 0,
+        "driftStage": 0,
+        "nextGate": 1,
+        "routeT": 0.12,
+        "offRoad": false,
+        "wrongWay": false,
+        "driver": "mario",
+        "hitTime": 0,
+        "immune": 0,
+        "modelYaw": 0.5892611742533685,
+        "impactFlash": 0,
+        "x": -74.19824915382223,
+        "y": 0.18000000000000002,
+        "z": 95.57528597672265
+      },
+      "renderer": {
+        "calls": 265,
+        "triangles": 519476,
+        "geometries": 286,
+        "textures": 6
+      },
+      "render": {
+        "calls": 265,
+        "triangles": 519476
+      },
+      "memory": {
+        "geometries": 286,
+        "textures": 6
+      },
+      "drawCalls": 265,
+      "triangles": 519476
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": []
+}

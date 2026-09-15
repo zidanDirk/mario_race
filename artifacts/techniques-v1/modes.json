@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "method": "QA boundary fixtures for lifecycle transitions; full racing covered separately.",
+  "checks": [
+    "cup switches to castle with no carried ramp/flight; home restores mushroom ramps",
+    "practice writes no records and returns to selected elimination mode",
+    "elimination loss/retry restores six racers and clears draft/flight without a lap limit"
+  ],
+  "errors": []
+}

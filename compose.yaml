@@ -1,0 +1,40 @@
+services:
+  game:
+    build: .
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3001
+      DATABASE_PATH: /app/data/race.sqlite
+      DEV_AUTH_ENABLED: 'false'
+      SERVE_STATIC: 'false'
+      TRUST_PROXY: 'true'
+    volumes:
+      - race-data:/app/data
+      - race-backups:/app/backups
+    networks: [race]
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env.production}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [race]
+    depends_on:
+      game:
+        condition: service_healthy
+volumes:
+  race-data:
+  race-backups:
+  caddy-data:
+  caddy-config:
+networks:
+  race:

@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checks": [
+    "question box breaks into shards, disappears and starts visible icon roulette",
+    "pause freezes roulette; first use press hurries without firing unseen item",
+    "awarded item can actually be used",
+    "second box fills backup slot; full inventory gives feedback without overwriting",
+    "using front item promotes backup in order",
+    "collected boxes visibly respawn",
+    "normal and boosted head-on impacts remain on near side, lose speed and cancel boost",
+    "point-blank shell launch cannot spawn beyond a guardrail",
+    "green shell reflects from the same visible guardrail",
+    "red shell follows the curved road and hits its moving target",
+    "dash panel does not shorten mushroom boost",
+    "banana and shell contact trigger visible spin/bounce, drop coins, cancel boost and protect against chained hits",
+    "close racers separate instead of staying overlapped during cooldown",
+    "reset clears pending roulette and particle effects",
+    "mobile two-slot HUD fits and touch uses the front item"
+  ],
+  "errors": []
+}

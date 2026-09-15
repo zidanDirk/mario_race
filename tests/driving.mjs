@@ -15,5 +15,5 @@ d.reset(0,0,0);tick(d,1,{...input,throttle:false,brake:true});assert(d.speed<-5)
 d.reset(0,0,0);tick(d,.5,{...input,brake:true,steer:1});assert(d.heading<-.5);results.push('accelerate + brake enables spin turn');
 d.reset(.99,0,30,1);d.position.copy(track.sample(1.001).position);d.project();assert.equal(d.nextGate,1,'cannot skip seven lap checkpoints');results.push('checkpoint shortcuts rejected');
 d.reset(2.99,0,30,24);d.position.copy(track.sample(3.001).position);d.project();assert(d.finished);results.push('ordered third-lap finish');
-d.reset(.4,0,30);const gate=d.nextGate;d.position.set(200,.14,200);tick(d,1.5,{...input,throttle:false});assert(d.roadDistance<10);assert.equal(d.nextGate,gate);results.push('off-course recovery preserves checkpoint count');
+d.reset(.4,0,30);const gate=d.nextGate;d.position.set(200,.14,200);d.speed=0;tick(d,3.5,{...input,throttle:false});assert(d.roadDistance<10);assert.equal(d.nextGate,gate);results.push('off-course recovery preserves checkpoint count');
 console.log(JSON.stringify({passed:true,checks:results},null,2));

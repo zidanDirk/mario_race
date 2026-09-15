@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "checks": [
+    "built ordinary URL starts audible loop within countdown, lazily requests only current track, and pauses cleanly",
+    "both compressed tracks decode to exact32bar loops without clipping or audible-sized boundary discontinuities",
+    "asset failure keeps racing/controls usable; resume gesture successfully retries"
+  ],
+  "startToMusicMs": 3746,
+  "decoded": [
+    {
+      "file": "castle-race-CGRtyABe.mp3",
+      "duration": 50.5263125,
+      "peak": 0.7529364228248596,
+      "rms": 0.07824125071743382,
+      "boundary": 0.004317627026466653
+    },
+    {
+      "file": "mushroom-race-DQ4hv4jK.mp3",
+      "duration": 53.333333333333336,
+      "peak": 0.7354434132575989,
+      "rms": 0.08615759591038118,
+      "boundary": 0.006481558084487915
+    }
+  ],
+  "errors": []
+}

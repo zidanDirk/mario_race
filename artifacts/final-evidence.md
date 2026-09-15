@@ -1,3 +1,41 @@
+# 当前版本：车手成长与每日挑战
+
+已完成方案三。见 [progression-v1 验证记录](progression-v1/README.md)：六模板、每日三任务、经验与三档纯外观奖励、账号进度和装备持久化。60组游戏确定性检查、20组后端检查、8组实际游戏浏览器检查、4组真实API浏览器检查和加速特效验证通过。真实三圈获得200 XP，既有竞速与计时功能保留；正式第三方登录和阿里云部署仍待配置。
+
+---
+
+# 上一版：计时挑战与个人幽灵
+
+已完成方案二。见 [time-trial-v1 验证记录](time-trial-v1/README.md)：独立计时模式、本机最佳幽灵、十二分段比较、云端榜单与统计隔离。52 组确定性游戏检查、15 组后端检查、两次实际键盘完整三圈、9 组真实本地 API 浏览器检查及生产构建通过。幽灵暂不跨设备同步，真实 OAuth 和阿里云部署仍待配置。
+
+---
+
+# 上一版：双捷径与赛道机关
+
+已完成方案一。见 [course-v1 验证记录](course-v1/README.md)：花园/工坊捷径、预警喷气口、移动路障、出口加速、地图与新赛道计分。专项驾驶和完整三圈回归通过，额外旧交互回归因工具额度未执行。
+
+---
+
+# 上一版：登录、用户信息与云端成绩
+
+结果见 [cloud-v1 验证记录](cloud-v1/README.md)：已完成可配置 Google/微信网站扫码登录、服务端成绩与前十用户排行榜，10 组后端检查、8 组真实 API 浏览器检查、10 组 UI 检查、33 项游戏单元检查与生产构建通过。真实 OAuth 凭据及阿里云服务器尚未提供，部署未执行。
+
+---
+
+# 上一版：超车可见性与误救援修复
+
+结果见 [continuity-v4 验证记录](continuity-v4/README.md)：取消超车距离隐藏，检查点与救援分离，路肩正常计分，远离赛道先倒计时且驶回可取消救援。33 项单元检查、5 组专项浏览器检查及 17 项完整比赛回归通过。以下为历史版本记录。
+
+---
+
+# 上一版：碰撞与道具交互修复
+
+本轮结果见 [interactions-v3 验证记录](interactions-v3/README.md)：护栏与场景障碍碰撞、问号箱碎裂/轮盘/双道具库存、车手分离、道具受击动作、红壳寻路与加速叠加修复。完整三圈真实输入回归已通过。
+
+以下保留上版角色与操控升级的历史记录，画面和性能数字对应 handling-v2，不代表本轮重新测量。
+
+---
+
 # 角色与操控升级 · 最终验证
 
 本记录对应 handling-v2。旧 pass-2/pass-3 文件保留为上一版历史证据，不能代表新物理系统。
@@ -46,3 +84,23 @@
 操控参考：[任天堂基本操作](https://support-jp.nintendo.com/app/answers/detail/a_id/34439/)、[Mario Kart 8 官方说明书](https://www.nintendo.com/eu/media/downloads/games_8/emanuals/wii_u_6/mario_kart_8/ElectronicManual_WiiU_MarioKart8_EN.pdf)。漂移、后视、火箭起步、倒车和龟壳区别参考其规则；具体速度、转向及三级蓄力阈值为本项目调校。
 
 `artifacts/evidence.json` 已更新为本轮文件，所有引用存在。启动方式和完整操作见 [README](../README.md)。
+
+
+## Current revision: AI item combat
+See [combat-v1/README.md](combat-v1/README.md) for current implementation, input semantics, screenshots, two real-input races, local backend/UI validation and remaining physical-device/deployment limitations.
+
+
+## Current revision: tricks and combos
+[tricks-v1/README.md](tricks-v1/README.md) contains four-event scoring, eight-second timing, three-times multiplier, physical anti-repeat detection, scoped local records, actual three-lap scoring/persistence and production UI evidence. Build,101 deterministic checks and26 browser check groups passed. Physical-device and existing cloud-deployment limitations remain.
+
+
+## Current revision: Castle Night and two-stage cup
+[cup-v1/README.md](cup-v1/README.md) records the new track/config, shared physical rails, two-scene lifecycle, points/podium/retry, local cup eligibility, 121 deterministic checks, focused/production browser tests and a real six-lap two-stage run. No unintended recovery or browser exceptions.
+
+### 2026-09-14 原创竞速配乐
+
+两首32小节赛道配乐已接入，最后一圈提速升调、暂停续播、切站/重赛/后台防叠音、提示音闪避与独立音量设置完成。预渲染MP3替代约10秒现场合成。构建、6组浏览器音频检查、3组生产检查、22项服务端检查通过；详见artifacts/audio-v1/README.md。
+
+## 末位淘汰赛 — 完成
+
+独立模式，30/50/70/90/110秒末位淘汰、5秒预警、末两名位置标记、无限圈有效赛程、AI/碰撞/投射物清理与退场、胜负/超车/本机最佳/重试完成。构建与134项规则检查、6组边界浏览器测试、110秒真实输入7圈实跑及生产登录30秒失败/云隔离检查通过。真实超车5次、0意外救援、AI道具23取13用；详见artifacts/elimination-v1/README.md。

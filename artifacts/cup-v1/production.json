@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "checks": [
+    "signed-in ordinary race creates real ticket; cup creates no single-race ticket or leaderboard entry",
+    "production castle landscape stage label clears timer; failed local save still allows a new cup"
+  ],
+  "errors": []
+}

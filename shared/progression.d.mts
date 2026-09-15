@@ -1,0 +1,15 @@
+export type Metrics={orangeDrifts:number;coinsCollected:number;rescues:number;shortcutClears:number};
+export type Equipped={paint:'standard'|'mint';trail:'standard'|'violet';title:'rookie'|'star'};
+export type ProgressState={version:1;xp:number;days:Record<string,Record<string,number>>;equipped:Equipped};
+export type Task={id:string;title:string;description:string;target:number;xp:number;progress:number;complete:boolean};
+export type Reward={id:string;kind:keyof Equipped;name:string;xp:number;unlocked:boolean};
+export type Snapshot={day:string;resetAt:number;xp:number;level:number;tasks:Task[];rewards:Reward[];equipped:Equipped};
+export const rewardCatalog:Omit<Reward,'unlocked'>[];
+export function dayKey(nowMs?:number):string;
+export function dailyTasks(day:string):Omit<Task,'progress'|'complete'>[];
+export function emptyProgress(day?:string):ProgressState;
+export function normalizeProgress(value:unknown,day?:string):ProgressState;
+export function applyRace(state:ProgressState,race:{mode:'grand-prix'|'time-trial';metrics?:Metrics},day:string):ProgressState;
+export function snapshot(state:ProgressState,day:string):Snapshot;
+export function equipProgress(state:ProgressState,equipped:Equipped):ProgressState;
+export function validateMetrics(metrics:unknown,timeMs?:number):void;

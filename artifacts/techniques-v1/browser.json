@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "real keyboard drives two ramps with timed tricks; pause freezes flight and ground banana does not hit airborne kart",
+    "missing trick still lands; optional left ground lane bypasses both ramps",
+    "three presses consume one triple slot and retain backup; normal held defense still cancels safely on pause",
+    "horn clears an actual incoming red shell, hits nearby rival and cannot clear through guardrail",
+    "horn respects rescue protection after stun ends",
+    "sustained real follow grants a draft boost",
+    "mobile uses triple item and real throttle/cancel; portrait and landscape fit"
+  ],
+  "errors": []
+}

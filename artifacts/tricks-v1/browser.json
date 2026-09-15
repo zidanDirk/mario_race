@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "real throttle passes a nearby moving rival and awards 120 points",
+    "actual drift release at orange/purple thresholds awards one event each; purple is not double-counted",
+    "combo caps at 3x and simulation countdown freezes across pause",
+    "real boosted guardrail impact breaks combo while retaining earned points",
+    "manual rescue breaks combo and keeps total",
+    "real item damage breaks combo",
+    "real steering traverses both complete shortcuts and scores once in time trial without AI points",
+    "cutting into shortcut at the exit earns no trick points",
+    "completion fixture persists best and mobile result retry remains reachable/resettable",
+    "mode/difficulty records are separated and reload restores best"
+  ],
+  "errors": []
+}

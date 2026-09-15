@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "checks": [
+    "using a mushroom emits the equipped violet boost effect",
+    "restoring default restores orange boost effect"
+  ],
+  "errors": []
+}

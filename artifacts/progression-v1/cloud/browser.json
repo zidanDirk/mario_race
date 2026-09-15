@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "checks": [
+    "real authenticated finish failure/retry awards once and only after server confirmation",
+    "three rewards unlock; failed equipment stays unchanged and retry persists all cosmetics",
+    "reload restores account equipment; title appears on leaderboard; logout removes account cosmetics",
+    "new login has separate zero progression and mobile UI fits"
+  ],
+  "errors": [],
+  "scope": "real local HTTP and SQLite with explicit dev login; race telemetry submitted by test harness"
+}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": [
+    "real game login and HttpOnly session cookie",
+    "account dialog remains inside fullscreen game",
+    "starting a real race issues ticket; account dialog pauses gameplay",
+    "real score upload failure/retry stores exactly one completed race",
+    "personal best, rank, character and own-user highlight read back from SQLite",
+    "trial ticket survives board switches and saves to separate trial statistics/leaderboard",
+    "reload retains signed-in identity and best score; mobile dialog has no horizontal overflow",
+    "logout invalidates server session",
+    "game QA finish hooks never upload synthetic scores"
+  ],
+  "errors": [],
+  "realOAuth": "not exercised; credentials required",
+  "deployment": "local HTTP and SQLite; no Alibaba server supplied"
+}

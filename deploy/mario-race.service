@@ -1,0 +1,30 @@
+[Unit]
+Description=Mario Race account and leaderboard API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mario-race
+Group=mario-race
+WorkingDirectory=/opt/mario-race-backend
+EnvironmentFile=/etc/mario-race/backend.env
+ExecStart=/opt/node-v22.17.0/bin/node server/index.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/mario-race /var/backups/mario-race
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,135 @@
+
+> mushroom-grand-prix@1.0.0 test:unit
+> node --experimental-strip-types tests/driving.mjs && node --experimental-strip-types tests/collisions.mjs && node --experimental-strip-types tests/items.mjs && node --experimental-strip-types tests/continuity.mjs && node --experimental-strip-types tests/course.mjs && node --experimental-strip-types tests/ghost.mjs && node tests/progression.mjs
+
+(node:38656) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "straight throttle does not auto-steer",
+    "right input rotates heading",
+    "hop lands, countersteering retains drift side",
+    "release charged drift grants turbo",
+    "brake from standstill reverses",
+    "reverse wrong-way and stunned brake are handled",
+    "accelerate + brake enables spin turn",
+    "checkpoint shortcuts rejected",
+    "ordered third-lap finish",
+    "off-course recovery preserves checkpoint count"
+  ]
+}
+(node:38658) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{ barrierZ: 110, kartZ: 108.198, speed: 1.318394790084994 }
+guardrail collision passed
+{
+  "passed": true,
+  "checks": [
+    "guardrail blocks and slows kart",
+    "boosted impact cannot cross wall or preserve boost",
+    "reverse impact blocks opposite side",
+    "glancing impact retains movement along barrier",
+    "swept collision prevents high-speed tunnelling",
+    "overlap correction runs even without movement",
+    "rounded rail tips collide while real gaps remain open",
+    "tree and post circular proxies block vehicles"
+  ]
+}
+✓ empty inventory cannot consume
+✓ box starts visible roulette, unavailable until it settles exactly once
+✓ two slots preserve both items and a third box cannot overwrite them
+✓ backup moves forward with its own roulette progress intact
+✓ hurry never instantly grants or fires an item, repeated presses do not restart time
+✓ pausing without step does not advance roulette; invalid dt is ignored
+✓ reset clears pending reveals without delayed callbacks contaminating next race
+✓ test grant clears both previous slots and can clear inventory
+✓ trailing racers receive more catch-up items with deterministic sampling
+Item inventory: 9 checks passed.
+(node:38660) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:38675) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "roadside crossing does not miss checkpoint",
+    "missing a checkpoint never teleports a kart already on the road",
+    "recoverable grass detour does not force a reset",
+    "far stationary kart receives warning before rescue and preserves gates",
+    "driving back toward track cancels pending rescue",
+    "large checkpoint shortcut cannot award lap or trigger teleport"
+  ],
+  "failures": []
+}
+(node:38676) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "both shortcuts save distance and join the road with matching positions and headings",
+    "all branch centers remain paved, continuous and free of rescue",
+    "ordered checkpoints accept both branches and finish exactly three laps",
+    "reverse branch traversal never awards forward checkpoints",
+    "joining beyond an unpassed gate cannot skip or retroactively award it",
+    "real steering traverses each shortcut at road speed without repositioning or rescue",
+    "vents give two seconds warning then return safely at every cycle boundary",
+    "vents only hit while active; sweeps catch fast crossings with both endpoints outside",
+    "moving barriers hit stopped karts via relative sweep and keep their collider aligned",
+    "the same race clock freezes all hazards and reset reproduces their initial positions"
+  ],
+  "evidence": [
+    {
+      "route": "garden",
+      "length": 172.9141121208633,
+      "savedMeters": 30.600565198824683
+    },
+    {
+      "route": "workshop",
+      "length": 201.11965967378737,
+      "savedMeters": 34.95736601705076
+    },
+    {
+      "route": "garden",
+      "physicalTraversal": true,
+      "maxSpeed": 46.9516754480546,
+      "offRoadFrames": 0
+    },
+    {
+      "route": "workshop",
+      "physicalTraversal": true,
+      "maxSpeed": 46.97900677087329,
+      "offRoadFrames": 0
+    }
+  ],
+  "failures": []
+}
+{
+  "passed": true,
+  "checks": [
+    "fixed 50 ms samples interpolate uneven simulation frames and preserve exact finish",
+    "headings interpolate through the short arc across ±pi",
+    "a recovery cuts at the next pose without drawing a ghost through scenery",
+    "ghost is visible at exact finish only and never loops or extrapolates",
+    "recordings require all twelve ordered splits and a matching finish",
+    "recording rejects invalid data and backward time, and retains its own pose copy",
+    "maximum thirty-minute recording is bounded and round trips through storage",
+    "storage rejects incompatible versions, malformed tuples, gaps, times and coordinates",
+    "disabled storage and full quota never throw or erase a previous best"
+  ]
+}
+(node:38683) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "Beijing midnight rotates three distinct tasks and covers all six templates",
+    "each daily task awards once and repeating full races cannot farm daily XP",
+    "coins require ten in ONE completed race, drift and exits accumulate across races",
+    "manual/automatic rescue invalidates clean objective and legacy missing metrics never assumes clean",
+    "old-day race settles old tasks while current-day view starts empty",
+    "three reward thresholds enforce equipment and permit restoration",
+    "state round trips; malformed, inconsistent or incompatible records safely reset",
+    "invalid metrics are rejected, no input state mutation"
+  ]
+}

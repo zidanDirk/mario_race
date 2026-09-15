@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "checks": [
+    "time trial has no AI traffic, random boxes or item actions",
+    "real keyboard three-lap run records 12 splits and persists a complete first ghost",
+    "ghost replays on retry, freezes on pause, toggles visibility and never pushes stopped player",
+    "slower full run shows 12 comparisons and keeps the faster stored ghost",
+    "reload restores valid best replay",
+    "mobile mode picker, trial HUD and ghost fit viewport",
+    "switching back restores AI and boxes without a ghost"
+  ],
+  "first": {
+    "finished": true,
+    "time": 47.16666666666527,
+    "samples": 713,
+    "laps": [
+      1,
+      2,
+      3
+    ],
+    "splits": [
+      5304.644053919853,
+      9290.03246324628,
+      13171.774821918714,
+      16878.25568263934,
+      20739.930991668607,
+      24438.172063914797,
+      28336.433591699923,
+      32066.510432230367,
+      35941.65515860435,
+      39609.59176589905,
+      43456.817280950985,
+      47166.666666665275
+    ]
+  },
+  "second": {
+    "finished": true,
+    "time": 49.49999999999847,
+    "samples": 724,
+    "laps": [
+      1,
+      2,
+      3
+    ],
+    "splits": [
+      7289.376437726726,
+      11267.269429827558,
+      15304.098659528594,
+      19011.71481116668,
+      22870.317292674492,
+      26589.587128798346,
+      30617.619142687246,
+      34332.560048951105,
+      38188.07318454389,
+      41876.294704680644,
+      45778.56763216334,
+      49499.99999999847
+    ]
+  },
+  "frames": 945,
+  "bytes": 66191,
+  "errors": []
+}

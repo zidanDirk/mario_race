@@ -1,0 +1,54 @@
+.trick-hud{position:absolute;left:35px;top:220px;width:174px;padding:10px 12px 9px;border-left:3px solid #18a48f;border-radius:3px 11px 11px 3px;background:#fffdf3ed;box-shadow:0 4px 18px #173e4020;z-index:3;pointer-events:none;user-select:none;color:#193e3f;font-variant-numeric:tabular-nums}
+.trick-hud[hidden]{display:none}
+.trick-heading,.trick-score-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0}
+.trick-eyebrow{font-size:9px;font-weight:800;letter-spacing:1px}
+.trick-chain{font-size:9px;color:#647b70;white-space:nowrap}
+.trick-score{font:800 29px/1.15 'Barlow Condensed',sans-serif;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.trick-multiplier{font:800 italic 24px/1 'Barlow Condensed',sans-serif;color:#b96a20;transform-origin:right center;white-space:nowrap}
+.trick-hud[data-active=false] .trick-multiplier{color:#8b9989}
+.trick-meter{height:3px;margin:3px 0 5px;background:#214a3d17;border-radius:4px;overflow:hidden}
+.trick-bar{height:100%;background:#18a48f;transform:scaleX(0);transform-origin:left}
+.trick-meter[data-urgent=true] .trick-bar{background:#db7b35}
+.trick-event{font-size:9px;line-height:1.4;color:#256d61;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trick-event[data-kind=break]{color:#967347}
+.trick-event[data-kind=idle]{color:#78887a}
+.trick-announcement{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.dialog{max-height:calc(100dvh - 30px);overflow-y:auto;overscroll-behavior:contain}
+.trick-results{margin-top:15px;padding:12px 0 0;border-top:1px solid #214a3d22;text-align:left}
+.trick-result-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px}
+.trick-result-label{font-weight:700;color:#557166}
+.trick-evaluation{font-size:10px;color:#167969}
+.trick-result-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0}
+.trick-result-summary strong{display:block;font:800 28px/1.15 'Barlow Condensed','Noto Sans SC',sans-serif;color:#1b5f55;overflow-wrap:anywhere}
+.trick-result-summary small{display:block;font-size:9px;line-height:1.8;color:#687b70}
+.trick-result-chain{text-align:right;flex-shrink:0}
+.trick-result-chain strong{font:800 14px/1.7 'Noto Sans SC',sans-serif}
+.trick-result-counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:9px 0;padding:9px 0;border-top:1px dashed #214a3d1a;border-bottom:1px dashed #214a3d1a;text-align:center}
+.trick-result-counts dt{font-size:9px;color:#657c70;white-space:nowrap}
+.trick-result-counts dd{font:800 19px/1.6 'Barlow Condensed',sans-serif;margin:0;color:#315c51;overflow-wrap:anywhere}
+.trick-local-record{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:9px;line-height:1.7;color:#637669;flex-wrap:wrap}
+.trick-new-best{border-radius:4px;padding:1px 5px;background:#ffedbc;color:#a36520;font-size:9px;white-space:nowrap}
+.dialog .trick-save-warning{font-size:9px;color:#aa6a30;margin:4px 0 0}
+@media(max-width:700px){
+  .trick-hud{left:max(14px,env(safe-area-inset-left));top:180px;width:140px;height:56px;padding:5px 8px 4px;border-left-width:2px;border-radius:3px 8px 8px 3px}
+  .trick-eyebrow,.trick-chain{font-size:8px;line-height:10px;letter-spacing:0}
+  .trick-score{font-size:22px;line-height:22px}
+  .trick-multiplier{font-size:20px;line-height:22px}
+  .trick-meter{height:2px;margin:0 0 2px}
+  .trick-event{font-size:8px;line-height:10px}
+  .racing .event-toast{left:auto;right:14px;top:180px;max-width:calc(100% - 174px);white-space:normal;text-align:center;font-size:9px;line-height:1.5;padding:7px 9px;border-radius:10px;transform:translateY(-10px)}
+  .racing .event-toast.show{transform:translateY(0)}
+  .trick-results{margin-top:12px;padding-top:10px}
+}
+@media(max-height:480px){
+  .trick-hud{left:20px;top:148px;width:145px;height:56px;padding:5px 8px 4px}
+  .trick-eyebrow,.trick-chain{font-size:8px;line-height:10px;letter-spacing:0}
+  .trick-score{font-size:22px;line-height:22px}
+  .trick-multiplier{font-size:20px;line-height:22px}
+  .trick-meter{height:2px;margin:0 0 2px}
+  .trick-event{font-size:8px;line-height:10px}
+  .racing .event-toast{left:50%;right:auto;top:148px;max-width:calc(100% - 380px);transform:translate(-50%,-10px);white-space:normal;line-height:1.4;padding:5px 8px}
+  .racing .event-toast.show{transform:translate(-50%,0)}
+  .trick-results{margin-top:10px;padding-top:8px}
+}
+@media(prefers-reduced-motion:reduce){.trick-hud *{animation:none!important;transition:none!important}}

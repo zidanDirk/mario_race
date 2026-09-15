@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "checks": [
+    "three daily objectives and three locked cosmetics are visible; Escape does not start race",
+    "real keyboard three-lap time trial earns XP, preserves 12 splits and growth dialog pauses input",
+    "reload restores guest progress; abandoning race grants no XP",
+    "coin pickup counts at wallet cap; manual and automatic rescue each count once",
+    "crossing actual shortcut exit records challenge progress",
+    "real orange drift release increments task once",
+    "all three earned cosmetics equip; repaint affects only player and follows driver selection",
+    "equipment persists and restores defaults; mobile dialog fits; Grand Prix traffic and items remain"
+  ],
+  "first": {
+    "finished": true,
+    "time": 47.06666666666528,
+    "samples": 711,
+    "laps": [
+      1,
+      2,
+      3
+    ],
+    "splits": [
+      5170.087987387716,
+      8885.298194054512,
+      12819.336603419166,
+      16520.484691245798,
+      20374.949352783973,
+      24051.449022124238,
+      27935.926515440868,
+      31642.852844550212,
+      35505.941063045444,
+      39186.053147057435,
+      43340.51547903035,
+      47066.666666665275
+    ]
+  },
+  "earnedMetrics": {
+    "orangeDrifts": 0,
+    "coinsCollected": 54,
+    "rescues": 0,
+    "shortcutClears": 0
+  },
+  "earnedXP": 200,
+  "maxCharge": 2.1100000000000008,
+  "errors": []
+}

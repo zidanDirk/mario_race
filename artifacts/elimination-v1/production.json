@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "production ordinary URL has no QA hooks",
+    "signed-in ordinary GP creates a ticket; elimination runs30real seconds without a ticket, finish upload or cloud result",
+    "idle player actually loses at30s, saves isolated local result and retries with all six drivers"
+  ],
+  "record": {
+    "version": 1,
+    "bestPlace": 6,
+    "last": {
+      "place": 6,
+      "survival": 30,
+      "overtakes": 0
+    }
+  },
+  "errors": []
+}

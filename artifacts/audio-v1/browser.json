@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "no autoplay before gesture; start plays one audible mushroom music loop at144BPM",
+    "master mute/unmute reaches music, engine and cues without adding another loop",
+    "pause is silent, preserves phrase position; mobile music/effects sliders work independently; resume does not stack",
+    "last lap lifts tempo/key without restarting music; finish stops race loop; next cup stage plays distinct castle arrangement at152BPM",
+    "restart resets arrangement; home stops music; saved mix survives reload",
+    "unavailable storage does not break audio controls; backgrounding pauses game and stops audio"
+  ],
+  "audible": {
+    "loops": 1,
+    "rms": [
+      0.03338479142405995
+    ]
+  },
+  "errors": []
+}

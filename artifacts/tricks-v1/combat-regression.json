@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "AI physically collects a real box into its own roulette",
+    "quick E press launches exactly one shell",
+    "rear red shell warns then is intercepted; only held slot consumed, reserve never auto-fires",
+    "front hit cannot be blocked by a rear item and grants a recovery window",
+    "pause cancels hold without throwing or consuming inventory",
+    "touch/pointer cancellation preserves held inventory without a shot",
+    "held gamepad button waits for release after pause; disconnect cancels without shooting",
+    "AI executes all four real item effects via strategy decisions",
+    "casual selection cannot change time-trial hazard immunity or enable AI items",
+    "mobile difficulty and warning fit; long touch holds and release throws"
+  ],
+  "errors": []
+}

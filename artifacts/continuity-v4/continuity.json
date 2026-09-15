@@ -1,0 +1,141 @@
+{
+  "passed": true,
+  "checks": [
+    "opponent stays visible across all 32 front-to-rear overtake positions",
+    "rear-view keeps overtaken opponents visible",
+    "missing checkpoint on-road and a 30m grass detour do not teleport the player",
+    "genuine far-off-track rescue is announced and preserves checkpoint progress",
+    "mobile chase view retains opponents without layout overflow"
+  ],
+  "observations": [
+    {
+      "meters": 6,
+      "visible": true
+    },
+    {
+      "meters": 5,
+      "visible": true
+    },
+    {
+      "meters": 4,
+      "visible": true
+    },
+    {
+      "meters": 3,
+      "visible": true
+    },
+    {
+      "meters": 2,
+      "visible": true
+    },
+    {
+      "meters": 1,
+      "visible": true
+    },
+    {
+      "meters": 0,
+      "visible": true
+    },
+    {
+      "meters": -1,
+      "visible": true
+    },
+    {
+      "meters": -2,
+      "visible": true
+    },
+    {
+      "meters": -3,
+      "visible": true
+    },
+    {
+      "meters": -4,
+      "visible": true
+    },
+    {
+      "meters": -5,
+      "visible": true
+    },
+    {
+      "meters": -6,
+      "visible": true
+    },
+    {
+      "meters": -7,
+      "visible": true
+    },
+    {
+      "meters": -8,
+      "visible": true
+    },
+    {
+      "meters": -9,
+      "visible": true
+    },
+    {
+      "meters": -10,
+      "visible": true
+    },
+    {
+      "meters": -11,
+      "visible": true
+    },
+    {
+      "meters": -12,
+      "visible": true
+    },
+    {
+      "meters": -13,
+      "visible": true
+    },
+    {
+      "meters": -14,
+      "visible": true
+    },
+    {
+      "meters": -15,
+      "visible": true
+    },
+    {
+      "meters": -16,
+      "visible": true
+    },
+    {
+      "meters": -17,
+      "visible": true
+    },
+    {
+      "meters": -18,
+      "visible": true
+    },
+    {
+      "meters": -19,
+      "visible": true
+    },
+    {
+      "meters": -20,
+      "visible": true
+    },
+    {
+      "meters": -21,
+      "visible": true
+    },
+    {
+      "meters": -22,
+      "visible": true
+    },
+    {
+      "meters": -23,
+      "visible": true
+    },
+    {
+      "meters": -24,
+      "visible": true
+    },
+    {
+      "meters": -25,
+      "visible": true
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "checks": [
+    "real keyboard hop/hold/countersteer charges orange drift and release earns points",
+    "real keyboard three-lap race earns drift points, finishes and persists independent trick record",
+    "retry clears combo and per-race counts"
+  ],
+  "realDrift": {
+    "score": 270,
+    "chain": 2,
+    "multiplier": 1.5,
+    "remaining": 8,
+    "maxChain": 2,
+    "maxMultiplier": 1.5,
+    "counts": {
+      "orange": 1,
+      "purple": 0,
+      "overtake": 1,
+      "shortcut": 0
+    },
+    "last": {
+      "label": "橙色漂移",
+      "points": 150,
+      "serial": 2
+    },
+    "breakReason": "",
+    "best": null,
+    "key": "mushroom-tricks-v1-grand-prix-standard-qa",
+    "valid": true,
+    "entry": null
+  },
+  "race": {
+    "seconds": 51.199999999998376,
+    "laps": [
+      1,
+      2,
+      3
+    ],
+    "samples": 769,
+    "tricks": {
+      "score": 520,
+      "chain": 0,
+      "multiplier": 1,
+      "remaining": 0,
+      "maxChain": 3,
+      "maxMultiplier": 2,
+      "counts": {
+        "orange": 1,
+        "purple": 0,
+        "overtake": 2,
+        "shortcut": 0
+      },
+      "last": {
+        "label": "贴身超车",
+        "points": 240,
+        "serial": 3
+      },
+      "breakReason": "受击中断",
+      "best": 520,
+      "key": "mushroom-tricks-v1-grand-prix-standard-qa",
+      "valid": false,
+      "entry": null
+    }
+  },
+  "errors": []
+}

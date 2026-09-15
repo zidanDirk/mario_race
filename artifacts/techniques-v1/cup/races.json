@@ -1,0 +1,674 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "finished": true,
+      "track": "mushroom",
+      "time": 46.649999999998634,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "rescues": 0,
+      "maxCalls": 434,
+      "maxTriangles": 529366,
+      "bridgeSamples": 0,
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 2,
+          "playerHits": 0,
+          "warnings": 0,
+          "collected": 26,
+          "used": 21,
+          "playerAttacks": 0
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 3
+              },
+              {
+                "item": null,
+                "pending": "mushroom",
+                "remaining": 0.11666666666666697,
+                "elapsed": 1.3833333333333333
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "super-horn",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 2
+              },
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": [
+          {
+            "kind": "banana",
+            "owner": "yoshi",
+            "target": "toad",
+            "x": 82.45897542375313,
+            "z": -45.52920212516315,
+            "age": 14.716666666666978
+          },
+          {
+            "kind": "green-shell",
+            "owner": "yoshi",
+            "target": "wario",
+            "x": -35.3461008192819,
+            "z": 440.30490042410446,
+            "age": 5.916666666666651
+          }
+        ]
+      },
+      "tricks": {
+        "score": 1200,
+        "chain": 2,
+        "multiplier": 1.5,
+        "remaining": 6.0666666666666735,
+        "maxChain": 2,
+        "maxMultiplier": 1.5,
+        "counts": {
+          "orange": 0,
+          "purple": 0,
+          "overtake": 2,
+          "shortcut": 0,
+          "jump": 6
+        },
+        "last": {
+          "label": "跳台技巧",
+          "points": 180,
+          "serial": 8
+        },
+        "breakReason": "",
+        "best": 1200,
+        "key": "light-handling1-techniques1-cup-mushroom-tricks-v1-grand-prix-standard-qa",
+        "valid": false,
+        "entry": null
+      },
+      "techniques": {
+        "drafts": 1,
+        "jumps": 6,
+        "horns": 0,
+        "hornClears": 0,
+        "aiDrafts": 3,
+        "aiJumps": 12,
+        "aiHorns": 1,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "airborne": false,
+          "trickReady": false,
+          "trick": false,
+          "activeRamp": null
+        }
+      },
+      "cup": {
+        "selected": true,
+        "state": {
+          "stageIndex": 0,
+          "complete": false,
+          "awaitingNext": true,
+          "playerId": "mario",
+          "difficulty": "standard",
+          "rounds": [
+            {
+              "trackId": "mushroom",
+              "order": [
+                "mario",
+                "wario",
+                "toad",
+                "yoshi",
+                "peach",
+                "luigi"
+              ]
+            }
+          ],
+          "standings": [
+            {
+              "id": "mario",
+              "name": "马里奥",
+              "places": [
+                1
+              ],
+              "points": 15,
+              "wins": 1,
+              "rank": 1
+            },
+            {
+              "id": "wario",
+              "name": "瓦力欧",
+              "places": [
+                2
+              ],
+              "points": 12,
+              "wins": 0,
+              "rank": 2
+            },
+            {
+              "id": "toad",
+              "name": "奇诺比奥",
+              "places": [
+                3
+              ],
+              "points": 10,
+              "wins": 0,
+              "rank": 3
+            },
+            {
+              "id": "yoshi",
+              "name": "耀西",
+              "places": [
+                4
+              ],
+              "points": 8,
+              "wins": 0,
+              "rank": 4
+            },
+            {
+              "id": "peach",
+              "name": "碧姬",
+              "places": [
+                5
+              ],
+              "points": 6,
+              "wins": 0,
+              "rank": 5
+            },
+            {
+              "id": "luigi",
+              "name": "路易吉",
+              "places": [
+                6
+              ],
+              "points": 4,
+              "wins": 0,
+              "rank": 6
+            }
+          ]
+        },
+        "track": "mushroom",
+        "scenes": 1,
+        "times": [
+          46.649999999998634
+        ]
+      }
+    },
+    {
+      "finished": true,
+      "track": "castle",
+      "time": 62.66666666666439,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "rescues": 0,
+      "maxCalls": 287,
+      "maxTriangles": 373234,
+      "bridgeSamples": 118,
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 7,
+          "playerHits": 0,
+          "warnings": 0,
+          "collected": 23,
+          "used": 22,
+          "playerAttacks": 0
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 2
+              },
+              {
+                "item": "super-horn",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 3
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": []
+      },
+      "tricks": {
+        "score": 120,
+        "chain": 0,
+        "multiplier": 1,
+        "remaining": 0,
+        "maxChain": 1,
+        "maxMultiplier": 1,
+        "counts": {
+          "orange": 0,
+          "purple": 0,
+          "overtake": 1,
+          "shortcut": 0,
+          "jump": 0
+        },
+        "last": {
+          "label": "贴身超车",
+          "points": 120,
+          "serial": 1
+        },
+        "breakReason": "连击结束",
+        "best": 120,
+        "key": "light-handling1-techniques1-cup-castle-tricks-v1-grand-prix-standard-qa",
+        "valid": false,
+        "entry": null
+      },
+      "techniques": {
+        "drafts": 1,
+        "jumps": 0,
+        "horns": 0,
+        "hornClears": 0,
+        "aiDrafts": 9,
+        "aiJumps": 0,
+        "aiHorns": 1,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "airborne": false,
+          "trickReady": false,
+          "trick": false,
+          "activeRamp": null
+        }
+      },
+      "cup": {
+        "selected": true,
+        "state": {
+          "stageIndex": 1,
+          "complete": true,
+          "awaitingNext": false,
+          "playerId": "mario",
+          "difficulty": "standard",
+          "rounds": [
+            {
+              "trackId": "mushroom",
+              "order": [
+                "mario",
+                "wario",
+                "toad",
+                "yoshi",
+                "peach",
+                "luigi"
+              ]
+            },
+            {
+              "trackId": "castle",
+              "order": [
+                "mario",
+                "wario",
+                "luigi",
+                "yoshi",
+                "peach",
+                "toad"
+              ]
+            }
+          ],
+          "standings": [
+            {
+              "id": "mario",
+              "name": "马里奥",
+              "places": [
+                1,
+                1
+              ],
+              "points": 30,
+              "wins": 2,
+              "rank": 1
+            },
+            {
+              "id": "wario",
+              "name": "瓦力欧",
+              "places": [
+                2,
+                2
+              ],
+              "points": 24,
+              "wins": 0,
+              "rank": 2
+            },
+            {
+              "id": "yoshi",
+              "name": "耀西",
+              "places": [
+                4,
+                4
+              ],
+              "points": 16,
+              "wins": 0,
+              "rank": 3
+            },
+            {
+              "id": "luigi",
+              "name": "路易吉",
+              "places": [
+                6,
+                3
+              ],
+              "points": 14,
+              "wins": 0,
+              "rank": 4
+            },
+            {
+              "id": "toad",
+              "name": "奇诺比奥",
+              "places": [
+                3,
+                6
+              ],
+              "points": 14,
+              "wins": 0,
+              "rank": 5
+            },
+            {
+              "id": "peach",
+              "name": "碧姬",
+              "places": [
+                5,
+                5
+              ],
+              "points": 12,
+              "wins": 0,
+              "rank": 6
+            }
+          ]
+        },
+        "track": "castle",
+        "scenes": 2,
+        "times": [
+          46.649999999998634,
+          62.66666666666439
+        ]
+      }
+    }
+  ],
+  "final": {
+    "selected": true,
+    "state": {
+      "stageIndex": 1,
+      "complete": true,
+      "awaitingNext": false,
+      "playerId": "mario",
+      "difficulty": "standard",
+      "rounds": [
+        {
+          "trackId": "mushroom",
+          "order": [
+            "mario",
+            "wario",
+            "toad",
+            "yoshi",
+            "peach",
+            "luigi"
+          ]
+        },
+        {
+          "trackId": "castle",
+          "order": [
+            "mario",
+            "wario",
+            "luigi",
+            "yoshi",
+            "peach",
+            "toad"
+          ]
+        }
+      ],
+      "standings": [
+        {
+          "id": "mario",
+          "name": "马里奥",
+          "places": [
+            1,
+            1
+          ],
+          "points": 30,
+          "wins": 2,
+          "rank": 1
+        },
+        {
+          "id": "wario",
+          "name": "瓦力欧",
+          "places": [
+            2,
+            2
+          ],
+          "points": 24,
+          "wins": 0,
+          "rank": 2
+        },
+        {
+          "id": "yoshi",
+          "name": "耀西",
+          "places": [
+            4,
+            4
+          ],
+          "points": 16,
+          "wins": 0,
+          "rank": 3
+        },
+        {
+          "id": "luigi",
+          "name": "路易吉",
+          "places": [
+            6,
+            3
+          ],
+          "points": 14,
+          "wins": 0,
+          "rank": 4
+        },
+        {
+          "id": "toad",
+          "name": "奇诺比奥",
+          "places": [
+            3,
+            6
+          ],
+          "points": 14,
+          "wins": 0,
+          "rank": 5
+        },
+        {
+          "id": "peach",
+          "name": "碧姬",
+          "places": [
+            5,
+            5
+          ],
+          "points": 12,
+          "wins": 0,
+          "rank": 6
+        }
+      ]
+    },
+    "track": "castle",
+    "scenes": 2,
+    "times": [
+      46.649999999998634,
+      62.66666666666439
+    ]
+  },
+  "errors": []
+}

@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "checks": [
+    "built game starts with trick HUD; ordinary URL exposes no QA hooks",
+    "landscape and large mobile scores fit without horizontal overflow",
+    "blocked local storage shows clear record warning and still allows retry"
+  ],
+  "errors": []
+}

@@ -1,0 +1,274 @@
+{
+  "passed": true,
+  "runs": [
+    {
+      "difficulty": "standard",
+      "finished": true,
+      "time": 48.69999999999852,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "first30": {
+        "blocks": 0,
+        "aiHits": 2,
+        "playerHits": 0,
+        "warnings": 0,
+        "collected": 14,
+        "used": 8,
+        "playerAttacks": 0
+      },
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 2,
+          "playerHits": 0,
+          "warnings": 0,
+          "collected": 18,
+          "used": 8,
+          "playerAttacks": 0
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": []
+      },
+      "interactions": {
+        "railHits": 0,
+        "propHits": 0,
+        "kartHits": 14,
+        "boxes": 12,
+        "itemAwards": 2,
+        "hits": 0,
+        "shellBounces": 2
+      }
+    },
+    {
+      "difficulty": "casual",
+      "finished": true,
+      "time": 50.28333333333176,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "first30": {
+        "blocks": 0,
+        "aiHits": 2,
+        "playerHits": 0,
+        "warnings": 0,
+        "collected": 14,
+        "used": 8,
+        "playerAttacks": 0
+      },
+      "combat": {
+        "difficulty": "casual",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0.16666666666699825,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 4,
+          "playerHits": 1,
+          "warnings": 1,
+          "collected": 22,
+          "used": 13,
+          "playerAttacks": 0
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": null,
+                "pending": "green-shell",
+                "remaining": 0.3333333333333336,
+                "elapsed": 1.1666666666666674
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": []
+      },
+      "interactions": {
+        "railHits": 0,
+        "propHits": 0,
+        "kartHits": 12,
+        "boxes": 11,
+        "itemAwards": 2,
+        "hits": 1,
+        "shellBounces": 0
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "checks": [
+    "standard gamepad shoulder consumes one triple charge per press; long holds and release preserve remaining charges and reserve",
+    "same left shoulder fires horn on press exactly once, never auto-uses reserve while held",
+    "gamepad A accelerates, axis steers and right shoulder times a real ramp trick through successful boosted landing",
+    "real mobile multitouch throttle plus drift times a ramp trick, with touch steering and a safe landing",
+    "touchCancel releases throttle and drift; pressed state clears, kart coasts, and fresh touch works"
+  ],
+  "samples": {
+    "gamepad": {
+      "jumps": 1,
+      "peak": 2.1452777777777787,
+      "speed": 44.731122450658695
+    },
+    "touch": {
+      "jumps": 1,
+      "peak": 2.1452777777777787
+    }
+  },
+  "errors": []
+}

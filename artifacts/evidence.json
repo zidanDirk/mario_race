@@ -1,33 +1,30 @@
 {
   "version": 1,
-  "runId": "handling-v2",
+  "runId": "interactions-v3",
   "captures": [
     {
       "mode": "desktop",
       "state": "active-play",
-      "report": "artifacts/handling-v2/desktop-active-play.json"
+      "report": "artifacts/interactions-v3/desktop-active-play.json"
     },
     {
       "mode": "mobile",
       "state": "active-play",
-      "report": "artifacts/handling-v2/mobile-active-play.json"
+      "report": "artifacts/interactions-v3/mobile-active-play.json"
     }
   ],
   "artifacts": [
-    "artifacts/handling-v2/playtest.json",
-    "artifacts/handling-v2/gamepad.json",
-    "artifacts/handling-v2/full-race.json",
-    "artifacts/handling-v2/hero-mario.png",
-    "artifacts/handling-v2/hero-luigi.png",
-    "artifacts/handling-v2/hero-peach.png",
-    "artifacts/handling-v2/hero-toad.png",
-    "artifacts/handling-v2/hero-yoshi.png",
-    "artifacts/handling-v2/hero-wario.png",
-    "artifacts/handling-v2/hop.png",
-    "artifacts/handling-v2/drift-hold.png",
-    "artifacts/handling-v2/drift-release.png",
-    "artifacts/handling-v2/full-race-finish.png",
-    "artifacts/handling-v2/controls.png",
-    "artifacts/handling-v2/mobile-ready.png"
+    "artifacts/interactions-v3/interactions.json",
+    "artifacts/interactions-v3/playtest.json",
+    "artifacts/interactions-v3/full-race.json",
+    "artifacts/interactions-v3/item-shatter-roulette.png",
+    "artifacts/interactions-v3/item-awarded.png",
+    "artifacts/interactions-v3/two-items.png",
+    "artifacts/interactions-v3/wall-impact.png",
+    "artifacts/interactions-v3/boost-wall-impact.png",
+    "artifacts/interactions-v3/banana-hit.png",
+    "artifacts/interactions-v3/green-shell-hit.png",
+    "artifacts/interactions-v3/mobile-roulette.png",
+    "artifacts/interactions-v3/full-race-finish.png"
   ]
 }

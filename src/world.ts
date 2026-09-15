@@ -1,7 +1,11 @@
+import type { Collider } from './collision';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createDriver } from './characters';
+import { createShortcuts, projectShortcut } from './routes';
+import { createTrack, TRACKS, type TrackId } from './tracks';
+import { buildNightWorld } from './night-world';
 
 export interface Pickup { object: THREE.Object3D; t: number; lane: number; kind: 'coin' | 'item'; cooldown: number }
 export interface BoostPad { t: number; lane: number }
@@ -58,20 +62,13 @@ function bake(root: THREE.Object3D, destination: THREE.Object3D) {
   }
 }
 
-export function buildWorld(scene: THREE.Scene) {
-  // A broader inner bend keeps even the 15-unit recovery lane inside the
-  // minimum turn radius (17.31), so shoulder and curb ribbons cannot fold.
-  const points=[[-90,0],[-80,80],[-20,130],[65,105],[105,40],[65,-15],[110,-75],[60,-130],[-30,-130],[-95,-70]];
-  const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],.14,p[1])),true,'catmullrom',.6);
-  curve.arcLengthDivisions=2400;
-  const trackLength=curve.getLength();
-  function sample(t:number,lateral=0) {
-    t=((t%1)+1)%1;
-    const position=curve.getPointAt(t),tangent=curve.getTangentAt(t).normalize();
-    const normal=new THREE.Vector3(tangent.z,0,-tangent.x).normalize();
-    position.addScaledVector(normal,lateral);
-    return {position,tangent,normal};
-  }
+export function buildWorld(scene: THREE.Scene, id: TrackId = 'mushroom') {
+  if(id === 'castle') return buildNightWorld(scene);
+  const {curve,trackLength,sample,widthAt}=createTrack(id);
+  const shortcuts=createShortcuts(sample,trackLength);
+  const inShortcut=(x:number,z:number,margin=3)=>shortcuts.some(route=>projectShortcut(route,{x,z}).distance<route.width/2+margin);
+  const colliders:Collider[]=[];
+  const obstacle=(x:number,z:number,radius:number)=>colliders.push({a:{x,z},b:{x,z},radius,kind:'prop'});
   const staticProps=new THREE.Group();
   const animated:THREE.Object3D[]=[];
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(1500,1500),mat(0x79c85b));
@@ -108,6 +105,7 @@ export function buildWorld(scene: THREE.Scene) {
   const startGroup=new THREE.Group(); startGroup.position.copy(start.position);startGroup.rotation.y=startHeading;
   for(let row=0;row<3;row++)for(let col=0;col<18;col++)cube(startGroup,(row+col)%2?white:dark,[-8.5+col,.025,-1+row],[1,.025,1]);
   for(const x of [-11.2,11.2]){
+    const post=sample(0,x).position;obstacle(post.x,post.z,1);
     round(startGroup,red,[x,5.5,0],[1.4,11,1.4]);
     round(startGroup,white,[x,1.2,0],[2,2.4,2]);
     ball(startGroup,gold,[x,11.6,0],[.85,.85,.85]);
@@ -125,6 +123,7 @@ export function buildWorld(scene: THREE.Scene) {
     let distance=Infinity;for(let i=0;i<180;i++){const p=curve.getPointAt(i/180);distance=Math.min(distance,Math.hypot(x-p.x,z-p.z));}return distance;
   };
   function mushroom(x:number,z:number,size:number,color:number) {
+    obstacle(x,z,.85*size);
     const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=random()*Math.PI*2;g.scale.setScalar(size);
     cylinder(g,mat(0xffefca),[0,2,0],.7,1,4);
     ball(g,mat(color),[0,4,0],[3.2,1.75,3.2]);
@@ -139,6 +138,7 @@ export function buildWorld(scene: THREE.Scene) {
     staticProps.add(g);
   }
   function tree(x:number,z:number,size:number,variant:number) {
+    obstacle(x,z,.65*size);
     const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(size);
     cylinder(g,mat(0xb57b46),[0,2,0],.48,.72,4,8);
     const leaf=mat(variant?0x288f67:0x43a95a);
@@ -151,13 +151,13 @@ export function buildWorld(scene: THREE.Scene) {
   for(let i=0;i<72;i++) {
     const t=(i+.2)/72,side=i%2?1:-1;
     const p=sample(t,side*(16+random()*18)).position;
-    if(nearestRoad(p.x,p.z)<14)continue;
+    if(nearestRoad(p.x,p.z)<14 || inShortcut(p.x,p.z,7))continue;
     if(i%3===0) tree(p.x,p.z,.8+random()*.75,i%2);
     else mushroom(p.x,p.z,.55+random()*1.1,[0xf54b4f,0xf4ba3e,0xe98bb4][i%3]);
   }
   for(let i=0;i<65;i++) {
     const x=(random()-.5)*470,z=(random()-.5)*430;
-    if(nearestRoad(x,z)<28 || Math.hypot(x+10,z-20)<37)continue;
+    if(inShortcut(x,z,7) || nearestRoad(x,z)<28 || Math.hypot(x+10,z-20)<37)continue;
     tree(x,z,.9+random()*1.3,i%2);
   }
   // Distant rounded landforms provide a soft three-layer horizon.
@@ -195,20 +195,29 @@ export function buildWorld(scene: THREE.Scene) {
   const pond=shape(staticProps,new THREE.CircleGeometry(19,48),mat(0x54cbd3,.18,.1),[53,.055,49],[1,1,1]);pond.rotation.x=-Math.PI/2;pond.scale.y=.6;pond.castShadow=false;
   for(let i=0;i<130;i++) {
     const p=sample(random(),(random()<.5?-1:1)*(12+random()*13)).position;
-    if(nearestRoad(p.x,p.z)<11.5)continue;
+    if(nearestRoad(p.x,p.z)<11.5 || inShortcut(p.x,p.z,1))continue;
     const flowerColor=mat([0xfff1a6,0xfffcf0,0xef87ab][i%3]);
     for(let j=0;j<4;j++){const a=j*Math.PI/2;shape(staticProps,flowerSphere,flowerColor,[p.x+Math.cos(a)*.22,.3,p.z+Math.sin(a)*.22],[.25,.12,.25]).castShadow=false;}
     shape(staticProps,flowerSphere,gold,[p.x,.4,p.z],[.16,.13,.16]).castShadow=false;
   }
-  for(const t of [.18,.25,.36,.47,.55,.66,.74,.87]) {
-    const s=sample(t,13.5),g=new THREE.Group();g.position.copy(s.position);g.rotation.y=Math.atan2(s.tangent.x,s.tangent.z);
-    for(let i=-3;i<=3;i++){cube(g,white,[i*2.4,1.1,0],[.28,2.2,.28]);}
-    for(const y of [.7,1.6])round(g,white,[0,y,0],[16,.24,.28]);staticProps.add(g);
+  // Rails follow the bend; the same endpoints author both visuals and collision.
+  for(const t of [.18,.25,.36,.47,.55,.66,.74,.87])for(const side of [-1,1]) {
+    for(let i=0;i<8;i++){
+      const a=sample(t+(i-4)*2/trackLength,side*13.5).position;
+      const b=sample(t+(i-3)*2/trackLength,side*13.5).position;
+      if(inShortcut(a.x,a.z)||inShortcut(b.x,b.z))continue;
+      const length=a.distanceTo(b),heading=Math.atan2(b.x-a.x,b.z-a.z);
+      const g=new THREE.Group();g.position.copy(a).add(b).multiplyScalar(.5);g.rotation.y=heading;
+      for(const y of [.7,1.6])cube(g,white,[0,y,0],[.28,.24,length+.08]);
+      cube(g,i%2?red:white,[0,1.1,-length/2],[.3,2.2,.3]);
+      if(i===7)cube(g,white,[0,1.1,length/2],[.3,2.2,.3]);
+      staticProps.add(g);colliders.push({a:{x:a.x,z:a.z},b:{x:b.x,z:b.z},radius:.16,kind:'rail'});
+    }
   }
   const arrowMat=new THREE.MeshStandardMaterial({map:textTexture('› › ›','#ffcf40','#293c44',256,128),roughness:.8});
   for(const t of [.25,.38,.5,.63,.77,.91]) {
-    const p=sample(t,-12.5); const g=new THREE.Group();g.position.copy(p.position);g.rotation.y=Math.atan2(p.tangent.x,p.tangent.z)+Math.PI;
-    for(const x of [-1.5,1.5])cylinder(g,dark,[x,1.7,0],.13,.13,3.4,6);
+    const p=sample(t,-12.5); if(inShortcut(p.position.x,p.position.z,5))continue; const g=new THREE.Group();g.position.copy(p.position);g.rotation.y=Math.atan2(p.tangent.x,p.tangent.z)+Math.PI;
+    for(const x of [-1.5,1.5]){cylinder(g,dark,[x,1.7,0],.13,.13,3.4,6);const post=p.position.clone().addScaledVector(p.normal,-x);obstacle(post.x,post.z,.13);}
     round(g,dark,[0,3.5,0],[4.6,2.5,.35]);cube(g,arrowMat,[0,3.5,.19],[4.25,2.15,.025]);staticProps.add(g);
   }
   // Puffy clouds are opaque, inexpensive geometry and do not obscure the track.
@@ -233,7 +242,7 @@ export function buildWorld(scene: THREE.Scene) {
   const coinCore=new THREE.CylinderGeometry(.72,.72,.22,20);
   const coinRing=new THREE.TorusGeometry(.74,.085,6,20);
   const coinMark=new THREE.BoxGeometry(.16,.78,.035);
-  for(const t of [.045,.075,.16,.21,.3,.38,.46,.56,.64,.73,.81,.9]) {
+  for(const t of TRACKS.mushroom.coinTs) {
     for(let k=0;k<3;k++) {
       const progress=t+k*.007,lane=(Math.floor(t*100)%3-1)*4.8;
       const object=new THREE.Group();
@@ -247,14 +256,14 @@ export function buildWorld(scene: THREE.Scene) {
   const questionTexture=textTexture('?','#58ccde','#ffffff',128,128);
   const questionMat=new THREE.MeshStandardMaterial({map:questionTexture,color:0xffffff,roughness:.3,metalness:.08,emissive:0x0a343e,emissiveIntensity:.3});
   const itemEdges=new THREE.EdgesGeometry(new THREE.BoxGeometry(1.9,1.9,1.9));
-  for(const t of [.11,.34,.6,.85])for(const lane of [-5,0,5]) {
+  for(const t of TRACKS.mushroom.itemTs)for(const lane of [-5,0,5]) {
     const object=new THREE.Group();
     const item=new THREE.Mesh(new RoundedBoxGeometry(1.9,1.9,1.9,2,.13),questionMat);object.add(item);
     const edges=new THREE.LineSegments(itemEdges,new THREE.LineBasicMaterial({color:0xd9fcff}));object.add(edges);
     object.position.copy(sample(t,lane).position);object.position.y+=2.15;object.rotation.set(.15,.5,.08);scene.add(object);
     pickups.push({object,t,lane,kind:'item',cooldown:0});animated.push(object);
   }
-  const boostPads:BoostPad[]=[{t:.19,lane:4.2},{t:.43,lane:-3.8},{t:.69,lane:3.8},{t:.95,lane:-4}];
+  const boostPads:BoostPad[]=TRACKS.mushroom.boostPads.map(pad=>({...pad}));
   for(const pad of boostPads) {
     const s=sample(pad.t,pad.lane),g=new THREE.Group();g.position.copy(s.position);g.rotation.y=Math.atan2(s.tangent.x,s.tangent.z);
     round(g,mat(0xf39a31),[0,.035,0],[4.8,.07,7]);
@@ -264,12 +273,13 @@ export function buildWorld(scene: THREE.Scene) {
     }
     scene.add(g);
   }
-  return {trackLength,sample,curve,animated,pickups,boostPads};
+  return {id,trackLength,sample,curve,animated,pickups,boostPads,colliders,shortcuts,widthAt};
 }
 
 export function createKart(color:number,character:string):THREE.Group {
   const kart=new THREE.Group();kart.name=`kart-${character}`;
-  const bodyParts=new THREE.Group(),body=mat(color,.33,.16),paintDark=mat(new THREE.Color(color).multiplyScalar(.56).getHex(),.45,.12);
+  const bodyParts=new THREE.Group(),body=mat(color,.33,.16).clone(),paintDark=mat(new THREE.Color(color).multiplyScalar(.56).getHex(),.45,.12).clone();
+  body.userData={kartPaint:'base',originalColor:body.color.getHex()};paintDark.userData={kartPaint:'dark',originalColor:paintDark.color.getHex()};
   const rubber=mat(0x181d26,.94),metal=mat(0xbecbd9,.27,.65),seat=mat(0x342d30,.84);
   const heroSphere=new THREE.SphereGeometry(1,24,16);
   const bulb=(material:THREE.Material,p:number[],s:number[])=>shape(bodyParts,heroSphere,material,p,s);

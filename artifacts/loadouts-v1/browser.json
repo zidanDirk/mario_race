@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": [
+    "three configurations are open; real handling changes; modal isolates driving keys; selection survives reload",
+    "mobile/landscape controls fit; real driving practice pauses, blocks profile changes, writes no records and returns to prior cup mode",
+    "configuration stays locked across cup stations; ghosts and local records are separated by handling profile",
+    "storage failure keeps session selection usable; elimination retains selected configuration and unlimited laps"
+  ],
+  "errors": []
+}

@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {Slipstream} from '../src/slipstream.ts';
+const self={id:'p',x:0,z:0,height:0,heading:0,speed:35,progress:0,route:null,eligible:true};
+const rival={...self,id:'a',z:9,progress:.01};
+const fresh=()=>new Slipstream(),tick=(s,n=66,other=rival,clear=()=>true)=>{let fired=0;for(let i=0;i<n;i++){s.step(1/60,self,[other],clear);if(s.triggered)fired++;}return fired;};
+let s=fresh();assert.equal(tick(s),1);assert.equal(tick(s,120),0);
+for(const patch of [{x:4},{z:25},{z:-9},{heading:Math.PI},{eligible:false},{height:3},{route:'branch'},{progress:2},{id:'p'}])assert.equal(tick(fresh(),90,{...rival,...patch}),0);
+assert.equal(tick(fresh(),90,rival,()=>false),0);
+s=fresh();tick(s,30);s.step(.2,self,[],()=>true);assert(s.charge<.2);s.reset();assert.equal(s.charge,0);assert.equal(s.cooldown,0);
+s=fresh();tick(s,30);s.step(1/60,self,[{...rival,id:'b'}],()=>true);assert(s.charge<.02);
+s=fresh();s.step(1,self,[rival],()=>true);const before=s.charge;s.step(0,self,[rival],()=>true);assert.equal(s.charge,before);
+console.log('Slipstream: sustained follow, cooldown, 9 invalid targets, occlusion, decay, reset, switch and zero-time checks passed.');

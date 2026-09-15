@@ -1,0 +1,153 @@
+
+> mushroom-grand-prix@1.0.0 test:server
+> node --test tests/server.test.mjs tests/progression-server.test.mjs
+
+TAP version 13
+# (node:53860) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: authenticated, origin checked growth; default equipment locked
+ok 1 - authenticated, origin checked growth; default equipment locked
+  ---
+  duration_ms: 31.276542
+  type: 'test'
+  ...
+# Subtest: finish transaction grants once; retry and changed metrics cannot duplicate rewards
+ok 2 - finish transaction grants once; retry and changed metrics cannot duplicate rewards
+  ---
+  duration_ms: 17.095041
+  type: 'test'
+  ...
+# Subtest: bad telemetry never finishes race or grants XP
+ok 3 - bad telemetry never finishes race or grants XP
+  ---
+  duration_ms: 9.916875
+  type: 'test'
+  ...
+# Subtest: Beijing midnight uses ticket start day; account growth survives restart and equipment shows on boards
+ok 4 - Beijing midnight uses ticket start day; account growth survives restart and equipment shows on boards
+  ---
+  duration_ms: 14.175209
+  type: 'test'
+  ...
+# Subtest: different accounts do not share progress or equipment, missing legacy metrics do not earn clean
+ok 5 - different accounts do not share progress or equipment, missing legacy metrics do not earn clean
+  ---
+  duration_ms: 10.845667
+  type: 'test'
+  ...
+# Subtest: casual Grand Prix earns daily growth once and retains records without affecting standard leaderboard
+ok 6 - casual Grand Prix earns daily growth once and retains records without affecting standard leaderboard
+  ---
+  duration_ms: 12.402417
+  type: 'test'
+  ...
+# (node:53861) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: configuration forbids production/public dev authentication, insecure origins and partial credentials
+ok 7 - configuration forbids production/public dev authentication, insecure origins and partial credentials
+  ---
+  duration_ms: 0.864875
+  type: 'test'
+  ...
+# Subtest: guest access, CSRF, local dev login, session privacy and logout
+ok 8 - guest access, CSRF, local dev login, session privacy and logout
+  ---
+  duration_ms: 38.547625
+  type: 'test'
+  ...
+# Subtest: Google OAuth uses state binding, PKCE, server token exchange and private identity
+ok 9 - Google OAuth uses state binding, PKCE, server token exchange and private identity
+  ---
+  duration_ms: 14.652958
+  type: 'test'
+  ...
+# Subtest: WeChat QR OAuth verifies OpenID and never returns private provider identifiers
+ok 10 - WeChat QR OAuth verifies OpenID and never returns private provider identifiers
+  ---
+  duration_ms: 8.820084
+  type: 'test'
+  ...
+# OAuth google: identity exchange failed
+# Subtest: OAuth rejects missing, wrong, cross-provider, expired and replayed state; consumes cancellation/error
+ok 11 - OAuth rejects missing, wrong, cross-provider, expired and replayed state; consumes cancellation/error
+  ---
+  duration_ms: 14.491708
+  type: 'test'
+  ...
+# OAuth wechat: identity exchange failed
+# OAuth wechat: identity exchange failed
+# Subtest: WeChat rejects failed token exchange and mismatched profile identity without creating a session
+ok 12 - WeChat rejects failed token exchange and mismatched profile identity without creating a session
+  ---
+  duration_ms: 9.963959
+  type: 'test'
+  ...
+# Subtest: race tickets enforce identity, session, timing, schema and idempotent immutable results
+ok 13 - race tickets enforce identity, session, timing, schema and idempotent immutable results
+  ---
+  duration_ms: 24.52175
+  type: 'test'
+  ...
+# Subtest: leaderboard keeps ten distinct users, fastest result, stable ties, own rank outside top ten and persistence
+ok 14 - leaderboard keeps ten distinct users, fastest result, stable ties, own rank outside top ten and persistence
+  ---
+  duration_ms: 49.470625
+  type: 'test'
+  ...
+# Subtest: production disables dev endpoint, hides legacy dev scores, and sets secure cookies
+ok 15 - production disables dev endpoint, hides legacy dev scores, and sets secure cookies
+  ---
+  duration_ms: 10.287
+  type: 'test'
+  ...
+# Subtest: public config excludes secrets, unconfigured providers fail gracefully, static paths cannot expose dotfiles/outside files
+ok 16 - public config excludes secrets, unconfigured providers fail gracefully, static paths cannot expose dotfiles/outside files
+  ---
+  duration_ms: 9.574834
+  type: 'test'
+  ...
+# Subtest: backend-only deployment allows one exact Kodo app origin and returns OAuth callbacks to it
+ok 17 - backend-only deployment allows one exact Kodo app origin and returns OAuth callbacks to it
+  ---
+  duration_ms: 9.421417
+  type: 'test'
+  ...
+# Subtest: course revision isolates historical best scores and rejects stale clients/tickets
+ok 18 - course revision isolates historical best scores and rejects stale clients/tickets
+  ---
+  duration_ms: 12.078084
+  type: 'test'
+  ...
+# Subtest: time trial tickets lock mode and reject invalid selectors and cross-mode submissions
+ok 19 - time trial tickets lock mode and reject invalid selectors and cross-mode submissions
+  ---
+  duration_ms: 16.774125
+  type: 'test'
+  ...
+# Subtest: each mode has independent best time, race count, unique-user top ten and own ranking
+ok 20 - each mode has independent best time, race count, unique-user top ten and own ranking
+  ---
+  duration_ms: 66.63225
+  type: 'test'
+  ...
+# Subtest: legacy SQLite schema gains mode without discarding users, sessions or scores
+ok 21 - legacy SQLite schema gains mode without discarding users, sessions or scores
+  ---
+  duration_ms: 6.675
+  type: 'test'
+  ...
+# Subtest: combat difficulty is bound to tickets, validated on retries and never changes time trials
+ok 22 - combat difficulty is bound to tickets, validated on retries and never changes time trials
+  ---
+  duration_ms: 20.614542
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 366.613958

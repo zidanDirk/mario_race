@@ -1,0 +1,210 @@
+{
+  "passed": true,
+  "checks": [
+    "cup menu keeps character/difficulty; first result totals55points; retry rolls back only current result",
+    "visible narrow-bridge parapet stops the kart on the paved side",
+    "next station switches actual world/map/track physics and resets lap/items/tricks while retaining first points, character and difficulty",
+    "second result sums110points, produces six-racer table/three-place podium, persists cup and full retry returns to first track",
+    "exit restores mushroom time trial without AI, boxes or cup HUD",
+    "revisiting castle reuses at most two scene roots"
+  ],
+  "first": {
+    "selected": true,
+    "state": {
+      "stageIndex": 0,
+      "complete": false,
+      "awaitingNext": true,
+      "playerId": "peach",
+      "difficulty": "casual",
+      "rounds": [
+        {
+          "trackId": "mushroom",
+          "order": [
+            "peach",
+            "luigi",
+            "mario",
+            "yoshi",
+            "toad",
+            "wario"
+          ]
+        }
+      ],
+      "standings": [
+        {
+          "id": "peach",
+          "name": "碧姬",
+          "places": [
+            1
+          ],
+          "points": 15,
+          "wins": 1,
+          "rank": 1
+        },
+        {
+          "id": "luigi",
+          "name": "路易吉",
+          "places": [
+            2
+          ],
+          "points": 12,
+          "wins": 0,
+          "rank": 2
+        },
+        {
+          "id": "mario",
+          "name": "马里奥",
+          "places": [
+            3
+          ],
+          "points": 10,
+          "wins": 0,
+          "rank": 3
+        },
+        {
+          "id": "yoshi",
+          "name": "耀西",
+          "places": [
+            4
+          ],
+          "points": 8,
+          "wins": 0,
+          "rank": 4
+        },
+        {
+          "id": "toad",
+          "name": "奇诺比奥",
+          "places": [
+            5
+          ],
+          "points": 6,
+          "wins": 0,
+          "rank": 5
+        },
+        {
+          "id": "wario",
+          "name": "瓦力欧",
+          "places": [
+            6
+          ],
+          "points": 4,
+          "wins": 0,
+          "rank": 6
+        }
+      ]
+    },
+    "track": "mushroom",
+    "scenes": 1,
+    "times": [
+      60.39999999999998
+    ]
+  },
+  "final": {
+    "selected": true,
+    "state": {
+      "stageIndex": 1,
+      "complete": true,
+      "awaitingNext": false,
+      "playerId": "peach",
+      "difficulty": "casual",
+      "rounds": [
+        {
+          "trackId": "mushroom",
+          "order": [
+            "peach",
+            "luigi",
+            "mario",
+            "yoshi",
+            "toad",
+            "wario"
+          ]
+        },
+        {
+          "trackId": "castle",
+          "order": [
+            "peach",
+            "luigi",
+            "mario",
+            "yoshi",
+            "toad",
+            "wario"
+          ]
+        }
+      ],
+      "standings": [
+        {
+          "id": "peach",
+          "name": "碧姬",
+          "places": [
+            1,
+            1
+          ],
+          "points": 30,
+          "wins": 2,
+          "rank": 1
+        },
+        {
+          "id": "luigi",
+          "name": "路易吉",
+          "places": [
+            2,
+            2
+          ],
+          "points": 24,
+          "wins": 0,
+          "rank": 2
+        },
+        {
+          "id": "mario",
+          "name": "马里奥",
+          "places": [
+            3,
+            3
+          ],
+          "points": 20,
+          "wins": 0,
+          "rank": 3
+        },
+        {
+          "id": "yoshi",
+          "name": "耀西",
+          "places": [
+            4,
+            4
+          ],
+          "points": 16,
+          "wins": 0,
+          "rank": 4
+        },
+        {
+          "id": "toad",
+          "name": "奇诺比奥",
+          "places": [
+            5,
+            5
+          ],
+          "points": 12,
+          "wins": 0,
+          "rank": 5
+        },
+        {
+          "id": "wario",
+          "name": "瓦力欧",
+          "places": [
+            6,
+            6
+          ],
+          "points": 8,
+          "wins": 0,
+          "rank": 6
+        }
+      ]
+    },
+    "track": "castle",
+    "scenes": 2,
+    "times": [
+      60.5833333333333,
+      60.51666666666664
+    ]
+  },
+  "errors": []
+}

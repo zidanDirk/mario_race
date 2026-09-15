@@ -1,0 +1,191 @@
+
+> mushroom-grand-prix@1.0.0 test:server
+> node --test tests/server.test.mjs tests/progression-server.test.mjs tests/loadout-server.test.mjs
+
+TAP version 13
+# (node:27877) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: version 4 SQLite migration preserves all historical data and marks legacy loadouts on repeat opens
+ok 1 - version 4 SQLite migration preserves all historical data and marks legacy loadouts on repeat opens
+  ---
+  duration_ms: 9.393
+  type: 'test'
+  ...
+# Subtest: new tickets default to light, allow every unlocked configuration, and reject invalid selectors without writes
+ok 2 - new tickets default to light, allow every unlocked configuration, and reject invalid selectors without writes
+  ---
+  duration_ms: 43.454667
+  type: 'test'
+  ...
+# Subtest: loadout is bound before finish and immutable on retries; omitted finish selector uses the ticket
+ok 3 - loadout is bound before finish and immutable on retries; omitted finish selector uses the ticket
+  ---
+  duration_ms: 22.775375
+  type: 'test'
+  ...
+# Subtest: new GP and trial versions isolate old scores and reject stale clients and finished-ticket retries
+ok 4 - new GP and trial versions isolate old scores and reject stale clients and finished-ticket retries
+  ---
+  duration_ms: 22.287875
+  type: 'test'
+  ...
+# Subtest: all configurations share each mode leaderboard, fastest loadout wins per user, and full history persists
+ok 5 - all configurations share each mode leaderboard, fastest loadout wins per user, and full history persists
+  ---
+  duration_ms: 24.620708
+  type: 'test'
+  ...
+# Subtest: technique rules reject previous-version unfinished tickets without awarding growth; current finishes count once
+ok 6 - technique rules reject previous-version unfinished tickets without awarding growth; current finishes count once
+  ---
+  duration_ms: 24.529042
+  type: 'test'
+  ...
+# (node:27878) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: authenticated, origin checked growth; default equipment locked
+ok 7 - authenticated, origin checked growth; default equipment locked
+  ---
+  duration_ms: 29.782083
+  type: 'test'
+  ...
+# Subtest: finish transaction grants once; retry and changed metrics cannot duplicate rewards
+ok 8 - finish transaction grants once; retry and changed metrics cannot duplicate rewards
+  ---
+  duration_ms: 17.172291
+  type: 'test'
+  ...
+# Subtest: bad telemetry never finishes race or grants XP
+ok 9 - bad telemetry never finishes race or grants XP
+  ---
+  duration_ms: 10.494041
+  type: 'test'
+  ...
+# Subtest: Beijing midnight uses ticket start day; account growth survives restart and equipment shows on boards
+ok 10 - Beijing midnight uses ticket start day; account growth survives restart and equipment shows on boards
+  ---
+  duration_ms: 15.164875
+  type: 'test'
+  ...
+# Subtest: different accounts do not share progress or equipment, missing legacy metrics do not earn clean
+ok 11 - different accounts do not share progress or equipment, missing legacy metrics do not earn clean
+  ---
+  duration_ms: 11.517666
+  type: 'test'
+  ...
+# Subtest: casual Grand Prix earns daily growth once and retains records without affecting standard leaderboard
+ok 12 - casual Grand Prix earns daily growth once and retains records without affecting standard leaderboard
+  ---
+  duration_ms: 12.684833
+  type: 'test'
+  ...
+# (node:27879) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: configuration forbids production/public dev authentication, insecure origins and partial credentials
+ok 13 - configuration forbids production/public dev authentication, insecure origins and partial credentials
+  ---
+  duration_ms: 0.7945
+  type: 'test'
+  ...
+# Subtest: guest access, CSRF, local dev login, session privacy and logout
+ok 14 - guest access, CSRF, local dev login, session privacy and logout
+  ---
+  duration_ms: 37.118709
+  type: 'test'
+  ...
+# Subtest: Google OAuth uses state binding, PKCE, server token exchange and private identity
+ok 15 - Google OAuth uses state binding, PKCE, server token exchange and private identity
+  ---
+  duration_ms: 15.251125
+  type: 'test'
+  ...
+# Subtest: WeChat QR OAuth verifies OpenID and never returns private provider identifiers
+ok 16 - WeChat QR OAuth verifies OpenID and never returns private provider identifiers
+  ---
+  duration_ms: 9.019459
+  type: 'test'
+  ...
+# OAuth google: identity exchange failed
+# Subtest: OAuth rejects missing, wrong, cross-provider, expired and replayed state; consumes cancellation/error
+ok 17 - OAuth rejects missing, wrong, cross-provider, expired and replayed state; consumes cancellation/error
+  ---
+  duration_ms: 16.419541
+  type: 'test'
+  ...
+# OAuth wechat: identity exchange failed
+# OAuth wechat: identity exchange failed
+# Subtest: WeChat rejects failed token exchange and mismatched profile identity without creating a session
+ok 18 - WeChat rejects failed token exchange and mismatched profile identity without creating a session
+  ---
+  duration_ms: 9.892125
+  type: 'test'
+  ...
+# Subtest: race tickets enforce identity, session, timing, schema and idempotent immutable results
+ok 19 - race tickets enforce identity, session, timing, schema and idempotent immutable results
+  ---
+  duration_ms: 24.669583
+  type: 'test'
+  ...
+# Subtest: leaderboard keeps ten distinct users, fastest result, stable ties, own rank outside top ten and persistence
+ok 20 - leaderboard keeps ten distinct users, fastest result, stable ties, own rank outside top ten and persistence
+  ---
+  duration_ms: 50.656834
+  type: 'test'
+  ...
+# Subtest: production disables dev endpoint, hides legacy dev scores, and sets secure cookies
+ok 21 - production disables dev endpoint, hides legacy dev scores, and sets secure cookies
+  ---
+  duration_ms: 10.355375
+  type: 'test'
+  ...
+# Subtest: public config excludes secrets, unconfigured providers fail gracefully, static paths cannot expose dotfiles/outside files
+ok 22 - public config excludes secrets, unconfigured providers fail gracefully, static paths cannot expose dotfiles/outside files
+  ---
+  duration_ms: 8.498542
+  type: 'test'
+  ...
+# Subtest: backend-only deployment allows one exact Kodo app origin and returns OAuth callbacks to it
+ok 23 - backend-only deployment allows one exact Kodo app origin and returns OAuth callbacks to it
+  ---
+  duration_ms: 7.106583
+  type: 'test'
+  ...
+# Subtest: course revision isolates historical best scores and rejects stale clients/tickets
+ok 24 - course revision isolates historical best scores and rejects stale clients/tickets
+  ---
+  duration_ms: 12.008542
+  type: 'test'
+  ...
+# Subtest: time trial tickets lock mode and reject invalid selectors and cross-mode submissions
+ok 25 - time trial tickets lock mode and reject invalid selectors and cross-mode submissions
+  ---
+  duration_ms: 14.092792
+  type: 'test'
+  ...
+# Subtest: each mode has independent best time, race count, unique-user top ten and own ranking
+ok 26 - each mode has independent best time, race count, unique-user top ten and own ranking
+  ---
+  duration_ms: 56.735375
+  type: 'test'
+  ...
+# Subtest: legacy SQLite schema gains mode without discarding users, sessions or scores
+ok 27 - legacy SQLite schema gains mode without discarding users, sessions or scores
+  ---
+  duration_ms: 6.622458
+  type: 'test'
+  ...
+# Subtest: combat difficulty is bound to tickets, validated on retries and never changes time trials
+ok 28 - combat difficulty is bound to tickets, validated on retries and never changes time trials
+  ---
+  duration_ms: 17.327458
+  type: 'test'
+  ...
+1..28
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 350.593708

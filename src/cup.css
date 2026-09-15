@@ -1,0 +1,35 @@
+.cup-stage{position:absolute;z-index:3;left:50%;top:94px;transform:translateX(-50%);max-width:calc(100% - 30px);padding:3px 11px;border-radius:20px;background:#fff9e8ef;color:#53614b;font-size:10px;font-weight:800;line-height:16px;white-space:nowrap;box-shadow:0 2px 8px #24342b15;pointer-events:none}
+.cup-stage[hidden]{display:none}
+.cup-stage[data-track=castle]{background:#252e49e8;color:#ffe6a2;border:1px solid #efc87644}
+.cup-results{margin-top:12px;padding-top:12px;border-top:1px solid #214a3d22;text-align:left;color:#315c51;font-variant-numeric:tabular-nums}
+.cup-result-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
+.cup-difficulty-tag{font-size:9px;padding:2px 7px;border:1px solid #35614b33;border-radius:4px;color:#6a7e6b}
+.cup-table{width:100%;border-collapse:collapse;margin:9px 0 0;table-layout:fixed;font-size:11px;line-height:1.45}
+.cup-table caption{caption-side:bottom;text-align:left;padding-top:7px;font-size:9px;color:#778272}
+.cup-table th,.cup-table td{padding:7px 4px;text-align:center;border-bottom:1px solid #315c5110}
+.cup-table thead th{font-size:9px;font-weight:600;color:#788775}
+.cup-table th:nth-child(1){width:11%}.cup-table th:nth-child(2){width:35%}
+.cup-table .cup-driver{text-align:left;overflow-wrap:anywhere;font-size:11px;font-weight:600}
+.cup-table tr[data-player=true]{background:#d8eee3;color:#175f50}
+.cup-points{font-weight:900}.cup-rank{color:#67806b}
+.cup-you{font-size:8px;margin-left:4px;padding:1px 3px;border-radius:3px;background:#25876c;color:#fff;vertical-align:middle;white-space:nowrap}
+.dialog .cup-result-rule{font-size:9px;line-height:1.65;color:#87917e;margin:6px 0 0}
+.dialog .cup-next-stage{font-size:11px;line-height:1.7;margin:11px 0 0;padding:8px 10px;border-radius:5px;background:#f4e8bd;color:#786239}
+.cup-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:13px 0 6px;align-items:end;text-align:center}
+.cup-podium-place{min-width:0;border-radius:8px 8px 3px 3px;padding:7px 3px;background:#e8eadb;border-bottom:3px solid #b9c7b1}
+.cup-podium-place[data-place="1"]{padding-top:12px;background:#f7edc5;border-color:#d2b458}
+.cup-medal{display:block;font-size:22px;line-height:30px}
+.cup-podium-name{display:block;font-size:11px;overflow-wrap:anywhere}
+.cup-podium-place small{font-size:10px;color:#74816a}
+.dialog .cup-player-summary{font-size:12px;font-weight:700;line-height:1.65;color:#28705a;margin:8px 0}
+@media(max-width:700px){
+  .cup-stage{top:76px;font-size:9px;line-height:14px;padding:2px 8px}
+  .cup-results{padding-top:9px;margin-top:9px}
+  .cup-table th,.cup-table td{padding:6px 3px}
+  .cup-podium{margin-top:10px}
+}
+@media(max-height:480px){.cup-stage{top:49px}.cup-podium{margin-top:7px}.cup-table th,.cup-table td{padding:4px 3px}}
+
+.night-race .vignette{background:linear-gradient(180deg,#111b3630,transparent 28%,transparent 65%,#07142b33)}.night-race .brand,.night-race .top-middle,.night-race .lap-cluster,.night-race .race-clock{color:#ffefd0}.night-race .icon-button{background:#fff5dacf}.cup-round-details{text-align:left;margin-top:12px;font-size:11px}.cup-round-details summary{cursor:pointer;color:#467367}.dialog .cup-local-note{font-size:9px;color:#71816f;line-height:1.6}
+
+.night-race .item-help,.night-race .position small{color:#ffefd0}.night-race .item-help kbd{color:#193339}

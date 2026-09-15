@@ -1,0 +1,557 @@
+{
+  "passed": true,
+  "method": "Actual keyboard throttle, steering, brake, jump and item buttons from race start to finish. Read-only geometry and diagnostics; no state, position or time injection.",
+  "runs": [
+    {
+      "id": "light",
+      "time": 51.29999999999837,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "rescues": 0,
+      "airFrames": 131,
+      "maxCalls": 438,
+      "maxTriangles": 527276,
+      "techniques": {
+        "drafts": 2,
+        "jumps": 6,
+        "horns": 1,
+        "hornClears": 0,
+        "aiDrafts": 7,
+        "aiJumps": 12,
+        "aiHorns": 3,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "airborne": false,
+          "trickReady": false,
+          "trick": false,
+          "activeRamp": null
+        }
+      },
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 12,
+          "playerHits": 2,
+          "warnings": 2,
+          "collected": 26,
+          "used": 21,
+          "playerAttacks": 2
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 3
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "super-horn",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [],
+            "boost": 0
+          }
+        ],
+        "projectiles": [
+          {
+            "kind": "banana",
+            "owner": "mario",
+            "target": null,
+            "x": -24.80013359604351,
+            "z": 128.8773241211024,
+            "age": 11.733333333333496
+          },
+          {
+            "kind": "banana",
+            "owner": "mario",
+            "target": null,
+            "x": 99.4922565393382,
+            "z": 26.172798859735188,
+            "age": 8.31666666666666
+          },
+          {
+            "kind": "green-shell",
+            "owner": "mario",
+            "target": null,
+            "x": 67.41657943797901,
+            "z": -11.434004961859568,
+            "age": 4.083333333333324
+          },
+          {
+            "kind": "green-shell",
+            "owner": "mario",
+            "target": null,
+            "x": -85.91149352586372,
+            "z": 14.905743039163237,
+            "age": 0.5333333333333333
+          }
+        ]
+      },
+      "tricks": {
+        "score": 1440,
+        "chain": 2,
+        "multiplier": 1.5,
+        "remaining": 5.966666666666674,
+        "maxChain": 4,
+        "maxMultiplier": 2.5,
+        "counts": {
+          "orange": 0,
+          "purple": 0,
+          "overtake": 2,
+          "shortcut": 0,
+          "jump": 6
+        },
+        "last": {
+          "label": "跳台技巧",
+          "points": 180,
+          "serial": 8
+        },
+        "breakReason": "",
+        "best": 1440,
+        "key": "light-handling1-techniques1-mushroom-tricks-v1-grand-prix-standard-qa",
+        "valid": false,
+        "entry": null
+      }
+    },
+    {
+      "id": "speed",
+      "time": 46.59999999999864,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "rescues": 0,
+      "airFrames": 137,
+      "maxCalls": 432,
+      "maxTriangles": 526454,
+      "techniques": {
+        "drafts": 2,
+        "jumps": 6,
+        "horns": 1,
+        "hornClears": 0,
+        "aiDrafts": 8,
+        "aiJumps": 11,
+        "aiHorns": 1,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "airborne": false,
+          "trickReady": false,
+          "trick": false,
+          "activeRamp": null
+        }
+      },
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 9,
+          "playerHits": 0,
+          "warnings": 0,
+          "collected": 22,
+          "used": 15,
+          "playerAttacks": 1
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": null,
+                "pending": "mushroom",
+                "remaining": 0.9666666666666683,
+                "elapsed": 0.5333333333333333
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": [
+          {
+            "kind": "green-shell",
+            "owner": "mario",
+            "target": null,
+            "x": 249.8821397965071,
+            "z": -349.4970779970179,
+            "age": 4.333333333333323
+          }
+        ]
+      },
+      "tricks": {
+        "score": 1440,
+        "chain": 2,
+        "multiplier": 1.5,
+        "remaining": 5.583333333333342,
+        "maxChain": 4,
+        "maxMultiplier": 2.5,
+        "counts": {
+          "orange": 0,
+          "purple": 0,
+          "overtake": 2,
+          "shortcut": 0,
+          "jump": 6
+        },
+        "last": {
+          "label": "跳台技巧",
+          "points": 180,
+          "serial": 8
+        },
+        "breakReason": "",
+        "best": 1440,
+        "key": "speed-handling1-techniques1-mushroom-tricks-v1-grand-prix-standard-qa",
+        "valid": false,
+        "entry": null
+      }
+    },
+    {
+      "id": "drift",
+      "time": 51.29999999999837,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "rescues": 0,
+      "airFrames": 135,
+      "maxCalls": 390,
+      "maxTriangles": 524350,
+      "techniques": {
+        "drafts": 1,
+        "jumps": 6,
+        "horns": 2,
+        "hornClears": 0,
+        "aiDrafts": 6,
+        "aiJumps": 12,
+        "aiHorns": 0,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "airborne": false,
+          "trickReady": false,
+          "trick": false,
+          "activeRamp": null
+        }
+      },
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 5,
+          "playerHits": 1,
+          "warnings": 2,
+          "collected": 26,
+          "used": 25,
+          "playerAttacks": 1
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 3
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "super-horn",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              },
+              {
+                "item": null,
+                "pending": "red-shell",
+                "remaining": 1.4333333333333336,
+                "elapsed": 0.06666666666666667
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "triple-mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 3
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996,
+                "charges": 1
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": [
+          {
+            "kind": "green-shell",
+            "owner": "mario",
+            "target": null,
+            "x": -85.8385160217652,
+            "z": 13.731556626126782,
+            "age": 0.5166666666666666
+          }
+        ]
+      },
+      "tricks": {
+        "score": 1440,
+        "chain": 2,
+        "multiplier": 1.5,
+        "remaining": 6.016666666666674,
+        "maxChain": 4,
+        "maxMultiplier": 2.5,
+        "counts": {
+          "orange": 0,
+          "purple": 0,
+          "overtake": 2,
+          "shortcut": 0,
+          "jump": 6
+        },
+        "last": {
+          "label": "跳台技巧",
+          "points": 180,
+          "serial": 8
+        },
+        "breakReason": "",
+        "best": 1440,
+        "key": "drift-handling1-techniques1-mushroom-tricks-v1-grand-prix-standard-qa",
+        "valid": false,
+        "entry": null
+      }
+    }
+  ],
+  "errors": []
+}

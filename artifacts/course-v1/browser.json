@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "checks": [
+    "two routes each save over25m before exit boost",
+    "static scenery clears both shortcut centers and full-width main racing lanes",
+    "visible green safe, amber warning and red steam phases",
+    "active steam hits slow player without teleport",
+    "safe vent can be crossed or occupied without damage",
+    "pause freezes hazard position and phase; resume advances",
+    "moving blocker physically hits and separates kart",
+    "actual steering/braking traverses both branches, earns exit boosts, merges without missed gates or rescue",
+    "mobile warning, controls and course map fit viewport",
+    "restart clears hazards/rewards and resets safe phase"
+  ],
+  "runs": [
+    {
+      "route": "garden",
+      "finished": true,
+      "samples": 72,
+      "offRoad": 0,
+      "recovery": 0,
+      "hits": 0,
+      "boosts": 1,
+      "time": 4.266666666666657
+    },
+    {
+      "route": "workshop",
+      "finished": true,
+      "samples": 88,
+      "offRoad": 2,
+      "recovery": 0,
+      "hits": 0,
+      "boosts": 1,
+      "time": 10.150000000000096
+    }
+  ],
+  "clearance": {
+    "main": 3.1999999999999975,
+    "branches": [
+      {
+        "id": "garden",
+        "min": 7.453231405305124
+      },
+      {
+        "id": "workshop",
+        "min": 5.9555271897515425
+      }
+    ]
+  },
+  "errors": []
+}

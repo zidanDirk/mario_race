@@ -1,0 +1,157 @@
+{
+  "passed": true,
+  "milestones": [
+    {
+      "time": 30.016666666666243,
+      "lap": 2,
+      "rank": 1,
+      "active": 5,
+      "eliminated": {
+        "id": "luigi",
+        "at": 30,
+        "place": 6
+      },
+      "overtakes": 5
+    },
+    {
+      "time": 50.01666666666511,
+      "lap": 4,
+      "rank": 1,
+      "active": 4,
+      "eliminated": {
+        "id": "peach",
+        "at": 50,
+        "place": 5
+      },
+      "overtakes": 5
+    },
+    {
+      "time": 70.03333333333065,
+      "lap": 5,
+      "rank": 1,
+      "active": 3,
+      "eliminated": {
+        "id": "toad",
+        "at": 70,
+        "place": 4
+      },
+      "overtakes": 5
+    },
+    {
+      "time": 90.03333333332951,
+      "lap": 6,
+      "rank": 1,
+      "active": 2,
+      "eliminated": {
+        "id": "yoshi",
+        "at": 90,
+        "place": 3
+      },
+      "overtakes": 5
+    },
+    {
+      "time": 110,
+      "lap": 7,
+      "rank": 1,
+      "active": 1,
+      "eliminated": {
+        "id": "wario",
+        "at": 110,
+        "place": 2
+      },
+      "overtakes": 5
+    }
+  ],
+  "maxLap": 7,
+  "rescueFrames": 0,
+  "maxCalls": 367,
+  "maxTriangles": 524638,
+  "final": {
+    "elapsed": 110,
+    "nextAt": null,
+    "remaining": 0,
+    "warning": false,
+    "activeIds": [
+      "mario"
+    ],
+    "order": [
+      "mario"
+    ],
+    "eliminated": [
+      {
+        "id": "luigi",
+        "at": 30,
+        "place": 6
+      },
+      {
+        "id": "peach",
+        "at": 50,
+        "place": 5
+      },
+      {
+        "id": "toad",
+        "at": 70,
+        "place": 4
+      },
+      {
+        "id": "yoshi",
+        "at": 90,
+        "place": 3
+      },
+      {
+        "id": "wario",
+        "at": 110,
+        "place": 2
+      }
+    ],
+    "complete": true,
+    "playerPlace": 1,
+    "winnerId": "mario"
+  },
+  "overtakes": 5,
+  "combat": {
+    "difficulty": "standard",
+    "held": null,
+    "heldPosition": null,
+    "pressing": false,
+    "protection": 0,
+    "stats": {
+      "blocks": 0,
+      "aiHits": 8,
+      "playerHits": 0,
+      "warnings": 0,
+      "collected": 23,
+      "used": 13,
+      "playerAttacks": 0
+    },
+    "ai": [
+      {
+        "id": "luigi",
+        "inventory": [],
+        "boost": 0
+      },
+      {
+        "id": "peach",
+        "inventory": [],
+        "boost": 0
+      },
+      {
+        "id": "yoshi",
+        "inventory": [],
+        "boost": 0
+      },
+      {
+        "id": "toad",
+        "inventory": [],
+        "boost": 0
+      },
+      {
+        "id": "wario",
+        "inventory": [],
+        "boost": 0
+      }
+    ],
+    "projectiles": []
+  },
+  "errors": []
+}

@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "rendered": [
+    {
+      "track": "mushroom",
+      "title": "晴空冲刺",
+      "bpm": 144,
+      "finalBpm": 161.63453495654971,
+      "duration": 53.33334375,
+      "renderMs": 10339.600000023842,
+      "peak": 0.7799999713897705,
+      "rms": 0.09071908019963874,
+      "finite": true,
+      "boundary": 0.0016304515302181244,
+      "minWindowRms": 0.05258260749865672
+    },
+    {
+      "track": "castle",
+      "title": "月下疾驰",
+      "bpm": 152,
+      "finalBpm": 170.6142313430247,
+      "duration": 50.5263125,
+      "renderMs": 11438.699999988079,
+      "peak": 0.7799999713897705,
+      "rms": 0.08240959744775561,
+      "finite": true,
+      "boundary": 0.00030262747895903885,
+      "minWindowRms": 0.049458280086861955
+    }
+  ]
+}

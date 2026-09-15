@@ -1,0 +1,437 @@
+
+> mushroom-grand-prix@1.0.0 test:unit
+> node --experimental-strip-types tests/driving.mjs && node --experimental-strip-types tests/collisions.mjs && node --experimental-strip-types tests/items.mjs && node --experimental-strip-types tests/continuity.mjs && node --experimental-strip-types tests/course.mjs && node --experimental-strip-types tests/ghost.mjs && node tests/progression.mjs && node --experimental-strip-types tests/combat-input.mjs && node --experimental-strip-types tests/ai-combat.mjs && node --experimental-strip-types tests/tricks.mjs && node --experimental-strip-types tests/cup.mjs && node --experimental-strip-types tests/tracks.mjs && node --experimental-strip-types tests/elimination.mjs && node --experimental-strip-types tests/loadouts.mjs && node --experimental-strip-types tests/slipstream.mjs && node --experimental-strip-types tests/ramps.mjs
+
+(node:56579) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "straight throttle does not auto-steer",
+    "right input rotates heading",
+    "hop lands, countersteering retains drift side",
+    "release charged drift grants turbo",
+    "brake from standstill reverses",
+    "reverse wrong-way and stunned brake are handled",
+    "accelerate + brake enables spin turn",
+    "checkpoint shortcuts rejected",
+    "ordered third-lap finish",
+    "off-course recovery preserves checkpoint count"
+  ]
+}
+(node:56595) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{ barrierZ: 110, kartZ: 108.198, speed: 1.318394790084994 }
+guardrail collision passed
+{
+  "passed": true,
+  "checks": [
+    "guardrail blocks and slows kart",
+    "boosted impact cannot cross wall or preserve boost",
+    "reverse impact blocks opposite side",
+    "glancing impact retains movement along barrier",
+    "swept collision prevents high-speed tunnelling",
+    "overlap correction runs even without movement",
+    "rounded rail tips collide while real gaps remain open",
+    "tree and post circular proxies block vehicles"
+  ]
+}
+✓ empty inventory cannot consume
+✓ box starts visible roulette, unavailable until it settles exactly once
+✓ two slots preserve both items and a third box cannot overwrite them
+✓ backup moves forward with its own roulette progress intact
+✓ hurry never instantly grants or fires an item, repeated presses do not restart time
+✓ pausing without step does not advance roulette; invalid dt is ignored
+✓ reset clears pending reveals without delayed callbacks contaminating next race
+✓ test grant clears both previous slots and can clear inventory
+✓ trailing racers receive more catch-up items with deterministic sampling
+✓ triple mushroom has three charges and preserves slot identity and reserve roulette
+✓ six item types all appear, trailing catch-up weight rises, and leaders rarely get triples
+Item inventory: 11 checks passed.
+(node:56600) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56601) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "roadside crossing does not miss checkpoint",
+    "missing a checkpoint never teleports a kart already on the road",
+    "recoverable grass detour does not force a reset",
+    "far stationary kart receives warning before rescue and preserves gates",
+    "driving back toward track cancels pending rescue",
+    "large checkpoint shortcut cannot award lap or trigger teleport"
+  ],
+  "failures": []
+}
+(node:56602) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "both shortcuts save distance and join the road with matching positions and headings",
+    "all branch centers remain paved, continuous and free of rescue",
+    "ordered checkpoints accept both branches and finish exactly three laps",
+    "reverse branch traversal never awards forward checkpoints",
+    "joining beyond an unpassed gate cannot skip or retroactively award it",
+    "real steering traverses each shortcut at road speed without repositioning or rescue",
+    "vents give two seconds warning then return safely at every cycle boundary",
+    "vents only hit while active; sweeps catch fast crossings with both endpoints outside",
+    "moving barriers hit stopped karts via relative sweep and keep their collider aligned",
+    "the same race clock freezes all hazards and reset reproduces their initial positions"
+  ],
+  "evidence": [
+    {
+      "route": "garden",
+      "length": 172.9141121208633,
+      "savedMeters": 30.600565198824683
+    },
+    {
+      "route": "workshop",
+      "length": 201.11965967378737,
+      "savedMeters": 34.95736601705076
+    },
+    {
+      "route": "garden",
+      "physicalTraversal": true,
+      "maxSpeed": 46.9516754480546,
+      "offRoadFrames": 0
+    },
+    {
+      "route": "workshop",
+      "physicalTraversal": true,
+      "maxSpeed": 46.97900677087329,
+      "offRoadFrames": 0
+    }
+  ],
+  "failures": []
+}
+{
+  "passed": true,
+  "checks": [
+    "fixed 50 ms samples interpolate uneven simulation frames and preserve exact finish",
+    "headings interpolate through the short arc across ±pi",
+    "a recovery cuts at the next pose without drawing a ghost through scenery",
+    "ghost is visible at exact finish only and never loops or extrapolates",
+    "recordings require all twelve ordered splits and a matching finish",
+    "recording rejects invalid data and backward time, and retains its own pose copy",
+    "maximum thirty-minute recording is bounded and round trips through storage",
+    "storage rejects incompatible versions, malformed tuples, gaps, times and coordinates",
+    "disabled storage and full quota never throw or erase a previous best"
+  ]
+}
+(node:56609) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "Beijing midnight rotates three distinct tasks and covers all six templates",
+    "each daily task awards once and repeating full races cannot farm daily XP",
+    "coins require ten in ONE completed race, drift and exits accumulate across races",
+    "manual/automatic rescue invalidates clean objective and legacy missing metrics never assumes clean",
+    "old-day race settles old tasks while current-day view starts empty",
+    "three reward thresholds enforce equipment and permit restoration",
+    "state round trips; malformed, inconsistent or incompatible records safely reset",
+    "invalid metrics are rejected, no input state mutation"
+  ]
+}
+(node:56615) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "quick press releases exactly its original slot",
+    "long press attaches once then releases",
+    "block consumes held slot without auto-firing reserve while still held",
+    "pause, loss of focus or pointer cancellation never fires a stored item",
+    "single/triple mushroom, horn and roulette act on press without a second action on release",
+    "earliest hit orders interception before kart contact, including stationary overlap",
+    "holding triple trigger does not consume a second charge until a fresh press",
+    "all and only three defensive trailing items attach"
+  ]
+}
+(node:56618) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✓ actual collection uses two-slot roulette and waits for visible reveal and opening
+✓ red shell targets nearest forward kart including AI, without skipping close or immune racers
+✓ green shell requires a near forward target in the same lane
+✓ banana requires a trailing target with safe minimum distance, not a kart touching the rear
+✓ mushroom catches up but does not fire while stunned, stationary, or already leading
+✓ player protection and an existing red threat hold the item without spending it
+✓ multiple AIs share the eight-second player attack interval across different items
+✓ casual grants a longer opening and fourteen seconds between player attacks
+✓ individual cooldown applies to non-player attacks and mushrooms
+✓ stable ID ordering staggers first use and remains unchanged when reset input order changes
+✓ zero-time pauses do not advance roulette or launch; reset clears inventory, stats and cooldowns
+✓ race finish/removed racers are inert; wrapping targets and box lanes cross the start correctly
+✓ physical launch rejection preserves inventory, personal cooldown and global player attack budget
+✓ offensive targets use absolute race progress and never wrap to racers one lap away
+✓ triple mushroom uses its three charges at two-second gaps, without shortening the reserve cooldown
+✓ horn attacks nearby karts in either direction, or consumes for a specific incoming threat
+✓ horn splash cannot evade player protection by targeting a nearer AI or an incoming shell
+✓ horn physical rejection never spends the item or attack interval
+
+18 AI combat checks passed.
+{
+  "passed": true,
+  "checks": [
+    "four event scores advance the multiplier and independent counts",
+    "multiplier caps at three while maximum chain persists",
+    "zero simulation time pauses; eight seconds ends chain without losing earned score",
+    "duplicate event cannot score or refresh remaining time even after a break",
+    "finish freezes timers awards and breaks; reset permits a fresh race",
+    "invalid numeric inputs and event kinds cannot poison score; snapshots are isolated",
+    "first observation cannot score; real close crossing from behind to ahead scores once",
+    "single bounded segment may cross from two metres behind to two ahead",
+    "rank changes at distant physical locations and lateral non-close passes do not score",
+    "already ahead, slow movement, finished rivals and lapped rivals never earn a pass",
+    "six-second approach expiry rejects an old crossing",
+    "zero-dt pause preserves candidate timing without scoring",
+    "player progress jump and physical teleport reject crossings",
+    "reversing and oscillating do not manufacture a second award",
+    "recovery invalidates pending crossing but retains awards",
+    "a continuous crossing over start line can score on new lap without wrapping progress",
+    "reset permits a new race; separate opponents may earn separate passes",
+    "invalid positions and track lengths cannot bridge a pass",
+    "best storage accepts finite integer scores and only replaces improvements",
+    "malformed or blocked storage fails closed without crashing",
+    "ratings use explicit stable local-score thresholds"
+  ]
+}
+(node:56621) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✓ fixed two-station six-driver cup starts with no results or points
+✓ valid roster player and difficulty are required
+✓ cannot advance before a completed station
+✓ each position earns its real position points and first place records a win
+✓ missing duplicate and foreign driver results are rejected without mutations
+✓ duplicate first-station finish cannot award more points
+✓ advance preserves first result with locked roster player and difficulty
+✓ final standings accumulate both actual orders and break equal totals by final place
+✓ a repeated final result cannot double-count or move beyond the final station
+✓ retrying first round rolls back its result and accepts replacement only once
+✓ retrying uncommitted second round preserves first round points
+✓ retrying final result preserves first round but clears completed state
+✓ mutating constructor data result arrays or snapshots cannot change series state
+✓ creating a fresh cup clears previous progression and allows another chosen player
+14 cup state tests passed
+(node:56622) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56623) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": [
+    "original mushroom geometry, pickup cadence and width preserved",
+    "987m continuous level loop, broad corners and seamless start/finish",
+    "nonadjacent road sections do not overlap",
+    "continuous physical parapets match bridge narrowing without hidden lane blockers",
+    "coins, item boxes and boost pads remain safely on the road",
+    "actual driving model finishes three laps with all gates, no rail collisions or rescue"
+  ],
+  "castle": {
+    "length": 987.7833439997519,
+    "minRadius": 25.283594351407842,
+    "seconds": 64.54999999999762,
+    "hits": 0,
+    "rescues": 0,
+    "maxLane": 3.000147016949684
+  }
+}
+✓ six unique named drivers and a valid player are required
+✓ opening protection lasts thirty race-clock seconds; warning starts at 25
+✓ repeated and backwards clocks cannot move order or eliminate during pause
+✓ the most recent actual order decides each successive elimination
+✓ cumulative progress stays correctly ordered across a lap boundary
+✓ ties preserve the prior order, initially the roster order
+✓ player elimination immediately ends the run and fixes survival time/place
+✓ a second-place elimination identifies the other finalist as champion
+✓ large steps use the supplied order at each absolute deadline without duplicates
+✓ invalid snapshots are rejected atomically and cannot consume a deadline
+✓ active-only and full-roster updates work after eliminations, unknown IDs do not
+✓ negative grid progress is valid and input arrays are not mutated
+✓ snapshots, event arrays and constructor inputs cannot mutate internal state
+13 elimination rule checks passed.
+(node:56631) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56632) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": 8,
+  "results": {
+    "light": {
+      "launch": 36.61317107822653,
+      "top": 44.999999965878445,
+      "recovery": 38.1041628865418,
+      "charge": 1.512999999999998
+    },
+    "speed": {
+      "launch": 32.97381122010223,
+      "top": 50.99988472320018,
+      "recovery": 35.801448675772455,
+      "charge": 1.4373500000000026
+    },
+    "drift": {
+      "launch": 33.7117761095709,
+      "top": 45.99999686022248,
+      "recovery": 35.84885852529771,
+      "charge": 1.815599999999998
+    }
+  },
+  "laps": [
+    {
+      "id": "light",
+      "time": 54.23333333333154,
+      "rescues": 0
+    },
+    {
+      "id": "speed",
+      "time": 48.34999999999854,
+      "rescues": 0
+    },
+    {
+      "id": "drift",
+      "time": 53.04999999999827,
+      "rescues": 0
+    }
+  ]
+}
+Slipstream: sustained follow, cooldown, 9 invalid targets, occlusion, decay, reset, switch and zero-time checks passed.
+(node:56633) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56636) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "checks": 17,
+  "normal": {
+    "motion": {
+      "height": 0,
+      "verticalVelocity": 0,
+      "airborne": false,
+      "landed": false,
+      "launched": false,
+      "trickReady": false,
+      "trickLanded": false,
+      "trick": false,
+      "pitch": 0,
+      "roll": 0,
+      "activeRamp": null,
+      "riding": null,
+      "held": true,
+      "blocked": false,
+      "buffered": null,
+      "flightTime": 0.6500000000000004,
+      "eligible": false
+    },
+    "launched": 1,
+    "landed": 1,
+    "tricks": 1,
+    "peak": 2.1452777777777787,
+    "air": 39,
+    "firstLaunch": 16
+  },
+  "plain": {
+    "motion": {
+      "height": 0,
+      "verticalVelocity": 0,
+      "airborne": false,
+      "landed": false,
+      "launched": false,
+      "trickReady": false,
+      "trickLanded": false,
+      "trick": false,
+      "pitch": 0,
+      "roll": 0,
+      "activeRamp": null,
+      "riding": null,
+      "held": false,
+      "blocked": false,
+      "buffered": null,
+      "flightTime": 0.6500000000000004,
+      "eligible": false
+    },
+    "launched": 1,
+    "landed": 1,
+    "tricks": 0,
+    "peak": 2.1452777777777787,
+    "air": 39,
+    "firstLaunch": 16
+  },
+  "side": {
+    "motion": {
+      "height": 0,
+      "verticalVelocity": 0,
+      "airborne": false,
+      "landed": false,
+      "launched": false,
+      "trickReady": false,
+      "trickLanded": false,
+      "trick": false,
+      "pitch": 0,
+      "roll": 0,
+      "activeRamp": null,
+      "riding": null,
+      "held": true,
+      "blocked": false,
+      "buffered": null,
+      "flightTime": 0.26666666666666666,
+      "eligible": false
+    },
+    "launched": 0,
+    "landed": 1,
+    "tricks": 0,
+    "peak": 0.7907737641619546,
+    "air": 16,
+    "firstLaunch": null
+  },
+  "slow": {
+    "motion": {
+      "height": 0,
+      "verticalVelocity": 0,
+      "airborne": false,
+      "landed": false,
+      "launched": false,
+      "trickReady": false,
+      "trickLanded": false,
+      "trick": false,
+      "pitch": 0,
+      "roll": 0,
+      "activeRamp": null,
+      "riding": null,
+      "held": true,
+      "blocked": false,
+      "buffered": null,
+      "flightTime": 0.36666666666666664,
+      "eligible": false
+    },
+    "launched": 0,
+    "landed": 1,
+    "tricks": 0,
+    "peak": 1.5999999999999976,
+    "air": 22,
+    "firstLaunch": null
+  },
+  "chainResults": [
+    {
+      "speed": 40,
+      "totalLaunches": 2,
+      "totalLandings": 2,
+      "totalTricks": 2
+    },
+    {
+      "speed": 51,
+      "totalLaunches": 2,
+      "totalLandings": 2,
+      "totalTricks": 2
+    },
+    {
+      "speed": 65,
+      "totalLaunches": 2,
+      "totalLandings": 2,
+      "totalTricks": 2
+    }
+  ],
+  "meshes": 50
+}

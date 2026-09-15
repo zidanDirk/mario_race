@@ -4,12 +4,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 5173",
+    "dev": "node scripts/dev.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview --host 0.0.0.0 --port 5173",
-    "test": "node --experimental-strip-types tests/driving.mjs && node tests/handling-browser.mjs",
+    "test": "npm run test:server && npm run test:unit && node tests/interaction-browser.mjs && node tests/continuity-browser.mjs && node tests/handling-browser.mjs",
     "test:visual": "node tests/revision-visuals.mjs",
-    "test:gamepad": "node tests/gamepad.mjs"
+    "test:gamepad": "node tests/gamepad.mjs",
+    "test:unit": "node --experimental-strip-types tests/driving.mjs && node --experimental-strip-types tests/collisions.mjs && node --experimental-strip-types tests/items.mjs && node --experimental-strip-types tests/continuity.mjs && node --experimental-strip-types tests/course.mjs && node --experimental-strip-types tests/ghost.mjs && node tests/progression.mjs && node --experimental-strip-types tests/combat-input.mjs && node --experimental-strip-types tests/ai-combat.mjs && node --experimental-strip-types tests/tricks.mjs && node --experimental-strip-types tests/cup.mjs && node --experimental-strip-types tests/tracks.mjs && node --experimental-strip-types tests/elimination.mjs && node --experimental-strip-types tests/loadouts.mjs && node --experimental-strip-types tests/slipstream.mjs && node --experimental-strip-types tests/ramps.mjs",
+    "test:interactions": "node tests/interaction-browser.mjs",
+    "test:continuity": "node tests/continuity-browser.mjs",
+    "dev:client": "vite",
+    "dev:server": "node --env-file-if-exists=.env --watch server/index.mjs",
+    "start": "node --env-file-if-exists=.env server/index.mjs",
+    "test:server": "node --test tests/server.test.mjs tests/progression-server.test.mjs tests/loadout-server.test.mjs",
+    "test:cloud": "node tests/cloud-browser.mjs",
+    "test:cloud:ui": "node tests/cloud-ui-browser.mjs",
+    "backup": "node --env-file-if-exists=.env scripts/backup.mjs",
+    "test:course": "node --experimental-strip-types tests/course.mjs && node tests/course-browser.mjs",
+    "test:trial": "node --experimental-strip-types tests/ghost.mjs && node tests/trial-browser.mjs",
+    "test:progression": "node tests/progression.mjs && node tests/progression-browser.mjs && node tests/progression-effects-browser.mjs && node tests/progression-cloud-browser.mjs",
+    "test:combat": "node tests/combat-browser.mjs && node tests/combat-race-browser.mjs",
+    "test:tricks": "npm run build && node --experimental-strip-types tests/tricks.mjs && node tests/tricks-browser.mjs && node tests/tricks-race-browser.mjs && node tests/tricks-production.mjs",
+    "test:cup": "npm run build && node --experimental-strip-types tests/cup.mjs && node --experimental-strip-types tests/tracks.mjs && node tests/cup-browser.mjs && node tests/cup-race-browser.mjs && node tests/cup-production.mjs",
+    "test:audio": "npm run build && node tests/audio-browser.mjs && node tests/audio-production.mjs",
+    "test:elimination": "npm run build && node --experimental-strip-types tests/elimination.mjs && node tests/elimination-browser.mjs && node tests/elimination-race-browser.mjs && node tests/elimination-production.mjs",
+    "test:loadouts": "npm run build && node --experimental-strip-types tests/loadouts.mjs && node tests/loadouts-browser.mjs && node tests/loadouts-race-browser.mjs && node tests/loadouts-production.mjs",
+    "test:techniques": "npm run build && npm run test:unit && npm run test:server && node tests/techniques-browser.mjs && node tests/techniques-race-browser.mjs && node tests/techniques-inputs.mjs && node tests/techniques-modes.mjs && node tests/techniques-cup.mjs && node tests/techniques-production.mjs"
   },
   "dependencies": {
     "three": "^0.180.0"
@@ -20,5 +40,8 @@
     "pngjs": "^7.0.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
+  },
+  "engines": {
+    "node": ">=22.17.0"
   }
 }

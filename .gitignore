@@ -2,3 +2,12 @@ node_modules/
 dist/
 .DS_Store
 *.log
+.env
+.env.*
+!.env.example
+!.env.production.example
+data/
+backups/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

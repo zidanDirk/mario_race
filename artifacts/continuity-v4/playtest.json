@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "checks": [
+    "selected Toad model is the actual driver",
+    "guide closes without starting race",
+    "timed rocket start",
+    "world-space free heading and acceleration",
+    "right input turns nose right",
+    "real hop, latched drift, countersteering, charge and release turbo",
+    "pause freezes and resumes",
+    "rear view follows held key",
+    "green shell travels as a projectile",
+    "red shell launches separately",
+    "physical coin pickup",
+    "physical item pickup and roulette completion",
+    "ordered final gate finishes third lap",
+    "retry resets physics and gates",
+    "complete three laps through real steering inputs",
+    "touch accelerator and steering share new physics",
+    "touch pointer cancellation clears pressed state"
+  ],
+  "maxDrift": 1.6200000000000012,
+  "race": {
+    "samples": 663,
+    "laps": [
+      1,
+      2,
+      3
+    ],
+    "finished": true,
+    "time": 50.31666666666509,
+    "rank": 1
+  },
+  "errors": []
+}

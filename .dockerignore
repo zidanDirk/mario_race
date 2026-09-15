@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.env*
+data
+backups
+artifacts
+tests
+.hy-code

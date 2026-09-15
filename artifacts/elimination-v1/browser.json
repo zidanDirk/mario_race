@@ -1,0 +1,272 @@
+{
+  "passed": true,
+  "checks": [
+    "menu preserves character/difficulty; warmup and last-five-second warning; pause freezes deadline",
+    "mobile/landscape HUD avoids clock; player elimination ends immediately at30s with no invented survivor ranks; retry restores all racers",
+    "eliminated AI exits ranking, item inventory, projectiles, badge and collision immediately, then visibly retreats",
+    "fourth and later laps continue; five deadlines yield one champion at110s; local elimination record remains separate",
+    "exit restores normal three-lap time trial, ghost rules and cup mode",
+    "unavailable local storage shows feedback and still permits retry"
+  ],
+  "lost": {
+    "selected": true,
+    "state": {
+      "elapsed": 30,
+      "nextAt": null,
+      "remaining": 0,
+      "warning": false,
+      "activeIds": [
+        "luigi",
+        "mario",
+        "yoshi",
+        "toad",
+        "wario"
+      ],
+      "order": [
+        "wario",
+        "toad",
+        "yoshi",
+        "mario",
+        "luigi"
+      ],
+      "eliminated": [
+        {
+          "id": "peach",
+          "at": 30,
+          "place": 6
+        }
+      ],
+      "complete": true,
+      "playerPlace": 6,
+      "winnerId": null
+    },
+    "lapLimit": null,
+    "overtakes": 0,
+    "exits": [
+      [
+        "peach",
+        30
+      ]
+    ],
+    "markers": [
+      {
+        "visible": false,
+        "position": [
+          65.47754096505132,
+          0.26,
+          -18.422199682870115
+        ]
+      },
+      {
+        "visible": false,
+        "position": [
+          106.07349329233952,
+          0.26,
+          -81.6793695027384
+        ]
+      }
+    ],
+    "racers": [
+      {
+        "id": "peach",
+        "active": false,
+        "t": 0.5,
+        "speed": 0,
+        "visible": true,
+        "scale": 1,
+        "finish": 30
+      },
+      {
+        "id": "luigi",
+        "active": true,
+        "t": 0.6,
+        "speed": 36,
+        "visible": true,
+        "scale": 1,
+        "finish": null
+      },
+      {
+        "id": "mario",
+        "active": true,
+        "t": 0.62,
+        "speed": 36,
+        "visible": true,
+        "scale": 1,
+        "finish": null
+      },
+      {
+        "id": "yoshi",
+        "active": true,
+        "t": 0.64,
+        "speed": 36,
+        "visible": true,
+        "scale": 1,
+        "finish": null
+      },
+      {
+        "id": "toad",
+        "active": true,
+        "t": 0.66,
+        "speed": 36,
+        "visible": true,
+        "scale": 1,
+        "finish": null
+      },
+      {
+        "id": "wario",
+        "active": true,
+        "t": 0.6799999999999999,
+        "speed": 36,
+        "visible": true,
+        "scale": 1,
+        "finish": null
+      }
+    ],
+    "badges": []
+  },
+  "winner": {
+    "selected": true,
+    "state": {
+      "elapsed": 110,
+      "nextAt": null,
+      "remaining": 0,
+      "warning": false,
+      "activeIds": [
+        "peach"
+      ],
+      "order": [
+        "peach"
+      ],
+      "eliminated": [
+        {
+          "id": "wario",
+          "at": 30,
+          "place": 6
+        },
+        {
+          "id": "toad",
+          "at": 50,
+          "place": 5
+        },
+        {
+          "id": "yoshi",
+          "at": 70,
+          "place": 4
+        },
+        {
+          "id": "mario",
+          "at": 90,
+          "place": 3
+        },
+        {
+          "id": "luigi",
+          "at": 110,
+          "place": 2
+        }
+      ],
+      "complete": true,
+      "playerPlace": 1,
+      "winnerId": "peach"
+    },
+    "lapLimit": null,
+    "overtakes": 5,
+    "exits": [
+      [
+        "wario",
+        30
+      ],
+      [
+        "toad",
+        50.01666666666666
+      ],
+      [
+        "yoshi",
+        70
+      ],
+      [
+        "mario",
+        90
+      ],
+      [
+        "luigi",
+        110
+      ]
+    ],
+    "markers": [
+      {
+        "visible": false,
+        "position": [
+          105.50503328197327,
+          0.26,
+          -67.64520711457816
+        ]
+      },
+      {
+        "visible": false,
+        "position": [
+          50.11299539433589,
+          0.26,
+          -133.42764893924146
+        ]
+      }
+    ],
+    "racers": [
+      {
+        "id": "peach",
+        "active": true,
+        "t": 5.7,
+        "speed": 0,
+        "visible": true,
+        "scale": 1,
+        "finish": null
+      },
+      {
+        "id": "luigi",
+        "active": false,
+        "t": 5.58,
+        "speed": 0,
+        "visible": true,
+        "scale": 1,
+        "finish": 110
+      },
+      {
+        "id": "mario",
+        "active": false,
+        "t": 4.5600000000000005,
+        "speed": 0,
+        "visible": false,
+        "scale": 0.01,
+        "finish": 90
+      },
+      {
+        "id": "yoshi",
+        "active": false,
+        "t": 3.54,
+        "speed": 0,
+        "visible": false,
+        "scale": 0.01,
+        "finish": 70
+      },
+      {
+        "id": "toad",
+        "active": false,
+        "t": 3.0251844439090023,
+        "speed": 0,
+        "visible": false,
+        "scale": 0.01,
+        "finish": 50
+      },
+      {
+        "id": "wario",
+        "active": false,
+        "t": 1.6,
+        "speed": 0,
+        "visible": false,
+        "scale": 0.01,
+        "finish": 30
+      }
+    ],
+    "badges": []
+  },
+  "errors": []
+}

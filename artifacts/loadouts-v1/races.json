@@ -1,0 +1,102 @@
+{
+  "passed": true,
+  "method": "Real keyboard input only; diagnostics and track geometry are read-only. No time, position or finish injection.",
+  "runs": [
+    {
+      "loadout": "light",
+      "time": 20,
+      "laps": [
+        1,
+        2
+      ],
+      "rescues": 0,
+      "practice": {
+        "peak": 44.99999999999986,
+        "distance": 877.4442411160891
+      },
+      "trial": {
+        "splits": [],
+        "bestMs": null,
+        "referenceMs": null,
+        "ghostVisible": false,
+        "ghostPosition": null,
+        "notice": ""
+      }
+    },
+    {
+      "loadout": "speed",
+      "time": 20,
+      "laps": [
+        1,
+        2
+      ],
+      "rescues": 0,
+      "practice": {
+        "peak": 50.99999999973368,
+        "distance": 980.3426960592169
+      },
+      "trial": {
+        "splits": [],
+        "bestMs": null,
+        "referenceMs": null,
+        "ghostVisible": false,
+        "ghostPosition": null,
+        "notice": ""
+      }
+    },
+    {
+      "loadout": "drift",
+      "time": 20,
+      "laps": [
+        1,
+        2
+      ],
+      "rescues": 0,
+      "practice": {
+        "peak": 45.999999999999815,
+        "distance": 891.7361218655805
+      },
+      "trial": {
+        "splits": [],
+        "bestMs": null,
+        "referenceMs": null,
+        "ghostVisible": false,
+        "ghostPosition": null,
+        "notice": ""
+      }
+    },
+    {
+      "loadout": "drift",
+      "time": 47.116666666665274,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "rescues": 0,
+      "practice": null,
+      "trial": {
+        "splits": [
+          5217.705448701647,
+          8952.628933125987,
+          12841.681636570744,
+          16595.34692742505,
+          20511.36272655008,
+          24104.16104382538,
+          28080.645334878063,
+          31846.440609944526,
+          35761.99346634869,
+          39475.19668971259,
+          43338.28244479612,
+          47116.666666665275
+        ],
+        "bestMs": 47116.666666665275,
+        "referenceMs": null,
+        "ghostVisible": false,
+        "ghostPosition": null,
+        "notice": ""
+      }
+    }
+  ],
+  "errors": []
+}

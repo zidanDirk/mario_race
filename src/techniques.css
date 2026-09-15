@@ -1,0 +1,4 @@
+.technique-hud{position:absolute;z-index:4;left:50%;bottom:145px;transform:translateX(-50%);min-width:180px;max-width:300px;padding:9px 14px;background:#133f49ed;border:1px solid #90e6df;border-radius:9px;color:#fff7dc;text-align:center;font-size:12px;font-weight:800;pointer-events:none}
+.technique-hud[hidden]{display:none}.technique-hud .technique-track{height:3px;margin-top:6px;background:#ffffff25;overflow:hidden;border-radius:4px}.technique-fill{height:100%;background:#80e4df;transform-origin:left}.technique-hud[data-kind="jump"]{border-color:#ffd968;background:#524124ed}.technique-hud[data-kind="jump"] .technique-fill{background:#ffd968}
+@media(max-width:700px){.technique-hud{top:248px;bottom:auto;font-size:10px;min-width:145px;max-width:220px;padding:7px 10px}}
+@media(max-height:480px){.technique-hud{top:auto;bottom:100px;font-size:10px;padding:6px 10px}}
