@@ -52,7 +52,7 @@ jobs:
           qshell qupload2 \
             --src-dir=dist \
             --bucket="$QINIU_BUCKET" \
-            --key-prefix=mario-race/ \
+            --key-prefix=marace/ \
             --overwrite \
             --rescan-local \
             --skip-fixed-strings=".DS_Store"
