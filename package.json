@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "tsc && vite build",
+    "test:cdn": "npm run build && node tests/cdn-paths.mjs && node tests/cdn-browser.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 5173",
     "test": "npm run test:server && npm run test:unit && node tests/interaction-browser.mjs && node tests/continuity-browser.mjs && node tests/handling-browser.mjs",
     "test:visual": "node tests/revision-visuals.mjs",

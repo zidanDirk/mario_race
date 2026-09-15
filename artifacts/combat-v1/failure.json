@@ -1,0 +1,177 @@
+{
+  "checks": [
+    "AI physically collects a real box into its own roulette",
+    "quick E press launches exactly one shell",
+    "rear red shell warns then is intercepted; only held slot consumed, reserve never auto-fires",
+    "front hit cannot be blocked by a rear item and grants a recovery window",
+    "pause cancels hold without throwing or consuming inventory",
+    "touch/pointer cancellation preserves held inventory without a shot",
+    "held gamepad button waits for release after pause; disconnect cancels without shooting"
+  ],
+  "errors": [],
+  "diagnostics": {
+    "mode": "racing",
+    "raceMode": "grand-prix",
+    "trial": {
+      "splits": [],
+      "bestMs": null,
+      "referenceMs": null,
+      "ghostVisible": false,
+      "ghostPosition": null,
+      "notice": ""
+    },
+    "frame": 496,
+    "raceTime": 23.566666666666464,
+    "coins": 0,
+    "item": null,
+    "inventory": [],
+    "rolling": false,
+    "interactions": {
+      "railHits": 0,
+      "propHits": 0,
+      "kartHits": 1,
+      "boxes": 0,
+      "itemAwards": 0,
+      "hits": 0,
+      "shellBounces": 0
+    },
+    "shards": 0,
+    "boost": 0,
+    "charge": 0,
+    "rank": 6,
+    "lap": 1,
+    "projectiles": [],
+    "lookBack": false,
+    "course": {
+      "hits": 0,
+      "clears": 0,
+      "shortcut": null,
+      "hazards": [
+        {
+          "id": "garden-hazard",
+          "kind": "vent",
+          "phase": "active",
+          "seconds": 0.4333333333335361,
+          "x": 5.173205664297493,
+          "z": 93.15629812331899
+        },
+        {
+          "id": "workshop-hazard",
+          "kind": "barrier",
+          "phase": "active",
+          "seconds": 0,
+          "x": -0.009128119965970807,
+          "z": -96.84723233434991
+        }
+      ]
+    },
+    "trackLength": 814.0587092787521,
+    "player": {
+      "t": 0.4213926772972283,
+      "lane": -1.7048173208743,
+      "speed": 0,
+      "heading": -2.707890488890124,
+      "travelHeading": -2.707890488890124,
+      "hopHeight": 0,
+      "stun": 0,
+      "driftDirection": 0,
+      "driftStage": 0,
+      "nextGate": 4,
+      "routeT": 0.4213926772972283,
+      "offRoad": false,
+      "wrongWay": false,
+      "recoverySeconds": 0,
+      "recoveryFlash": 0,
+      "checkpointMissed": false,
+      "driver": "mario",
+      "hitTime": 0,
+      "immune": 0,
+      "modelYaw": -2.707890488890124,
+      "impactFlash": 0,
+      "x": 104.04349220074249,
+      "y": 0.18000000000000002,
+      "z": 29.430773230495824
+    },
+    "renderer": {
+      "calls": 207,
+      "triangles": 327724,
+      "geometries": 325,
+      "textures": 10
+    },
+    "render": {
+      "calls": 207,
+      "triangles": 327724
+    },
+    "memory": {
+      "geometries": 325,
+      "textures": 10
+    },
+    "drawCalls": 207,
+    "triangles": 327724
+  },
+  "combat": {
+    "difficulty": "standard",
+    "held": null,
+    "heldPosition": null,
+    "pressing": false,
+    "protection": 0,
+    "stats": {
+      "blocks": 0,
+      "aiHits": 0,
+      "playerHits": 0,
+      "warnings": 0,
+      "collected": 3,
+      "used": 1,
+      "playerAttacks": 0
+    },
+    "ai": [
+      {
+        "id": "luigi",
+        "inventory": [
+          {
+            "item": "green-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 0
+          }
+        ],
+        "boost": 0
+      },
+      {
+        "id": "peach",
+        "inventory": [
+          {
+            "item": "banana",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          }
+        ],
+        "boost": 0
+      },
+      {
+        "id": "yoshi",
+        "inventory": [
+          {
+            "item": "red-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          }
+        ],
+        "boost": 2.2
+      },
+      {
+        "id": "toad",
+        "inventory": [],
+        "boost": 0
+      },
+      {
+        "id": "wario",
+        "inventory": [],
+        "boost": 0
+      }
+    ],
+    "projectiles": []
+  }
+}

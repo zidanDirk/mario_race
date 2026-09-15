@@ -1,0 +1,133 @@
+{
+  "checks": [],
+  "errors": [],
+  "last": {
+    "mode": "racing",
+    "raceMode": "grand-prix",
+    "trial": {
+      "splits": [],
+      "bestMs": null,
+      "referenceMs": null,
+      "ghostVisible": false,
+      "ghostPosition": null,
+      "notice": ""
+    },
+    "frame": 334,
+    "raceTime": 25.06666666666638,
+    "coins": 2,
+    "item": null,
+    "inventory": [],
+    "rolling": false,
+    "interactions": {
+      "railHits": 0,
+      "propHits": 0,
+      "kartHits": 1,
+      "boxes": 0,
+      "itemAwards": 0,
+      "hits": 0,
+      "shellBounces": 0
+    },
+    "shards": 0,
+    "boost": 0,
+    "charge": 0,
+    "rank": 2,
+    "lap": 1,
+    "projectiles": [
+      {
+        "kind": "red-shell",
+        "x": 69.22208471361286,
+        "z": -5.132243966705456,
+        "age": 0.44999999999999996,
+        "routeT": 0.4819619503040445,
+        "roadDistance": 1.6908114918777926
+      }
+    ],
+    "lookBack": false,
+    "course": {
+      "hits": 0,
+      "clears": 0,
+      "shortcut": null,
+      "hazards": [
+        {
+          "id": "garden-hazard",
+          "kind": "vent",
+          "phase": "safe",
+          "seconds": 1.9333333333336213,
+          "x": 5.173205664297493,
+          "z": 93.15629812331899
+        },
+        {
+          "id": "workshop-hazard",
+          "kind": "barrier",
+          "phase": "active",
+          "seconds": 0,
+          "x": -0.053899072189959506,
+          "z": -100.26452961649173
+        }
+      ]
+    },
+    "trackLength": 814.0587092787521,
+    "player": {
+      "t": 0.849965896320749,
+      "lane": -55.530619026151825,
+      "speed": 19.00065795250842,
+      "heading": -1.6635101768961598,
+      "travelHeading": -1.6635101768961598,
+      "hopHeight": 0,
+      "stun": 0,
+      "driftDirection": 0,
+      "driftStage": 0,
+      "nextGate": 7,
+      "routeT": 0.849965896320749,
+      "offRoad": true,
+      "wrongWay": false,
+      "recoverySeconds": 0,
+      "recoveryFlash": 0,
+      "checkpointMissed": false,
+      "driver": "mario",
+      "hitTime": 0,
+      "immune": 0,
+      "modelYaw": -1.6635101768961598,
+      "impactFlash": 0,
+      "x": -100.41795046201396,
+      "y": 0.18000000000000002,
+      "z": -152.15218726660328
+    },
+    "renderer": {
+      "calls": 62,
+      "triangles": 217596,
+      "geometries": 144,
+      "textures": 6
+    },
+    "render": {
+      "calls": 62,
+      "triangles": 217596
+    },
+    "memory": {
+      "geometries": 144,
+      "textures": 6
+    },
+    "drawCalls": 62,
+    "triangles": 217596
+  },
+  "tricks": {
+    "score": 0,
+    "chain": 0,
+    "multiplier": 1,
+    "remaining": 0,
+    "maxChain": 0,
+    "maxMultiplier": 1,
+    "counts": {
+      "orange": 0,
+      "purple": 0,
+      "overtake": 0,
+      "shortcut": 0
+    },
+    "last": null,
+    "breakReason": "",
+    "best": null,
+    "key": "mushroom-tricks-v1-grand-prix-standard-qa",
+    "valid": false,
+    "entry": null
+  }
+}

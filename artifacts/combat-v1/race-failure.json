@@ -1,0 +1,504 @@
+{
+  "runs": [
+    {
+      "difficulty": "standard",
+      "finished": true,
+      "time": 49.099999999998495,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "first30": {
+        "blocks": 0,
+        "aiHits": 2,
+        "playerHits": 0,
+        "warnings": 0,
+        "collected": 13,
+        "used": 5,
+        "playerAttacks": 0
+      },
+      "combat": {
+        "difficulty": "standard",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 5,
+          "playerHits": 0,
+          "warnings": 0,
+          "collected": 19,
+          "used": 10,
+          "playerAttacks": 0
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": null,
+                "pending": "banana",
+                "remaining": 0.750000000000001,
+                "elapsed": 0.7500000000000007
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": [
+          {
+            "kind": "red-shell",
+            "owner": "wario",
+            "target": "toad",
+            "x": -1.8762223193852976,
+            "z": 131.02096695045046,
+            "age": 0.7833333333333341
+          }
+        ]
+      },
+      "interactions": {
+        "railHits": 0,
+        "propHits": 0,
+        "kartHits": 16,
+        "boxes": 11,
+        "itemAwards": 2,
+        "hits": 0,
+        "shellBounces": 0
+      }
+    },
+    {
+      "difficulty": "casual",
+      "finished": true,
+      "time": 48.749999999998515,
+      "laps": [
+        1,
+        2,
+        3
+      ],
+      "first30": {
+        "blocks": 0,
+        "aiHits": 1,
+        "playerHits": 0,
+        "warnings": 0,
+        "collected": 12,
+        "used": 4,
+        "playerAttacks": 0
+      },
+      "combat": {
+        "difficulty": "casual",
+        "held": null,
+        "heldPosition": null,
+        "pressing": false,
+        "protection": 0,
+        "stats": {
+          "blocks": 0,
+          "aiHits": 3,
+          "playerHits": 0,
+          "warnings": 0,
+          "collected": 18,
+          "used": 8,
+          "playerAttacks": 0
+        },
+        "ai": [
+          {
+            "id": "luigi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": null,
+                "pending": "mushroom",
+                "remaining": 1.3000000000000007,
+                "elapsed": 0.19999999999999998
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "peach",
+            "inventory": [
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "yoshi",
+            "inventory": [
+              {
+                "item": "banana",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "toad",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "mushroom",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          },
+          {
+            "id": "wario",
+            "inventory": [
+              {
+                "item": "red-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              },
+              {
+                "item": "green-shell",
+                "pending": null,
+                "remaining": 0,
+                "elapsed": 1.4999999999999996
+              }
+            ],
+            "boost": 0
+          }
+        ],
+        "projectiles": []
+      },
+      "interactions": {
+        "railHits": 0,
+        "propHits": 0,
+        "kartHits": 13,
+        "boxes": 11,
+        "itemAwards": 2,
+        "hits": 0,
+        "shellBounces": 1
+      }
+    }
+  ],
+  "last": {
+    "mode": "finished",
+    "raceMode": "grand-prix",
+    "trial": {
+      "splits": [],
+      "bestMs": null,
+      "referenceMs": null,
+      "ghostVisible": false,
+      "ghostPosition": null,
+      "notice": ""
+    },
+    "frame": 3151,
+    "raceTime": 48.749999999998515,
+    "coins": 10,
+    "item": "banana",
+    "inventory": [
+      {
+        "item": "banana",
+        "pending": null,
+        "remaining": 0,
+        "elapsed": 1.4999999999999996
+      },
+      {
+        "item": "mushroom",
+        "pending": null,
+        "remaining": 0,
+        "elapsed": 1.4999999999999996
+      }
+    ],
+    "rolling": false,
+    "interactions": {
+      "railHits": 0,
+      "propHits": 0,
+      "kartHits": 13,
+      "boxes": 11,
+      "itemAwards": 2,
+      "hits": 0,
+      "shellBounces": 1
+    },
+    "shards": 24,
+    "boost": 0,
+    "charge": 0,
+    "rank": 1,
+    "lap": 3,
+    "projectiles": [],
+    "lookBack": false,
+    "course": {
+      "hits": 0,
+      "clears": 0,
+      "shortcut": null,
+      "hazards": [
+        {
+          "id": "garden-hazard",
+          "kind": "vent",
+          "phase": "safe",
+          "seconds": 2.250000000001485,
+          "x": 5.173205664297493,
+          "z": 93.15629812331899
+        },
+        {
+          "id": "workshop-hazard",
+          "kind": "barrier",
+          "phase": "active",
+          "seconds": 0,
+          "x": -0.038351464225106845,
+          "z": -99.07780483618586
+        }
+      ]
+    },
+    "trackLength": 814.0587092787521,
+    "player": {
+      "t": 3.0002322357215863,
+      "lane": -0.5258051728555015,
+      "speed": 51.06402025589548,
+      "heading": 0.10935145120809596,
+      "travelHeading": 0.11111962557160897,
+      "hopHeight": 0,
+      "stun": 0,
+      "driftDirection": 0,
+      "driftStage": 0,
+      "nextGate": 25,
+      "routeT": 3.0002322357215863,
+      "offRoad": false,
+      "wrongWay": false,
+      "recoverySeconds": 0,
+      "recoveryFlash": 0,
+      "checkpointMissed": false,
+      "driver": "mario",
+      "hitTime": 0,
+      "immune": 0,
+      "modelYaw": 0.10951776089207013,
+      "impactFlash": 0,
+      "x": -90.59940933556067,
+      "y": 0.18000000000000002,
+      "z": -0.6067437842611861
+    },
+    "renderer": {
+      "calls": 354,
+      "triangles": 522028,
+      "geometries": 346,
+      "textures": 14
+    },
+    "render": {
+      "calls": 354,
+      "triangles": 522028
+    },
+    "memory": {
+      "geometries": 346,
+      "textures": 14
+    },
+    "drawCalls": 354,
+    "triangles": 522028
+  },
+  "combat": {
+    "difficulty": "casual",
+    "held": null,
+    "heldPosition": null,
+    "pressing": false,
+    "protection": 0,
+    "stats": {
+      "blocks": 0,
+      "aiHits": 3,
+      "playerHits": 0,
+      "warnings": 0,
+      "collected": 18,
+      "used": 8,
+      "playerAttacks": 0
+    },
+    "ai": [
+      {
+        "id": "luigi",
+        "inventory": [
+          {
+            "item": "banana",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          },
+          {
+            "item": null,
+            "pending": "mushroom",
+            "remaining": 1.3000000000000007,
+            "elapsed": 0.19999999999999998
+          }
+        ],
+        "boost": 0
+      },
+      {
+        "id": "peach",
+        "inventory": [
+          {
+            "item": "green-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          },
+          {
+            "item": "banana",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          }
+        ],
+        "boost": 0
+      },
+      {
+        "id": "yoshi",
+        "inventory": [
+          {
+            "item": "banana",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          },
+          {
+            "item": "red-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          }
+        ],
+        "boost": 0
+      },
+      {
+        "id": "toad",
+        "inventory": [
+          {
+            "item": "red-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          },
+          {
+            "item": "mushroom",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          }
+        ],
+        "boost": 0
+      },
+      {
+        "id": "wario",
+        "inventory": [
+          {
+            "item": "red-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          },
+          {
+            "item": "green-shell",
+            "pending": null,
+            "remaining": 0,
+            "elapsed": 1.4999999999999996
+          }
+        ],
+        "boost": 0
+      }
+    ],
+    "projectiles": []
+  },
+  "errors": []
+}

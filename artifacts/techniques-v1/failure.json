@@ -1,0 +1,370 @@
+{
+  "checks": [
+    "real keyboard drives two ramps with timed tricks; pause freezes flight and ground banana does not hit airborne kart"
+  ],
+  "errors": [],
+  "last": {
+    "techniques": {
+      "drafts": 0,
+      "jumps": 2,
+      "horns": 0,
+      "hornClears": 0,
+      "aiDrafts": 0,
+      "aiJumps": 0,
+      "aiHorns": 0,
+      "draft": {
+        "charge": 0,
+        "cooldown": 0,
+        "target": null,
+        "triggered": false
+      },
+      "ramp": {
+        "height": 0,
+        "airborne": false,
+        "trickReady": false,
+        "trick": false,
+        "activeRamp": null
+      }
+    },
+    "loadout": "light",
+    "practice": null,
+    "audio": {
+      "muted": false,
+      "musicVolume": 0.55,
+      "effectsVolume": 0.7,
+      "context": "running",
+      "track": "mushroom",
+      "title": "晴空冲刺",
+      "bpm": 144,
+      "finalLap": false,
+      "sources": 1,
+      "position": 2.1013333333333333,
+      "ready": [
+        "mushroom"
+      ],
+      "error": null
+    },
+    "elimination": null,
+    "eliminationOvertakes": 0,
+    "mode": "racing",
+    "raceMode": "time-trial",
+    "track": "mushroom",
+    "cup": null,
+    "trial": {
+      "splits": [],
+      "bestMs": null,
+      "referenceMs": null,
+      "ghostVisible": false,
+      "ghostPosition": null,
+      "notice": ""
+    },
+    "frame": 208,
+    "raceTime": 22.866666666666504,
+    "coins": 0,
+    "item": null,
+    "inventory": [],
+    "rolling": false,
+    "interactions": {
+      "railHits": 0,
+      "propHits": 0,
+      "kartHits": 0,
+      "boxes": 0,
+      "itemAwards": 0,
+      "hits": 0,
+      "shellBounces": 0
+    },
+    "shards": 0,
+    "boost": 0.7333333333333327,
+    "charge": 0,
+    "rank": 1,
+    "lap": 1,
+    "projectiles": [
+      {
+        "kind": "banana",
+        "x": 22.97283038560127,
+        "z": -134.5302055458066,
+        "age": 3.383333333333325,
+        "routeT": 0.7336485713282903,
+        "roadDistance": 3.848662090985903
+      }
+    ],
+    "lookBack": false,
+    "course": {
+      "hits": 0,
+      "clears": 0,
+      "shortcut": null,
+      "hazards": [
+        {
+          "id": "garden-hazard",
+          "kind": "vent",
+          "phase": "active",
+          "seconds": 1.1333333333334963,
+          "x": 5.173205664297493,
+          "z": 93.15629812331899
+        },
+        {
+          "id": "workshop-hazard",
+          "kind": "barrier",
+          "phase": "active",
+          "seconds": 0,
+          "x": 0.001073839884635254,
+          "z": -96.06853257617688
+        }
+      ]
+    },
+    "trackLength": 814.0587092787521,
+    "player": {
+      "t": 0.8470840883752668,
+      "lane": 3.4663940126584416,
+      "speed": 41.51517841005975,
+      "heading": -0.939905781609208,
+      "travelHeading": -0.9446711789937424,
+      "hopHeight": 0,
+      "stun": 0,
+      "driftDirection": 0,
+      "driftStage": 0,
+      "nextGate": 7,
+      "routeT": 0.8470840883752668,
+      "offRoad": false,
+      "wrongWay": false,
+      "recoverySeconds": 0,
+      "recoveryFlash": 0,
+      "checkpointMissed": false,
+      "driver": "mario",
+      "hitTime": 0,
+      "immune": 0,
+      "modelYaw": -0.939905781609208,
+      "impactFlash": 0,
+      "x": -60.67756167941093,
+      "y": 0.18000000000000002,
+      "z": -108.45457677091005
+    },
+    "renderer": {
+      "calls": 110,
+      "triangles": 266732,
+      "geometries": 153,
+      "textures": 6
+    },
+    "render": {
+      "calls": 110,
+      "triangles": 266732
+    },
+    "memory": {
+      "geometries": 153,
+      "textures": 6
+    },
+    "drawCalls": 110,
+    "triangles": 266732
+  },
+  "techniques": {
+    "stats": {
+      "drafts": 0,
+      "jumps": 0,
+      "horns": 0,
+      "hornClears": 0,
+      "aiDrafts": 0,
+      "aiJumps": 0,
+      "aiHorns": 0
+    },
+    "ramps": [
+      {
+        "id": "meadow-hop",
+        "t": 0.72,
+        "lane": 3.5,
+        "width": 5,
+        "length": 9,
+        "height": 1.6
+      },
+      {
+        "id": "meadow-hop-two",
+        "t": 0.785,
+        "lane": 3.5,
+        "width": 5,
+        "length": 9,
+        "height": 1.6
+      }
+    ],
+    "draft": {
+      "charge": 0,
+      "cooldown": 0,
+      "target": null,
+      "triggered": false
+    },
+    "ramp": {
+      "height": 0,
+      "verticalVelocity": 0,
+      "airborne": false,
+      "landed": false,
+      "launched": false,
+      "trickReady": false,
+      "trickLanded": false,
+      "trick": false,
+      "pitch": 0,
+      "roll": 0,
+      "activeRamp": null,
+      "riding": null,
+      "held": false,
+      "blocked": false,
+      "buffered": null,
+      "flightTime": 0,
+      "eligible": false
+    },
+    "ai": [
+      {
+        "id": "luigi",
+        "t": 0.15,
+        "lane": 0,
+        "height": 0,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "verticalVelocity": 0,
+          "airborne": false,
+          "landed": false,
+          "launched": false,
+          "trickReady": false,
+          "trickLanded": false,
+          "trick": false,
+          "pitch": 0,
+          "roll": 0,
+          "activeRamp": null,
+          "riding": null,
+          "held": false,
+          "blocked": false,
+          "buffered": null,
+          "flightTime": 0,
+          "eligible": false
+        }
+      },
+      {
+        "id": "peach",
+        "t": 0.19,
+        "lane": 0,
+        "height": 0,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "verticalVelocity": 0,
+          "airborne": false,
+          "landed": false,
+          "launched": false,
+          "trickReady": false,
+          "trickLanded": false,
+          "trick": false,
+          "pitch": 0,
+          "roll": 0,
+          "activeRamp": null,
+          "riding": null,
+          "held": false,
+          "blocked": false,
+          "buffered": null,
+          "flightTime": 0,
+          "eligible": false
+        }
+      },
+      {
+        "id": "yoshi",
+        "t": 0.22999999999999998,
+        "lane": 0,
+        "height": 0,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "verticalVelocity": 0,
+          "airborne": false,
+          "landed": false,
+          "launched": false,
+          "trickReady": false,
+          "trickLanded": false,
+          "trick": false,
+          "pitch": 0,
+          "roll": 0,
+          "activeRamp": null,
+          "riding": null,
+          "held": false,
+          "blocked": false,
+          "buffered": null,
+          "flightTime": 0,
+          "eligible": false
+        }
+      },
+      {
+        "id": "toad",
+        "t": 0.27,
+        "lane": 0,
+        "height": 0,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "verticalVelocity": 0,
+          "airborne": false,
+          "landed": false,
+          "launched": false,
+          "trickReady": false,
+          "trickLanded": false,
+          "trick": false,
+          "pitch": 0,
+          "roll": 0,
+          "activeRamp": null,
+          "riding": null,
+          "held": false,
+          "blocked": false,
+          "buffered": null,
+          "flightTime": 0,
+          "eligible": false
+        }
+      },
+      {
+        "id": "wario",
+        "t": 0.31,
+        "lane": 0,
+        "height": 0,
+        "draft": {
+          "charge": 0,
+          "cooldown": 0,
+          "target": null,
+          "triggered": false
+        },
+        "ramp": {
+          "height": 0,
+          "verticalVelocity": 0,
+          "airborne": false,
+          "landed": false,
+          "launched": false,
+          "trickReady": false,
+          "trickLanded": false,
+          "trick": false,
+          "pitch": 0,
+          "roll": 0,
+          "activeRamp": null,
+          "riding": null,
+          "held": false,
+          "blocked": false,
+          "buffered": null,
+          "flightTime": 0,
+          "eligible": false
+        }
+      }
+    ]
+  }
+}
