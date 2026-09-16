@@ -115,7 +115,9 @@ export class KartDriving {
 
   recover() {
     const gate = this.nextGate;
-    const t = Math.min(this.lastSafeT, gate / 8 - .005);
+    // A missed gate is already behind the car. Return near it rather than to an
+    // arbitrarily old safe point; retain the gate so driving through is required.
+    const t = this.checkpointMissed ? gate / 8 - 8 / this.track.trackLength : Math.min(this.lastSafeT, gate / 8 - .005);
     this.reset(t, 0, 0, gate);
     this.stun = .6; this.recoveryFlash = 1.2; this.recovered = true;
   }

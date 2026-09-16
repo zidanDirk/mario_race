@@ -153,3 +153,10 @@ npm run dev
 计时挑战可练跳台，保持无 AI 和随机道具。所有成绩与旧规则隔离，历史数据保留；云端 GP5 / TT4 与客户端一致。无需新增服务或凭据。
 
 启动本地预览后，`npm run test:techniques` 运行构建、规则、服务端、键盘/手柄/触屏、比赛模式、完整比赛及生产联调检查。Chrome 路径可通过 `CHROME_PATH` 指定。详细证据见 [技巧竞速验收](artifacts/techniques-v1/README.md)。
+
+
+## 漏点恢复
+
+出现「检查点未通过」时，小地图橙圈会标出待补过的位置。可自行返回顺向补点，也可点击「回到检查点前」（键盘 Backspace / 标准手柄 Select、−），回到漏点前约 8 米并朝向赛道正向。继续加速通过后恢复计圈。计时继续，最多扣 3 金币，重复长按不会重复扣费；暂停时不触发，不会自动补算检查点或突然传送。
+
+本地预览运行时可执行 `npm run test:checkpoints`。详见 [漏点恢复验收](artifacts/checkpoint-assist/README.md)。

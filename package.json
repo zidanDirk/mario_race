@@ -11,7 +11,7 @@
     "test": "npm run test:server && npm run test:unit && node tests/interaction-browser.mjs && node tests/continuity-browser.mjs && node tests/handling-browser.mjs",
     "test:visual": "node tests/revision-visuals.mjs",
     "test:gamepad": "node tests/gamepad.mjs",
-    "test:unit": "node --experimental-strip-types tests/driving.mjs && node --experimental-strip-types tests/collisions.mjs && node --experimental-strip-types tests/items.mjs && node --experimental-strip-types tests/continuity.mjs && node --experimental-strip-types tests/course.mjs && node --experimental-strip-types tests/ghost.mjs && node tests/progression.mjs && node --experimental-strip-types tests/combat-input.mjs && node --experimental-strip-types tests/ai-combat.mjs && node --experimental-strip-types tests/tricks.mjs && node --experimental-strip-types tests/cup.mjs && node --experimental-strip-types tests/tracks.mjs && node --experimental-strip-types tests/elimination.mjs && node --experimental-strip-types tests/loadouts.mjs && node --experimental-strip-types tests/slipstream.mjs && node --experimental-strip-types tests/ramps.mjs",
+    "test:unit": "node --experimental-strip-types tests/driving.mjs && node --experimental-strip-types tests/collisions.mjs && node --experimental-strip-types tests/items.mjs && node --experimental-strip-types tests/continuity.mjs && node --experimental-strip-types tests/course.mjs && node --experimental-strip-types tests/ghost.mjs && node tests/progression.mjs && node --experimental-strip-types tests/combat-input.mjs && node --experimental-strip-types tests/ai-combat.mjs && node --experimental-strip-types tests/tricks.mjs && node --experimental-strip-types tests/cup.mjs && node --experimental-strip-types tests/tracks.mjs && node --experimental-strip-types tests/elimination.mjs && node --experimental-strip-types tests/loadouts.mjs && node --experimental-strip-types tests/slipstream.mjs && node --experimental-strip-types tests/ramps.mjs && node --experimental-strip-types tests/checkpoints.mjs",
     "test:interactions": "node tests/interaction-browser.mjs",
     "test:continuity": "node tests/continuity-browser.mjs",
     "dev:client": "vite",
@@ -30,7 +30,8 @@
     "test:audio": "npm run build && node tests/audio-browser.mjs && node tests/audio-production.mjs",
     "test:elimination": "npm run build && node --experimental-strip-types tests/elimination.mjs && node tests/elimination-browser.mjs && node tests/elimination-race-browser.mjs && node tests/elimination-production.mjs",
     "test:loadouts": "npm run build && node --experimental-strip-types tests/loadouts.mjs && node tests/loadouts-browser.mjs && node tests/loadouts-race-browser.mjs && node tests/loadouts-production.mjs",
-    "test:techniques": "npm run build && npm run test:unit && npm run test:server && node tests/techniques-browser.mjs && node tests/techniques-race-browser.mjs && node tests/techniques-inputs.mjs && node tests/techniques-modes.mjs && node tests/techniques-cup.mjs && node tests/techniques-production.mjs"
+    "test:techniques": "npm run build && npm run test:unit && npm run test:server && node tests/techniques-browser.mjs && node tests/techniques-race-browser.mjs && node tests/techniques-inputs.mjs && node tests/techniques-modes.mjs && node tests/techniques-cup.mjs && node tests/techniques-production.mjs",
+    "test:checkpoints": "npm run build && node --experimental-strip-types tests/checkpoints.mjs && node --experimental-strip-types tests/continuity.mjs && node --experimental-strip-types tests/course.mjs && node tests/checkpoint-browser.mjs"
   },
   "dependencies": {
     "three": "^0.180.0"

@@ -34,6 +34,7 @@ import {RampMotion,MUSHROOM_RAMPS,rampDistance} from './ramps';
 import {buildRampVisuals,buildRampColliders} from './ramp-visuals';
 import {createTechniqueEffects} from './technique-effects';
 import './techniques.css';
+import {mountCheckpointAssist} from './checkpoint-assist';
 import './audio.css';
 import { moveCircle, segmentDistance, sweepCircle } from './collision';
 
@@ -97,6 +98,7 @@ const drafts=new Map(racers.map(r=>[r.key,new Slipstream()]));
 const techniqueEffects=createTechniqueEffects(scene,racers.map(r=>r.key));
 const techniqueHud=document.createElement('aside');techniqueHud.className='technique-hud';techniqueHud.hidden=true;techniqueHud.innerHTML='<span></span><div class="technique-track"><div class="technique-fill"></div></div>';app.append(techniqueHud);
 const techniqueStats={drafts:0,jumps:0,horns:0,hornClears:0,aiDrafts:0,aiJumps:0,aiHorns:0};
+const checkpointAssist=mountCheckpointAssist(app,()=>{if(driving.checkpointMissed)recoverPlayer();});
 const playerRamp=()=>rampMotions.get(player.key)!;
 const currentRamps=()=>activeTrack==='mushroom'?MUSHROOM_RAMPS:[];
 let driving=new KartDriving(world);
@@ -142,11 +144,11 @@ const challengeMetrics:Metrics={orangeDrifts:0,coinsCollected:0,rescues:0,shortc
 function applyCosmetics(value:Equipped){equipped={...value};for(const r of racers)r.mesh.traverse(o=>{if(o instanceof THREE.Mesh&&!Array.isArray(o.material)&&o.material instanceof THREE.MeshStandardMaterial&&o.material.userData.kartPaint){const m=o.material;m.color.setHex(r===player&&value.paint==='mint'?(m.userData.kartPaint==='dark'?0x167f6b:0x47d9b1):m.userData.originalColor);}});}
 let lookBack=false,lastLookBack=false,rocketHold=0,itemWasPressed=false;
 let gamepadInput={throttle:false,brake:false,steer:0,hop:false,item:false,rear:false};
-let padPauseWasPressed=false;
+let padPauseWasPressed=false,padRecoverWasPressed=false;
 const pointerKeys=new Set<string>();
 const down=(...codes:string[])=>codes.some(k=>keys.has(k)||pointerKeys.has(k));
 function readInput(){return {throttle:down('KeyW','ArrowUp')||gamepadInput.throttle,brake:down('KeyS','ArrowDown')||gamepadInput.brake,steer:THREE.MathUtils.clamp((down('KeyD','ArrowRight')?1:0)-(down('KeyA','ArrowLeft')?1:0)+gamepadInput.steer,-1,1),hop:down('Space','KeyR')||gamepadInput.hop,item:down('KeyE','KeyQ')||gamepadInput.item,rear:down('KeyC')||gamepadInput.rear};}
-function pollGamepad(){if(loadoutView?.isOpen()||progression?.isOpen()||cloud?.isOpen()||document.querySelector<HTMLDialogElement>('.driving-guide')?.open){gamepadInput={throttle:false,brake:false,steer:0,hop:false,item:false,rear:false};return;}const pad=Array.from(navigator.getGamepads?.()??[]).find(p=>p?.connected&&p.mapping==='standard');if(!pad){if(gamepadInput.item)cancelItemGesture();gamepadInput={throttle:false,brake:false,steer:0,hop:false,item:false,rear:false};padPauseWasPressed=false;return;}const nintendo=/nintendo|switch|057e/i.test(pad.id);const pressed=(n:number)=>!!pad.buttons[n]?.pressed;const axis=pad.axes[0]??0;gamepadInput={throttle:pressed(nintendo?1:0),brake:pressed(nintendo?0:1),steer:Math.abs(axis)>.12?axis:0,hop:pressed(5)||pressed(7),item:pressed(4)||pressed(6),rear:pressed(3)};if(pressed(9)&&!padPauseWasPressed){if(mode==='ready')start();else showPause();}padPauseWasPressed=pressed(9);}
+function pollGamepad(){if(loadoutView?.isOpen()||progression?.isOpen()||cloud?.isOpen()||document.querySelector<HTMLDialogElement>('.driving-guide')?.open){gamepadInput={throttle:false,brake:false,steer:0,hop:false,item:false,rear:false};return;}const pad=Array.from(navigator.getGamepads?.()??[]).find(p=>p?.connected&&p.mapping==='standard');if(!pad){if(gamepadInput.item)cancelItemGesture();gamepadInput={throttle:false,brake:false,steer:0,hop:false,item:false,rear:false};padPauseWasPressed=padRecoverWasPressed=false;return;}const nintendo=/nintendo|switch|057e/i.test(pad.id);const pressed=(n:number)=>!!pad.buttons[n]?.pressed;const axis=pad.axes[0]??0;gamepadInput={throttle:pressed(nintendo?1:0),brake:pressed(nintendo?0:1),steer:Math.abs(axis)>.12?axis:0,hop:pressed(5)||pressed(7),item:pressed(4)||pressed(6),rear:pressed(3)};if(pressed(9)&&!padPauseWasPressed){if(mode==='ready')start();else showPause();}padPauseWasPressed=pressed(9);if(pressed(8)&&!padRecoverWasPressed&&driving.checkpointMissed)recoverPlayer();padRecoverWasPressed=pressed(8);}
 let mode:Mode='ready',pausedFrom:Mode='racing';
 let raceTime=0,countdown=3.6,coins=0,boost=0,charge=0,wasDrifting=false,steer=0,collisionCooldown=0,toastTime=0,eventTime=0,rank=6,lastLap=1,frame=0,freeze=false;
 let rngState=42;
@@ -605,7 +607,7 @@ function finishTrial(){
  if(trialSplits.length){const table=document.createElement('div');table.className='trial-results';table.innerHTML='<table><thead><tr><th>分段</th><th>累计用时</th><th>对比此前最佳</th></tr></thead><tbody>'+trialSplits.map((s,i)=>{const diff=referenceGhost?s-referenceGhost.splits[i]:null;return `<tr><td>${Math.floor(i/4)+1}圈 · ${i%4+1}/4</td><td>${formatTime(s/1000)}</td><td>${diff===null?'首次记录':`${diff<0?'−':'+'}${Math.abs(diff/1000).toFixed(3)}s`}</td></tr>`;}).join('')+'</tbody></table>';el('result').append(table);}
  if(trialNotice){const note=document.createElement('p');note.className='trial-storage';note.textContent=trialNotice;el('result').append(note);}
 }
-function updateUI(){updateTechniqueUI();loadoutView?.refresh();updatePracticeUI();eliminationView.render(eliminationSelected?elimination?.snapshot()??null:null,mode);cupView.render(cupSelected?cup?.snapshot()??null:null,mode);trickView.render(trickScore.snapshot(),{mode,raceMode,best:trickBest});
+function updateUI(){checkpointAssist.update(mode==='racing'&&driving.checkpointMissed&&driving.recoveryFlash<=0&&driving.recoverySeconds===0);updateTechniqueUI();loadoutView?.refresh();updatePracticeUI();eliminationView.render(eliminationSelected?elimination?.snapshot()??null:null,mode);cupView.render(cupSelected?cup?.snapshot()??null:null,mode);trickView.render(trickScore.snapshot(),{mode,raceMode,best:trickBest});
  const sorted=eliminationSelected&&elimination?elimination.snapshot().order.map(id=>racers.find(r=>r.key===id)!):[...racers].sort((a,b)=>b.t-a.t);if(mode!=='finished')rank=raceMode==='time-trial'?1:sorted.indexOf(player)+1;
  (el('pause') as HTMLButtonElement).disabled=mode==='ready'||mode==='finished';el('position').textContent=String(rank);el('ordinal').textContent=['st','nd','rd','th','th','th'][rank-1];
  el('lap').textContent=String(driving.lap).padStart(2,'0');el('timer').textContent=formatTime(raceTime);el('speed').textContent=String(Math.round(Math.abs(player.speed)*3.1)).padStart(3,'0');el('coins').textContent=String(coins).padStart(2,'0');
@@ -625,6 +627,9 @@ function mapPoint(t:number){return mapWorld(world.sample(t).position);}
 function drawMap(){
  ctx.clearRect(0,0,440,360);ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();mapPoints.forEach((_,i)=>{const p=mapPoint(i/180);if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});ctx.strokeStyle='#21494345';ctx.lineWidth=19;ctx.stroke();ctx.strokeStyle='#fffdf3dc';ctx.lineWidth=10;ctx.stroke();
  for(const route of world.shortcuts){ctx.beginPath();route.points.forEach((point,i)=>{const p=mapWorld(point);if(!i)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y);});ctx.strokeStyle=route.id==='garden'?'#1bbd9a':'#fdbd3f';ctx.lineWidth=6;ctx.stroke();}
+ const missed=mode==='racing'&&driving.checkpointMissed;
+ el('minimap').setAttribute('aria-label',missed?'赛道小地图：橙色圆圈为待补过检查点，红点为你':'赛道小地图');
+ if(missed){const gate=mapPoint(driving.nextGate/8);ctx.beginPath();ctx.arc(gate.x,gate.y,18,0,Math.PI*2);ctx.fillStyle='#fff6dd';ctx.fill();ctx.strokeStyle='#e99517';ctx.lineWidth=6;ctx.stroke();ctx.fillStyle='#704009';ctx.font='bold 18px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('!',gate.x,gate.y);}
  const start=mapPoint(0);ctx.fillStyle='#183b3c';ctx.fillRect(start.x-5,start.y-7,10,14);
  if(eliminationSelected&&elimination){const order=elimination.snapshot().order;order.slice(-2).forEach((id,i)=>{const r=racers.find(r=>r.key===id)!;const p=mapPoint(r.t);ctx.beginPath();ctx.arc(p.x,p.y,12,0,Math.PI*2);ctx.strokeStyle=i===1?'#db4533':'#f0a822';ctx.lineWidth=4;ctx.stroke();});}
  racers.filter(r=>r!==player&&raceMode==='grand-prix'&&activeRacer(r)).forEach(r=>{const p=mapPoint(r.t);ctx.fillStyle='#'+r.color.toString(16).padStart(6,'0');ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fffdf3';ctx.lineWidth=2;ctx.stroke();});if(ghostView.mesh?.visible){const g=mapWorld(ghostView.mesh.position);ctx.beginPath();ctx.arc(g.x,g.y,7,0,Math.PI*2);ctx.fillStyle='#55cee5';ctx.fill();}const p=mapWorld(driving.position);ctx.beginPath();ctx.arc(p.x,p.y,9,0,Math.PI*2);ctx.fillStyle='#f24d3c';ctx.fill();ctx.strokeStyle='#fffdf3';ctx.lineWidth=4;ctx.stroke();
@@ -709,8 +714,15 @@ const audioSettings=document.createElement('details');audioSettings.className='a
 el('result').after(audioSettings);
 for(const kind of ['music','effects'] as const){const slider=el(`${kind}-volume`) as HTMLInputElement;slider.addEventListener('input',()=>{audio.setMix(kind,Number(slider.value)/100);el(`${kind}-level`).textContent=`${slider.value}%`;});slider.addEventListener('keydown',e=>{if(e.code!=='Escape')e.stopPropagation();});}
 el('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(app.requestFullscreen)await app.requestFullscreen();else toast('当前浏览器暂不支持全屏');}catch{toast('当前浏览器暂不支持全屏');}});
-window.addEventListener('keydown',e=>{if(loadoutView?.isOpen()||progression?.isOpen()||cloud?.isOpen())return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Backspace'].includes(e.code))e.preventDefault();if(e.repeat)return;if(e.code==='Enter'&&mode==='ready'){start();return;}if(e.code==='Escape'||e.code==='KeyP'){showPause();return;}if((e.code==='KeyE'||e.code==='KeyQ')&&mode==='racing'){keys.add(e.code);pressItem();return;}if(e.code==='Backspace'&&mode==='racing'){breakTricks('救援中断');challengeMetrics.rescues++;playerRamp().reset();drafts.get(player.key)!.reset();driving.recover();coins=Math.max(0,coins-3);toast('已回到赛道 · 损失 3 枚金币');return;}keys.add(e.code);});
+window.addEventListener('keydown',e=>{if(loadoutView?.isOpen()||progression?.isOpen()||cloud?.isOpen())return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','Backspace'].includes(e.code))e.preventDefault();if(e.repeat)return;if(e.code==='Enter'&&mode==='ready'){start();return;}if(e.code==='Escape'||e.code==='KeyP'){showPause();return;}if((e.code==='KeyE'||e.code==='KeyQ')&&mode==='racing'){keys.add(e.code);pressItem();return;}if(e.code==='Backspace'&&mode==='racing'){recoverPlayer();return;}keys.add(e.code);});
 window.addEventListener('keyup',e=>{keys.delete(e.code);if((e.code==='KeyE'||e.code==='KeyQ')&&!readInput().item)releaseItem();});
+function recoverPlayer(){
+ if(mode!=='racing'||driving.recoveryFlash>0)return;
+ const missed=driving.checkpointMissed,cost=Math.min(3,coins);
+ clearInputs();breakTricks('救援中断');challengeMetrics.rescues++;playerRamp().reset();drafts.get(player.key)!.reset();driving.recover();coins-=cost;
+ syncDriving();updateModels(0);updateCamera(1,true);updateUI();
+ toast(`${missed?'已回到检查点前 · 向前加速继续':'已回到赛道'}${cost?` · 扣 ${cost} 金币`:''}`);
+}
 function clearInputs(){for(const motion of rampMotions.values())motion.cancelInput();cancelItemGesture();keys.clear();pointerKeys.clear();document.querySelectorAll('.touch-button').forEach(b=>b.classList.remove('pressed'));}
 window.addEventListener('blur',()=>{clearInputs();if(mode==='racing'||mode==='countdown')showPause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearInputs();if(mode==='racing'||mode==='countdown')showPause();}});

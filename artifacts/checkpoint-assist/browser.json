@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": [
+    "missed checkpoint shows explicit help and map target, keeps timer running, and never auto-teleports",
+    "click returns 8m before missed gate, charges once and actual throttle must cross it to restore scoring",
+    "Backspace shares recovery and repeated keydown does not double-charge",
+    "portrait/landscape touch recovery stays visible, preserves steering controls and handles fewer than 3 coins",
+    "standard gamepad Select recovers once even when held beyond protection",
+    "pause blocks recovery and home clears the prompt"
+  ],
+  "errors": []
+}
