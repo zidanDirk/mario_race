@@ -1,0 +1,138 @@
+{
+  "passed": true,
+  "scope": "Mushroom finish fixture then castle three complete laps with keyboard steering and item use; no castle progress/time/finish injections",
+  "time": 63.41666666666435,
+  "laps": [
+    1,
+    2,
+    3
+  ],
+  "rescues": 0,
+  "maxCalls": 308,
+  "maxTriangles": 373276,
+  "aiSurfaces": [
+    "dry",
+    "wet",
+    "belt"
+  ],
+  "tactics": {
+    "bombs": 1,
+    "explosions": 2,
+    "bombHits": 0,
+    "stars": 0,
+    "starHits": 2,
+    "aiBombs": 1,
+    "aiStars": 1,
+    "wetSeconds": 5.166666666666654,
+    "beltSeconds": 2.716666666666662
+  },
+  "interactions": {
+    "railHits": 0,
+    "propHits": 0,
+    "kartHits": 36,
+    "boxes": 9,
+    "itemAwards": 9,
+    "hits": 1,
+    "shellBounces": 23
+  },
+  "cup": {
+    "stageIndex": 1,
+    "complete": true,
+    "awaitingNext": false,
+    "playerId": "mario",
+    "difficulty": "standard",
+    "rounds": [
+      {
+        "trackId": "mushroom",
+        "order": [
+          "mario",
+          "luigi",
+          "peach",
+          "yoshi",
+          "toad",
+          "wario"
+        ]
+      },
+      {
+        "trackId": "castle",
+        "order": [
+          "mario",
+          "yoshi",
+          "wario",
+          "peach",
+          "luigi",
+          "toad"
+        ]
+      }
+    ],
+    "standings": [
+      {
+        "id": "mario",
+        "name": "马里奥",
+        "places": [
+          1,
+          1
+        ],
+        "points": 30,
+        "wins": 2,
+        "rank": 1
+      },
+      {
+        "id": "yoshi",
+        "name": "耀西",
+        "places": [
+          4,
+          2
+        ],
+        "points": 20,
+        "wins": 0,
+        "rank": 2
+      },
+      {
+        "id": "peach",
+        "name": "碧姬",
+        "places": [
+          3,
+          4
+        ],
+        "points": 18,
+        "wins": 0,
+        "rank": 3
+      },
+      {
+        "id": "luigi",
+        "name": "路易吉",
+        "places": [
+          2,
+          5
+        ],
+        "points": 18,
+        "wins": 0,
+        "rank": 4
+      },
+      {
+        "id": "wario",
+        "name": "瓦力欧",
+        "places": [
+          6,
+          3
+        ],
+        "points": 14,
+        "wins": 0,
+        "rank": 5
+      },
+      {
+        "id": "toad",
+        "name": "奇诺比奥",
+        "places": [
+          5,
+          6
+        ],
+        "points": 10,
+        "wins": 0,
+        "rank": 6
+      }
+    ]
+  },
+  "errors": []
+}

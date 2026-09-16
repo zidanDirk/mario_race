@@ -1,0 +1,20 @@
+
+> mushroom-grand-prix@1.0.0 build
+> tsc && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 61 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                             0.64 kB │ gzip:   0.48 kB
+dist/assets/castle-race-CGRtyABe.mp3    1,012.37 kB
+dist/assets/mushroom-race-DQ4hv4jK.mp3  1,068.53 kB
+dist/assets/index-CbKPclt7.css             66.04 kB │ gzip:  14.49 kB
+dist/assets/index-Zwag0dpW.js             765.62 kB │ gzip: 226.16 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 774ms

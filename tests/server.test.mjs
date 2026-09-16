@@ -377,11 +377,11 @@ test('legacy SQLite schema gains mode without discarding users, sessions or scor
 
 test('combat difficulty is bound to tickets, validated on retries and never changes time trials', async t => {
   const f=await fixture(t),c=f.client();await login(c);
-  const start=data=>c.request('/api/races',{method:'POST',data:{character:'mario',rulesVersion:5,...data}});
+  const start=data=>c.request('/api/races',{method:'POST',data:{character:'mario',rulesVersion:rulesVersion(data.mode),...data}});
   for (const difficulty of ['easy','',null,1,{}]) assert.equal((await start({difficulty})).status,400);
   assert.equal((await start({mode:'grand-prix',rulesVersion:2})).status,409);
   assert.equal((await start({mode:'time-trial',rulesVersion:2})).status,409);
-  assert.equal((await start({mode:'time-trial',rulesVersion:4,difficulty:'casual'})).status,400);
+  assert.equal((await start({mode:'time-trial',rulesVersion:rulesVersion('time-trial'),difficulty:'casual'})).status,400);
   const id=await beginRace(c,'mario','grand-prix','casual');f.advance(60000);
   assert.equal(f.db.prepare('SELECT difficulty FROM races WHERE id=?').get(id).difficulty,'casual');
   for (const difficulty of ['standard','unknown',null]) assert.equal((await finishRace(c,id,score(50000,{difficulty}))).status,400);
@@ -394,7 +394,7 @@ test('combat difficulty is bound to tickets, validated on retries and never chan
   const tt=await beginRace(c,'mario','time-trial');f.advance(60000);assert.equal((await finishRace(c,tt)).status,200);
   await f.restart();
   const board=(await c.request('/api/leaderboard?mode=time-trial')).json;
-  assert.equal(board.rulesVersion,4);assert.equal(board.entries[0].bestTimeMs,50000);
-  assert.equal((await c.request('/api/leaderboard')).json.rulesVersion,5);
+  assert.equal(board.rulesVersion,rulesVersion('time-trial'));assert.equal(board.entries[0].bestTimeMs,50000);
+  assert.equal((await c.request('/api/leaderboard')).json.rulesVersion,rulesVersion('grand-prix'));
   assert.equal(f.db.prepare('SELECT COUNT(*) n FROM races WHERE finished_at IS NOT NULL').get().n,2);
 });

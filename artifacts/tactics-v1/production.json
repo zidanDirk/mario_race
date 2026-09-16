@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "checks": [
+    "production build has no QA hooks",
+    "signed-in GP binds speed/rules6; TT binds drift/rules5",
+    "20 seconds of production practice writes no local or cloud results",
+    "HTTP finish fixture preserves bound loadout and rendered leaderboard identifies it"
+  ],
+  "starts": [
+    {
+      "character": "mario",
+      "rulesVersion": 6,
+      "mode": "grand-prix",
+      "difficulty": "standard",
+      "loadout": "speed"
+    },
+    {
+      "character": "mario",
+      "rulesVersion": 5,
+      "mode": "time-trial",
+      "difficulty": "standard",
+      "loadout": "drift"
+    }
+  ],
+  "errors": []
+}

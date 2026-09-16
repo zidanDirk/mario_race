@@ -6,7 +6,7 @@ assert.equal(g.press(shell),'wait');assert.equal(g.step(.1),false);assert.equal(
 g.press(shell);assert.equal(g.step(.23),true);assert.equal(g.step(1),false);assert.equal(g.release(),shell);checks.push('long press attaches once then releases');
 g.press(shell);g.step(.23);g.breakHold();assert.equal(g.press(slot('red-shell')),'none');assert.equal(g.release(),null);checks.push('block consumes held slot without auto-firing reserve while still held');
 g.press(shell);g.step(.3);g.cancel();assert.equal(g.release(),null);checks.push('pause, loss of focus or pointer cancellation never fires a stored item');
-for(const s of [slot('mushroom'),slot('triple-mushroom'),slot('super-horn'),{...slot(null),pending:'banana'},null]){assert.equal(g.press(s),'use');assert.equal(g.release(),null);}checks.push('single/triple mushroom, horn and roulette act on press without a second action on release');
+for(const s of [slot('mushroom'),slot('triple-mushroom'),slot('super-horn'),slot('bomb'),slot('star'),{...slot(null),pending:'banana'},null]){assert.equal(g.press(s),'use');assert.equal(g.release(),null);}checks.push('single/triple mushroom, horn, bomb, star and roulette act on press without a second action on release');
 assert.equal(segmentHitTime({x:0,z:0},{x:10,z:0},{x:5,z:0},1),.4);assert.equal(segmentHitTime({x:0,z:0},{x:10,z:0},{x:5,z:4},1),null);assert.equal(segmentHitTime({x:0,z:0},{x:0,z:0},{x:0,z:0},1),0);checks.push('earliest hit orders interception before kart contact, including stationary overlap');
 const triple=slot('triple-mushroom');triple.charges=3;
 assert.equal(g.press(triple),'use');assert.equal(g.press(triple),'none');assert.equal(g.step(1),false);assert.equal(g.release(),null);

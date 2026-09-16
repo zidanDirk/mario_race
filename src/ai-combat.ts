@@ -1,8 +1,10 @@
 import { ItemInventory, isBoostItem, type Item, type ItemSlot } from './items.ts';
+import { BOMB_RADIUS } from './tactical-combat.ts';
+export { BOMB_RADIUS, BOMB_FUSE, STAR_DURATION } from './tactical-combat.ts';
 
 export type Difficulty = 'casual' | 'standard';
 export type CombatRacer = {
-  id: string; t: number; lane: number; speed: number; stun: number; immune: number; finished: boolean;
+  id: string; t: number; lane: number; speed: number; stun: number; immune: number; finished: boolean; starred?: boolean;
 };
 export type AiUse = { racerId: string; item: Item; targetId: string | null; rear: boolean };
 export type CombatContext = {
@@ -43,9 +45,9 @@ export class AiCombat {
     return this.brains.get(id)!.inventory;
   }
 
-  collect(id: string, rank: number, random: () => number, time: number): boolean {
+  collect(id: string, rank: number, random: () => number, time: number, gap = 0): boolean {
     if (!Number.isFinite(time) || time < 0) return false;
-    if (!this.inventory(id).acquire(rank, random)) return false;
+    if (!this.inventory(id).acquire(rank, random, { time, gap })) return false;
     this.stats.collected++;
     return true;
   }
@@ -74,11 +76,31 @@ export class AiCombat {
         .filter(candidate => candidate.distance > .01).sort((a, b) => a.distance - b.distance)[0];
       let target: CombatRacer | null = null;
       let rear = false;
+      let splashPlayer = false;
       if (isBoostItem(item)) {
         // A trailing kart can catch up, but a stationary/stunned kart never overwrites its hit state.
         const chasing = other.some(candidate => candidate.t > racer.t &&
           (candidate.t - racer.t) * trackLength >= 8 && (candidate.t - racer.t) * trackLength <= 180);
         if (!chasing) continue;
+      } else if (item === 'star') {
+        if (racer.starred) continue;
+        const chasing = other.some(candidate => candidate.t > racer.t && (candidate.t - racer.t) * trackLength <= 180);
+        if (!chasing && !context.hornThreatIds?.includes(id)) continue;
+      } else if (item === 'bomb') {
+        const behind = other.map(candidate => ({ target: candidate, distance: (racer.t - candidate.t) * trackLength }))
+          .filter(candidate => candidate.distance >= 18 && candidate.distance <= 55 && Math.abs(candidate.target.lane - racer.lane) <= 3.5)
+          .sort((a, b) => a.distance - b.distance)[0];
+        if (ahead && ahead.distance >= 22 && ahead.distance <= 65 && Math.abs(ahead.target.lane - racer.lane) <= 4.5) target = ahead.target;
+        else if (behind) { target = behind.target; rear = true; }
+        else continue;
+        // Reserve the shared player budget for a possible splash victim, even when
+        // aiming at another AI. World geometry and detonation protection are checked by the caller.
+        const player = other.find(candidate => candidate.id === playerId);
+        if (player) {
+          const progress = Math.abs(player.t - racer.t) % 1;
+          splashPlayer = Math.hypot(Math.min(progress, 1 - progress) * trackLength, player.lane - racer.lane) <= 65 + BOMB_RADIUS;
+          if (splashPlayer && (context.playerProtected || player.immune > 0 || player.starred || player.stun > 0 || time < this.lastPlayerAttack + settings.playerGap)) continue;
+        }
       } else if (item === 'super-horn') {
         // Route/lane proximity is a conservative broad phase; canFire checks world distance.
         // Include physically adjacent lapped racers, and reserve the player budget for any
@@ -88,8 +110,8 @@ export class AiCombat {
           return { target: candidate, distance: Math.hypot(Math.min(progress, 1 - progress) * trackLength, candidate.lane - racer.lane) };
         }).filter(candidate => candidate.distance <= HORN_RADIUS).sort((a, b) => a.distance - b.distance);
         const nearbyPlayer = near.find(candidate => candidate.target.id === playerId)?.target;
-        if (nearbyPlayer && (context.playerProtected || nearbyPlayer.immune > 0 || nearbyPlayer.stun > 0 || time < this.lastPlayerAttack + settings.playerGap)) continue;
-        target = nearbyPlayer ?? near.find(candidate => candidate.target.immune <= 0 && candidate.target.stun <= 0)?.target ?? null;
+        if (nearbyPlayer && (context.playerProtected || nearbyPlayer.immune > 0 || nearbyPlayer.starred || nearbyPlayer.stun > 0 || time < this.lastPlayerAttack + settings.playerGap)) continue;
+        target = nearbyPlayer ?? near.find(candidate => candidate.target.immune <= 0 && !candidate.target.starred && candidate.target.stun <= 0)?.target ?? null;
         if (!target && !context.hornThreatIds?.includes(id)) continue;
       } else if (item === 'red-shell') {
         if (!ahead || ahead.distance < 28 || ahead.distance > 95) continue;
@@ -104,7 +126,7 @@ export class AiCombat {
         target = behind.target;
         rear = true;
       }
-      if (target && (target.immune > 0 || target.stun > 0)) continue;
+      if (target && (target.immune > 0 || target.starred || target.stun > 0)) continue;
       if (target?.id === playerId && (context.playerProtected || time < this.lastPlayerAttack + settings.playerGap ||
           (item === 'red-shell' && playerRedThreat))) continue;
       const action: AiUse = { racerId: id, item, targetId: target?.id ?? null, rear };
@@ -115,7 +137,7 @@ export class AiCombat {
       brain.lastUse = time;
       if (brain.inventory.slots[0] !== usedSlot) brain.visibleAt = null;
       this.stats.used++;
-      if (target?.id === playerId) {
+      if (target?.id === playerId || splashPlayer) {
         this.lastPlayerAttack = time;
         this.stats.playerAttacks++;
         if (item === 'red-shell') playerRedThreat = true;

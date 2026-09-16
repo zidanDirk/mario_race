@@ -77,7 +77,7 @@ test('new tickets default to light, allow every unlocked configuration, and reje
       assert.equal(res.json.loadout, loadout ?? 'light');
       const ticket = f.db.prepare('SELECT loadout,rules_version FROM races WHERE id=?').get(res.json.raceId);
       assert.equal(ticket.loadout, loadout ?? 'light');
-      assert.equal(ticket.rules_version, mode === 'grand-prix' ? 5 : 4);
+      assert.equal(ticket.rules_version, mode === 'grand-prix' ? 6 : 5);
     }
   }
 });
@@ -102,7 +102,7 @@ test('loadout is bound before finish and immutable on retries; omitted finish se
 test('new GP and trial versions isolate old scores and reject stale clients and finished-ticket retries', async t => {
   const f = await fixture(t), cookie = await f.login('规则测试');
   for (const mode of ['grand-prix', 'time-trial']) {
-    const oldVersion = mode === 'grand-prix' ? 4 : 3;
+    const oldVersion = mode === 'grand-prix' ? 5 : 4;
     assert.equal((await f.start(cookie, 'light', mode, {rulesVersion: oldVersion})).status, 409);
     const {json: {raceId}} = await f.start(cookie, 'light', mode);
     f.advance(55_000);
@@ -151,10 +151,10 @@ test('all configurations share each mode leaderboard, fastest loadout wins per u
   assert.deepEqual(new Set(before.map(row => row.loadout)), new Set(LOADOUTS));
 });
 
-test('technique rules reject previous-version unfinished tickets without awarding growth; current finishes count once', async t => {
-  const f = await fixture(t), cookie = await f.login('技巧升级测试');
+test('tactical rules reject previous-version unfinished tickets without awarding growth; current finishes count once', async t => {
+  const f = await fixture(t), cookie = await f.login('机关升级测试');
   const stale = [];
-  for (const [mode, previous, current] of [['grand-prix', 4, 5], ['time-trial', 3, 4]]) {
+  for (const [mode, previous, current] of [['grand-prix', 5, 6], ['time-trial', 4, 5]]) {
     assert.equal(rulesVersion(mode), current);
     const rejected = await f.start(cookie, 'speed', mode, {rulesVersion: previous});
     assert.equal(rejected.status, 409);
@@ -174,7 +174,7 @@ test('technique rules reject previous-version unfinished tickets without awardin
   }
   assert.deepEqual(f.db.prepare('SELECT * FROM races ORDER BY id').all(), before);
   assert.deepEqual((await f.request('/api/progression', undefined, cookie)).json, growthBefore);
-  for (const [mode, current] of [['grand-prix', 5], ['time-trial', 4]]) {
+  for (const [mode, current] of [['grand-prix', 6], ['time-trial', 5]]) {
     const started = await f.start(cookie, 'drift', mode);
     assert.equal(started.status, 201);
     f.advance(60_000);

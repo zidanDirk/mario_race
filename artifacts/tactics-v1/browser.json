@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "checks": [
+    "parked kart is carried forward/backward by actual belts; central road stays still",
+    "real steering traverses wet lane with reduced grip and no unexpected rescue",
+    "real pause freezes belt phase, bomb fuse and star duration together",
+    "front throw consumes one slot, preserves reserve and explodes once after a visible fuse",
+    "rear-view plus item places bomb behind using the same item controls",
+    "actual solid guardrail blocks blast damage",
+    "super horn safely clears nearby bomb without triggering its blast",
+    "star ignores bomb, hits each contacted rival once, and damage resumes after expiration",
+    "home clears tactical state; castle practice retries its track, writes no results and restores garage",
+    "touch item use works in portrait/landscape with no horizontal overflow",
+    "standard gamepad shoulder uses bomb/star once per press and preserves reserve during long hold"
+  ],
+  "belt": [
+    {
+      "lane": 5,
+      "meters": 5.679049319877665
+    },
+    {
+      "lane": -5,
+      "meters": -5.396772842882692
+    },
+    {
+      "lane": 0,
+      "meters": 0
+    }
+  ],
+  "errors": []
+}

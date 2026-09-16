@@ -13,7 +13,7 @@ try{
   assert.match(await page.locator('#dialog-title').textContent(),/第 6 名/);assert.match(await page.locator('.elimination-result-metrics').textContent(),/00:30.0/);
   assert.equal(starts.length,1);assert.deepEqual(finishes,[]);assert.equal(app.db.prepare('SELECT COUNT(*) n FROM races').get().n,1);
   assert.equal(app.db.prepare('SELECT COUNT(*) n FROM races WHERE finished_at IS NOT NULL').get().n,0);
-  const record=await page.evaluate(()=>JSON.parse(localStorage.getItem('mushroom-elimination-v3-light-standard')));assert.equal(record.last.place,6);assert.equal(record.last.survival,30);
+  const record=await page.evaluate(()=>JSON.parse(localStorage.getItem('mushroom-elimination-v4-light-standard')));assert.equal(record.last.place,6);assert.equal(record.last.survival,30);
   await page.screenshot({path:'artifacts/elimination-v1/production-loss.png'});await page.locator('#resume').click();await page.locator('#elimination-hud').waitFor({state:'visible'});assert.equal(await page.locator('.elimination-active-count').textContent(),'6 人存活');
   assert.deepEqual(errors,[]);const report={passed:true,checks:['production ordinary URL has no QA hooks','signed-in ordinary GP creates a ticket; elimination runs30real seconds without a ticket, finish upload or cloud result','idle player actually loses at30s, saves isolated local result and retries with all six drivers'],record,errors};
   await writeFile('artifacts/elimination-v1/production.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

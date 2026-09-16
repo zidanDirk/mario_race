@@ -35,6 +35,11 @@ import {buildRampVisuals,buildRampColliders} from './ramp-visuals';
 import {createTechniqueEffects} from './technique-effects';
 import './techniques.css';
 import {mountCheckpointAssist} from './checkpoint-assist';
+import {surfaceAt,surfaceLane,DRY_SURFACE,beltPhase} from './surfaces';
+import {buildSurfaceVisuals} from './surface-visuals';
+import {BombMotion,BOMB_RADIUS,BOMB_FUSE,STAR_DURATION,blastAffects} from './tactical-combat';
+import {tacticalItem,bombWarning,updateBombWarning,createTacticalEffects} from './tactical-effects';
+import './tactics.css';
 import './audio.css';
 import { moveCircle, segmentDistance, sweepCircle } from './collision';
 
@@ -79,7 +84,7 @@ const sun=new THREE.DirectionalLight('#fff3d7',3.2);
 sun.position.set(-80,130,60);sun.castShadow=true;
 sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-60;sun.shadow.camera.right=60;sun.shadow.camera.top=60;sun.shadow.camera.bottom=-60;sun.shadow.camera.near=1;sun.shadow.camera.far=300;sun.shadow.bias=-.0005;sun.shadow.normalBias=.08;scene.add(sun,sun.target);
 const camera=new THREE.PerspectiveCamera(53,innerWidth/innerHeight,.2,700);
-function buildTrackScene(id:TrackId){const root=new THREE.Scene();root.name=`track-${id}`;const world=buildWorld(root,id);if(id==='mushroom'){buildRampVisuals(root,world,MUSHROOM_RAMPS);world.colliders.push(...buildRampColliders(world,MUSHROOM_RAMPS));}const hazards=createCourseHazards(world.shortcuts);hazards.forEach(h=>{if(h.collider)world.colliders.push(h.collider);});const visuals=buildCourseVisuals(root,world.shortcuts,hazards,world.colliders);const markers=buildSplitMarkers(root,world);scene.add(root);return {root,world,hazards,visuals,markers};}
+function buildTrackScene(id:TrackId){const root=new THREE.Scene();root.name=`track-${id}`;const world=buildWorld(root,id);if(id==='mushroom'){buildRampVisuals(root,world,MUSHROOM_RAMPS);world.colliders.push(...buildRampColliders(world,MUSHROOM_RAMPS));}const hazards=createCourseHazards(world.shortcuts);hazards.forEach(h=>{if(h.collider)world.colliders.push(h.collider);});const visuals=buildCourseVisuals(root,world.shortcuts,hazards,world.colliders);const markers=buildSplitMarkers(root,world);scene.add(root);const surfaces=id==='castle'?buildSurfaceVisuals(root,world):null;return {root,world,hazards,visuals,markers,surfaces};}
 const trackScenes=new Map<TrackId,ReturnType<typeof buildTrackScene>>();
 let activeTrack:TrackId='mushroom';const initialTrack=buildTrackScene(activeTrack);trackScenes.set(activeTrack,initialTrack);
 let world=initialTrack.world,courseHazards=initialTrack.hazards,courseVisuals=initialTrack.visuals,splitMarkers=initialTrack.markers;
@@ -96,6 +101,13 @@ const player=racers[0];
 const rampMotions=new Map(racers.map(r=>[r.key,new RampMotion()]));
 const drafts=new Map(racers.map(r=>[r.key,new Slipstream()]));
 const techniqueEffects=createTechniqueEffects(scene,racers.map(r=>r.key));
+const tacticalEffects=createTacticalEffects(scene,racers.map(r=>r.key));
+const stars=new Map<string,number>(),starVictims=new Map<string,Set<string>>();
+const starred=(r:Racer)=>(stars.get(r.key)??0)>0;
+const bombs:{owner:Racer;motion:BombMotion;mesh:THREE.Group;ring:ReturnType<typeof bombWarning>}[]=[];
+const tacticStats={bombs:0,explosions:0,bombHits:0,stars:0,starHits:0,aiBombs:0,aiStars:0,wetSeconds:0,beltSeconds:0};
+function clearBomb(index:number){const b=bombs[index];scene.remove(b.mesh,b.ring);b.ring.material.dispose();bombs.splice(index,1);}
+const tacticsHud=document.createElement('aside');tacticsHud.id='tactics-hud';tacticsHud.hidden=true;app.append(tacticsHud);
 const techniqueHud=document.createElement('aside');techniqueHud.className='technique-hud';techniqueHud.hidden=true;techniqueHud.innerHTML='<span></span><div class="technique-track"><div class="technique-fill"></div></div>';app.append(techniqueHud);
 const techniqueStats={drafts:0,jumps:0,horns:0,hornClears:0,aiDrafts:0,aiJumps:0,aiHorns:0};
 const checkpointAssist=mountCheckpointAssist(app,()=>{if(driving.checkpointMissed)recoverPlayer();});
@@ -106,6 +118,7 @@ type RaceMode='grand-prix'|'time-trial';
 let raceMode:RaceMode='grand-prix';
 let difficulty:Difficulty='standard';
 let selectedLoadout:LoadoutId=loadLoadout();
+let practiceTrack:TrackId='mushroom';
 let testDrive=false,practiceReturn:{raceMode:RaceMode;cup:boolean;elimination:boolean}|null=null;
 const practiceStats={peak:0,distance:0};
 let loadoutView:ReturnType<typeof mountLoadoutView>|undefined;
@@ -125,13 +138,13 @@ const aiBadges=new Map<string,{kind:Item;mesh:THREE.Group}>();
 const combatStats={blocks:0,aiHits:0,playerHits:0,warnings:0};
 const trickScore=new TrickScore(),nearPasses=new NearPassTracker();
 let trickBest:number|null=null,trickSafeUntil=0,trickActiveRoute:string|null=null,trickRouteEntry:string|null=null;
-function trickRecordKey(){return `${selectedLoadout}-handling1-techniques1-${eliminationSelected?'elimination':cupSelected?'cup-'+activeTrack:'mushroom'}-tricks-v1-${raceMode}-${raceMode==='time-trial'?'standard':difficulty}${new URLSearchParams(location.search).has('test')?'-qa':''}`;}
+function trickRecordKey(){return `${selectedLoadout}-handling1-techniques1-tactics1-${eliminationSelected?'elimination':cupSelected?'cup-'+activeTrack:'mushroom'}-tricks-v1-${raceMode}-${raceMode==='time-trial'?'standard':difficulty}${new URLSearchParams(location.search).has('test')?'-qa':''}`;}
 function trickValid(){return mode==='racing'&&raceTime>=trickSafeUntil&&driving.speed>=12&&!driving.offRoad&&!driving.wrongWay&&!driving.checkpointMissed&&driving.stun<=0&&driving.recoveryFlash<=0;}
 function awardTrick(kind:TrickKind,key?:string){if(!trickValid())return;const points=trickScore.award(kind,key);if(points)audio.tone(760+trickScore.snapshot().multiplier*90,.12);}
 function breakTricks(reason:string){trickScore.breakChain(reason);trickSafeUntil=raceTime+1.3;trickRouteEntry=null;}
 
 let threatWasVisible=false;
-const ghostKey=()=>DEFAULT_GHOST_KEY+'-handling1-techniques1-'+selectedLoadout+(new URLSearchParams(location.search).has('test')?'-qa':'');
+const ghostKey=()=>DEFAULT_GHOST_KEY+'-handling1-techniques1-tactics1-'+selectedLoadout+(new URLSearchParams(location.search).has('test')?'-qa':'');
 let personalGhost:GhostRun|null=null;try{personalGhost=loadGhost(localStorage,ghostKey());}catch{}
 let referenceGhost:GhostRun|null=null,recorder:GhostRecorder|null=null;
 let trialSplits:number[]=[];let ghostEnabled=true;let trialNotice='';
@@ -159,7 +172,7 @@ const padLocks=new Map<number,number>();
 const inventory=new ItemInventory();
 let cameraImpact=0;
 const interactionStats={railHits:0,propHits:0,kartHits:0,boxes:0,itemAwards:0,hits:0,shellBounces:0};
-const bestKey=()=>`mushroom-combat-standard-v5-${selectedLoadout}${new URLSearchParams(location.search).has('test')?'-qa':''}`;
+const bestKey=()=>`mushroom-combat-standard-v6-${selectedLoadout}${new URLSearchParams(location.search).has('test')?'-qa':''}`;
 let best:number|null=null;try{best=Number(localStorage.getItem(bestKey()))||null;}catch{}
 const formatTime=(s:number)=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}.${String(Math.floor((s%1)*1000)).padStart(3,'0')}`;
 
@@ -169,6 +182,7 @@ function toast(message:string){el('toast').textContent=message;el('toast').class
 function event(message:string,time=1.6){el('countdown').classList.add('small');el('countdown').textContent=message;eventTime=time;}
 function reset(){
  audio.reset(activeTrack);
+ while(bombs.length)clearBomb(bombs.length-1);stars.clear();starVictims.clear();tacticalEffects.reset();Object.keys(tacticStats).forEach(k=>tacticStats[k as keyof typeof tacticStats]=0);trackScenes.get(activeTrack)?.surfaces?.update(0);
  for(const motion of rampMotions.values())motion.reset();for(const draft of drafts.values())draft.reset();techniqueEffects.reset();Object.keys(techniqueStats).forEach(k=>techniqueStats[k as keyof typeof techniqueStats]=0);
  driving.lapLimit=eliminationSelected||testDrive?null:3;driving.handling=LOADOUTS[selectedLoadout].handling;practiceStats.peak=0;practiceStats.distance=0;
  elimination=null;
@@ -189,7 +203,7 @@ function reset(){
 function start(){
  loadoutView?.close();
  if(cupSelected){if(!cup||cup.complete){cup=new CupSeries(roster.map(r=>({id:r.key,name:r.name})),player.key,difficulty);cupTimes=[];}else if(cup.snapshot().awaitingNext)cup.retryRound();activateTrack(cup.stageIndex===0?'mushroom':'castle');}
- mode='countdown';reset();if(raceMode==='time-trial'&&!testDrive)recorder=new GhostRecorder(player.key);
+ if(testDrive)activateTrack(practiceTrack);mode='countdown';reset();if(raceMode==='time-trial'&&!testDrive)recorder=new GhostRecorder(player.key);
  if(!cupSelected&&!eliminationSelected&&!testDrive){progression?.startRace(raceMode);cloud?.startRace(player.key,raceMode,raceMode==='time-trial'?'standard':difficulty,selectedLoadout);}
  audio.unlock();app.classList.add('racing');el('countdown').textContent='3';audio.tone(440);updateUI();
 }
@@ -223,6 +237,7 @@ const bananaGeometries=Array.from({length:3},(_,i)=>{const a=i*Math.PI*2/3;retur
 const hornBell=new THREE.CylinderGeometry(.9,.3,1.3,14,1,true),hornHandle=new THREE.BoxGeometry(.35,.8,.35),hornMaterial=new THREE.MeshStandardMaterial({color:0xffbc35,metalness:.3,roughness:.4,side:THREE.DoubleSide});
 const badgeStem=new THREE.SphereGeometry(.4,10,6);
 function itemBadge(kind:Item){
+ if(kind==='bomb'||kind==='star')return tacticalItem(kind);
  if(kind==='super-horn'){const group=new THREE.Group(),bell=new THREE.Mesh(hornBell,hornMaterial),handle=new THREE.Mesh(hornHandle,shellMaterials.red);bell.rotation.x=Math.PI/2;handle.position.y=-.5;group.add(bell,handle);return group;}
  if(kind==='triple-mushroom'){const group=new THREE.Group();for(let i=0;i<3;i++){const m=itemBadge('mushroom');m.scale.setScalar(.64);m.position.set(Math.cos(i*2*Math.PI/3)*.7,0,Math.sin(i*2*Math.PI/3)*.7);group.add(m);}return group;}
  if(kind!=='mushroom')return shellMesh(kind);const group=new THREE.Group(),stem=new THREE.Mesh(badgeStem,shellMaterials.rim),cap=new THREE.Mesh(shellGeo,shellMaterials.red);stem.scale.y=1.3;cap.position.y=.4;group.add(stem,cap);return group;}
@@ -237,11 +252,66 @@ function canAiHorn(id:string,targetId:string|null){
  const target=racers.find(r=>r.key===targetId);
  return !!target&&hornAffects(owner,racerPosition(target),racerHeight(target))||projectiles.some(p=>p.life>0&&p.owner!==owner&&hornAffects(owner,p.position,p.position.y));
 }
+function activateStar(owner:Racer){
+ stars.set(owner.key,STAR_DURATION);starVictims.set(owner.key,new Set());owner.stun=owner.hitTime=0;
+ if(owner===player){driving.stun=0;tacticStats.stars++;toast('无敌星！5 秒提速 · 仍需转向避开护栏');audio.tone(660,.15);audio.tone(880,.2);audio.tone(1320,.3);}else tacticStats.aiStars++;
+}
+function starContact(owner:Racer,target:Racer){
+ if(!starred(owner)||starred(target)||target.immune>0||target.stun>0||target.finish!==null||starVictims.get(owner.key)?.has(target.key))return;
+ if(target===player&&(driving.recoveryFlash>0||raceTime<playerItemSafeUntil))return;
+ if(!clearLine(racerPosition(owner),racerPosition(target)))return;
+ starVictims.get(owner.key)?.add(target.key);damageRacer(target,'star',owner);tacticStats.starHits++;
+ if(target===player)playerItemSafeUntil=Math.max(playerItemSafeUntil,raceTime+(difficulty==='casual'?14:8));
+}
+function throwBomb(owner:Racer,rear:boolean){
+ const origin=racerPosition(owner),heading=racerHeading(owner)+(rear?Math.PI:0),delta=new THREE.Vector3(Math.sin(heading)*3.3,0,Math.cos(heading)*3.3);
+ const wall=sweepCircle(origin,delta,.8,world.colliders),position=origin.clone().addScaledVector(delta,wall?Math.max(0,wall.time-.01):1);
+ const motion=new BombMotion(position,heading,rear,owner.speed),mesh=tacticalItem('bomb'),ring=bombWarning();
+ if(wall){motion.velocity.x=motion.velocity.z=0;}
+ mesh.position.copy(motion.position);scene.add(mesh,ring);bombs.push({owner,motion,mesh,ring});updateBombWarning(ring,motion.position,0);
+ if(owner===player){tacticStats.bombs++;toast(rear?'炸弹向后放置 · 橙圈内将爆炸':'炸弹前抛 · 橙圈内将爆炸');audio.tone(310,.13);}else tacticStats.aiBombs++;
+}
+function explodeBomb(index:number){
+ const bomb=bombs[index];if(!bomb.motion.detonate())return;
+ const origin=bomb.motion.position;tacticStats.explosions++;tacticalEffects.explode(origin);burst(origin,0xffbf3e,35);
+ for(const r of racers){if(!activeRacer(r)||r.finish!==null||starred(r)||r.immune>0||r.stun>0||r===player&&(driving.recoveryFlash>0||raceTime<playerItemSafeUntil))continue;
+  const position=racerPosition(r).clone();position.y=racerHeight(r);if(blastAffects(origin,position,clearLine)){damageRacer(r,'bomb',bomb.owner);tacticStats.bombHits++;}
+ }
+ for(let i=projectiles.length-1;i>=0;i--)if(blastAffects(origin,projectiles[i].position,clearLine)){scene.remove(projectiles[i].mesh);projectiles.splice(i,1);}
+ if(origin.distanceTo(driving.position)<40){audio.tone(65,.25);audio.tone(125,.12);cameraImpact=Math.max(cameraImpact,.12);}
+ clearBomb(index);
+}
+function updateBombs(dt:number){
+ for(let i=bombs.length-1;i>=0;i--){const b=bombs[i],before=b.motion.position.clone();b.motion.step(dt,world.colliders);
+  b.mesh.position.copy(b.motion.position);b.mesh.rotation.y+=dt*2;updateBombWarning(b.ring,b.motion.position,b.motion.age);
+  const contact=b.motion.age>=.4&&racers.some(r=>activeRacer(r)&&r.finish===null&&!(r===b.owner&&b.motion.age<.8)&&Math.abs(racerHeight(r)-b.motion.position.y)<1.4&&segmentDistance(racerPosition(r),before,b.motion.position)<2&&clearLine(b.motion.position,racerPosition(r)));
+  if(b.motion.ready||contact)explodeBomb(i);
+ }
+}
+function avoidBombLane(r:Racer){
+ if(starred(r))return null;const p=racerPosition(r),road=world.sample(r.t);
+ const near=bombs.find(b=>{const delta=b.motion.position.clone().sub(p);return delta.length()<38&&delta.dot(road.tangent)>-5;});
+ if(!near)return null;const side=near.motion.position.clone().sub(world.sample(r.t).position).dot(road.normal);return side>=0?-5:5;
+}
+function updateTacticsUI(){
+ let label='';if(mode==='racing'){
+  const near=bombs.filter(b=>b.motion.position.distanceTo(driving.position)<27).sort((a,b)=>b.motion.age-a.motion.age)[0];
+  const star=stars.get(player.key)??0,local=((driving.routeT%1)+1)%1;
+  const surface=surfaceAt(activeTrack,driving.routeT,driving.lane,raceTime,world.trackLength);
+  if(near)label=star>0?'星星保护中 · 可突破炸弹区':`炸弹 ${Math.max(0,BOMB_FUSE-near.motion.age).toFixed(1)} 秒 · 离开橙圈`;
+  else if(star>0)label=`★ 星星 ${star.toFixed(1)} 秒 · 道具免疫，注意护栏`;
+  else if(activeTrack==='castle'&&local>.13&&local<.25)label=surface.kind==='wet'?'湿滑内线 · 松油门、小幅反打':'前方湿滑内线 · 干燥外线可绕行';
+  else if(activeTrack==='castle'&&local>.265&&local<.40){const phase=surfaceAt('castle',.34,5,raceTime,world.trackLength);label=phase.warning?`传送带 ${Math.ceil(phase.seconds)} 秒后换向 · 中间可绕行`:surface.kind==='belt'?`${surface.beltSpeed>0?'顺向带加速':'逆向带减速'} · 中间普通路面`:'观察箭头选顺向带 · 中间普通路面';}
+ }
+ tacticsHud.hidden=!label;app.classList.toggle('tactics-visible',!!label);if(tacticsHud.textContent!==label)tacticsHud.textContent=label;
+}
+
 function fireHorn(owner:Racer){
  const origin=racerPosition(owner);techniqueEffects.horn(origin);let cleared=0,hits=0;
+ for(let i=bombs.length-1;i>=0;i--)if(hornAffects(owner,bombs[i].motion.position,bombs[i].motion.position.y)){clearBomb(i);cleared++;}
  for(let i=projectiles.length-1;i>=0;i--){const p=projectiles[i];if(p.life>0&&hornAffects(owner,p.position,p.position.y)){scene.remove(p.mesh);projectiles.splice(i,1);cleared++;}}
- if(owner!==player&&heldItem&&hornAffects(owner,heldItem.mesh.position,heldItem.mesh.position.y)&&raceTime>=playerItemSafeUntil&&player.immune<=0&&driving.recoveryFlash<=0){inventory.consume();itemGesture.breakHold();detachHeld();}
- for(const r of racers){if(r===owner||!activeRacer(r)||r.finish!==null||r.immune>0||r===player&&owner!==player&&(raceTime<playerItemSafeUntil||driving.recoveryFlash>0))continue;if(hornAffects(owner,racerPosition(r),racerHeight(r))){damageRacer(r,'super-horn',owner);hits++;}}
+ if(owner!==player&&!starred(player)&&heldItem&&hornAffects(owner,heldItem.mesh.position,heldItem.mesh.position.y)&&raceTime>=playerItemSafeUntil&&player.immune<=0&&driving.recoveryFlash<=0){inventory.consume();itemGesture.breakHold();detachHeld();}
+ for(const r of racers){if(r===owner||!activeRacer(r)||starred(r)||r.finish!==null||r.immune>0||r===player&&owner!==player&&(raceTime<playerItemSafeUntil||driving.recoveryFlash>0))continue;if(hornAffects(owner,racerPosition(r),racerHeight(r))){damageRacer(r,'super-horn',owner);hits++;}}
  if(owner===player){techniqueStats.horns++;techniqueStats.hornClears+=cleared;toast(`超级喇叭！清除 ${cleared} 个道具 · 击退 ${hits} 辆车`);}else techniqueStats.aiHorns++;
  if(owner===player||origin.distanceTo(driving.position)<35){audio.tone(220,.22);audio.tone(330,.18);audio.tone(440,.12);}
 }
@@ -291,6 +361,8 @@ function fireItem(owner:Racer,item:Item,rear:boolean,target:Racer|null){
    return;
  }
  if(item==='super-horn'){fireHorn(owner);return;}
+ if(item==='star'){activateStar(owner);return;}
+ if(item==='bomb'){throwBomb(owner,rear);return;}
  const origin=racerPosition(owner),heading=racerHeading(owner)+(rear?Math.PI:0),mesh=shellMesh(item);
  const launch=new THREE.Vector3(Math.sin(heading)*3.3,0,Math.cos(heading)*3.3),obstruction=sweepCircle(origin,launch,.78,world.colliders);
  const position=origin.clone().addScaledVector(launch,obstruction?obstruction.time:1);position.y+=.35;
@@ -304,20 +376,20 @@ function fireItem(owner:Racer,item:Item,rear:boolean,target:Racer|null){
  if(owner===player){toast(item==='red-shell'?(rear?'红龟壳 · 向后直射':'红龟壳 · 追踪前方车手'):item==='green-shell'?'绿龟壳 · 直线发射':'香蕉 · 留在身后');audio.tone(280,.15);}
 }
 function damageRacer(r:Racer,kind:Item,owner?:Racer){
- if(r.immune>0||r.finish!==null||r===player&&driving.recoveryFlash>0)return;
+ if(starred(r)||r.immune>0||r.finish!==null||r===player&&driving.recoveryFlash>0)return;
  rampMotions.get(r.key)!.trick=false;rampMotions.get(r.key)!.cancelInput();drafts.get(r.key)!.reset();
  r.hitTime=kind==='banana'?.85:1.1;r.hitKind=kind;r.immune=r===player&&raceMode==='grand-prix'?(difficulty==='casual'?4.5:3):1.65;
  if(r===player){
    breakTricks(kind==='banana'?'打滑中断':'受击中断');
    if(heldItem){inventory.consume();detachHeld();}itemGesture.breakHold();
-   playerItemSafeUntil=raceTime+(difficulty==='casual'?6:4);driving.stun=1.25;driving.boost=0;driving.speed*=.15;driving.interruptDrift();const lost=Math.min(3,coins);coins-=lost;if(lost)burst(driving.position,0xffce35,lost*8);cameraImpact=.35;interactionStats.hits++;if(owner&&owner!==player)combatStats.playerHits++;toast(kind==='banana'?'踩到香蕉！失控打滑':kind==='super-horn'?'被超级喇叭击退！重新加速':'被龟壳击中！重新加速');
+   playerItemSafeUntil=raceTime+(difficulty==='casual'?6:4);driving.stun=1.25;driving.boost=0;driving.speed*=.15;driving.interruptDrift();const lost=Math.min(3,coins);coins-=lost;if(lost)burst(driving.position,0xffce35,lost*8);cameraImpact=.35;interactionStats.hits++;if(owner&&owner!==player)combatStats.playerHits++;toast(kind==='banana'?'踩到香蕉！失控打滑':kind==='super-horn'?'被超级喇叭击退！重新加速':kind==='bomb'?'被炸弹波及！重新加速':kind==='star'?'被星星赛车撞到！重新加速':'被龟壳击中！重新加速');
  }else{r.stun=1.4;r.speed*=.15;aiBoost.delete(r.key);if(owner===player)toast(`${r.name} 被击中！`);if(owner&&owner!==player)combatStats.aiHits++;}
  burst(racerPosition(r),0xffe276,22);if(r===player||owner===player)audio.tone(120,.2);
 }
 /** Test each actual travel segment, so a ricochet cannot hit through its skipped chord. */
 function projectileContact(p:Projectile,a:THREE.Vector3,b:THREE.Vector3){
  let at=Infinity,victim:Racer|null=null,blocked=false;
- if(heldItem&&itemGesture.slot===inventory.slots[0]&&p.owner!==player&&Math.abs(heldItem.mesh.position.y-a.y)<1.2){
+ if(!starred(player)&&heldItem&&itemGesture.slot===inventory.slots[0]&&p.owner!==player&&Math.abs(heldItem.mesh.position.y-a.y)<1.2){
    const t=segmentHitTime(a,b,heldItem.mesh.position,1.45);if(t!==null){at=t;blocked=true;}
  }
  for(const r of racers){
@@ -326,6 +398,7 @@ function projectileContact(p:Projectile,a:THREE.Vector3,b:THREE.Vector3){
  }
  if(at===Infinity)return false;
  p.position.copy(a).lerp(b,at);p.life=0;
+ if(victim&&starred(victim)){burst(p.position,0xffed72,10);return true;}
  if(blocked){inventory.consume();itemGesture.breakHold();detachHeld();combatStats.blocks++;burst(p.position,0x88eec8,20);audio.tone(960,.18);toast('防御成功！后挂道具抵挡了一次攻击');}
  else if(victim)damageRacer(victim,p.kind,p.owner);
  return true;
@@ -394,7 +467,7 @@ function step(dt:number){
  else toast('自己掌握方向 · 入弯按空格起跳漂移');}
  }
  if(mode==='racing'){
- const pendingTricks:{kind:TrickKind;key?:string}[]=[];trickScore.step(dt);raceTime+=dt;updateCourseHazards(courseHazards,raceTime);courseVisuals.update(raceTime);cameraImpact=Math.max(0,cameraImpact-dt*1.6);racers.forEach(r=>{r.hitTime=Math.max(0,r.hitTime-dt);r.immune=Math.max(0,r.immune-dt);});
+ const pendingTricks:{kind:TrickKind;key?:string}[]=[];trickScore.step(dt);raceTime+=dt;updateCourseHazards(courseHazards,raceTime);courseVisuals.update(raceTime);trackScenes.get(activeTrack)?.surfaces?.update(raceTime);for(const [id,left] of stars)stars.set(id,Math.max(0,left-dt));tacticalEffects.step(dt);cameraImpact=Math.max(0,cameraImpact-dt*1.6);racers.forEach(r=>{r.hitTime=Math.max(0,r.hitTime-dt);r.immune=Math.max(0,r.immune-dt);});
  const awards=inventory.step(dt);if(awards.length){interactionStats.itemAwards+=awards.length;audio.tone(1050,.18);toast('道具就绪 · 按 E / Q 使用');}
  if(inventory.rolling&&frame%7===0)audio.tone(520+(frame%4)*110,.045);
  collisionCooldown=Math.max(0,collisionCooldown-dt);
@@ -402,7 +475,9 @@ function step(dt:number){
  const ramp=playerRamp();const rampControl=ramp.activeRamp!==null||currentRamps().some(r=>{const d=rampDistance(driving.routeT,r,world.trackLength);return d>=-2&&d<=r.length+1&&Math.abs(driving.lane-r.lane)<=r.width/2;});
  if(rampControl){driving.interruptDrift();driving.hopHeight=driving.hopVelocity=0;}
  driving.rampPassId=ramp.activeRamp;
- driving.step(rampControl?{...input,hop:false}:input,coins,dt);
+ const surface=ramp.airborne||driving.hopHeight>.1?DRY_SURFACE:surfaceAt(activeTrack,driving.routeT,driving.lane,raceTime,world.trackLength);
+ if(surface.kind==='wet')tacticStats.wetSeconds+=dt;if(surface.kind==='belt')tacticStats.beltSeconds+=dt;
+ driving.step(rampControl?{...input,hop:false}:input,coins,dt,surface,starred(player));
  ramp.step({beforeT:beforeProgress,routeT:driving.routeT,lane:driving.lane,speed:driving.speed,hop:input.hop&&driving.stun<=0,valid:!driving.recovered,dt,trackLength:world.trackLength,ramps:driving.shortcutId?[]:currentRamps()});
  if(rampControl)driving.interruptDrift();
  driving.position.y=.14+ramp.height;
@@ -411,28 +486,29 @@ function step(dt:number){
  syncDriving();
  if(testDrive){if(driving.boost<=0&&driving.speed<=driving.handling.topSpeed+.01)practiceStats.peak=Math.max(practiceStats.peak,driving.speed);if(!driving.recovered)practiceStats.distance+=beforeDrive.distanceTo(driving.position);}
  if(driving.contact){const c=driving.contact;if(c.impact>12)breakTricks('重撞中断');interactionStats[c.kind==='rail'?'railHits':'propHits']++;burst(new THREE.Vector3(c.point.x,.8,c.point.z),0xffe8a1,18);cameraImpact=Math.min(.35,c.impact/180);audio.tone(95,.15);toast(c.kind==='rail'?'撞到护栏！调整方向重新加速':'撞到障碍！调整方向');}
- for(const hazard of courseHazards){if(!testDrive&&racerHeight(player)<1.5&&player.immune<=0&&courseContact(hazard,beforeDrive,driving.position)){damageRacer(player,'banana');courseStats.hits++;toast(hazard.kind==='vent'?'喷气烫到了！看预警灯，走右侧绕行':'撞到移动路障！观察空位再通过');}}
+ for(const hazard of courseHazards){if(!testDrive&&!starred(player)&&racerHeight(player)<1.5&&player.immune<=0&&courseContact(hazard,beforeDrive,driving.position)){damageRacer(player,'banana');courseStats.hits++;toast(hazard.kind==='vent'?'喷气烫到了！看预警灯，走右侧绕行':'撞到移动路障！观察空位再通过');}}
  if(driving.shortcutId!==trickActiveRoute){trickActiveRoute=driving.shortcutId;trickRouteEntry=null;}
  if(trickActiveRoute&&trickValid()){const route=world.shortcuts.find(r=>r.id===trickActiveRoute)!;if(projectShortcut(route,driving.position).u<=.2)trickRouteEntry=`${route.id}:${Math.floor(driving.routeT)}`;}
  if(driving.shortcutId&&driving.shortcutId!==lastCourseRoute){const route=world.shortcuts.find(r=>r.id===driving.shortcutId)!;toast(`${route.name} · 出口加速，注意机关！`);}lastCourseRoute=driving.shortcutId;
  for(const route of world.shortcuts){const p=route.sample(.86).position,key=`${route.id}:${Math.floor(driving.routeT)}`;if(!testDrive&&!courseRewards.has(key)&&driving.shortcutId===route.id&&!driving.wrongWay&&segmentDistance(p,beforeDrive,driving.position)<3.3){courseRewards.add(key);if(trickRouteEntry===key)pendingTricks.push({kind:'shortcut',key:`shortcut:${key}`});courseStats.clears++;challengeMetrics.shortcutClears++;driving.boost=Math.max(driving.boost,1.25);toast(`${route.name}通过 · 出口涡轮！`);audio.tone(950,.23);}}
  updateItemGesture(input.item,dt);
- if(driving.recovered){breakTricks('救援中断');challengeMetrics.rescues++;coins=Math.max(0,coins-3);toast('已救援回赛道 · 损失 3 枚金币');}
+ if(driving.recovered){stars.delete(player.key);breakTricks('救援中断');challengeMetrics.rescues++;coins=Math.max(0,coins-3);toast('已救援回赛道 · 损失 3 枚金币');}
  if(driving.releasedTurbo){if(driving.releasedTurbo>=2)pendingTricks.push({kind:driving.releasedTurbo===3?'purple':'orange'});if(driving.releasedTurbo>=2)challengeMetrics.orangeDrifts++;const names=['','迷你涡轮','超级迷你涡轮','极限迷你涡轮'];toast(`${names[driving.releasedTurbo]} · BOOST!`);audio.tone(650+driving.releasedTurbo*150,.2);}
  if(wasDrifting&&frame%3===0){const color=driving.driftStage===3?0xe174ff:driving.driftStage===2?0xffa038:0x4dafff;for(const side of [-1,1]){const p=driving.position.clone();p.x+=Math.cos(driving.heading)*side*1.35-Math.sin(driving.heading)*1.1;p.z-=Math.sin(driving.heading)*side*1.35+Math.cos(driving.heading)*1.1;burst(p,color,2);}}
  const lap=driving.lap;
  if(!testDrive&&!eliminationSelected&&lap>lastLap){lastLap=lap;event(lap===3?'最后一圈！':'第 2 圈 · 继续冲刺');audio.tone(900,.25);}
  recordTrial(beforeGate,beforeProgress,dt);
  let trickKartContact=false;
- racers.forEach((r,i)=>{if(i===0||raceMode==='time-trial'||!activeRacer(r))return;const beforeAi=world.sample(r.t,r.lane).position,beforeAiT=r.t;r.stun=Math.max(0,r.stun-dt);aiBoost.set(r.key,Math.max(0,(aiBoost.get(r.key)??0)-dt));const aiSpeed=r.stun>0?9:(aiBoost.get(r.key)??0)>0?56:34+i*.9+Math.floor(r.t)*.5+Math.sin(raceTime*.5+i)*1.5;r.speed=THREE.MathUtils.damp(r.speed,aiSpeed,1.3,dt);r.t+=r.speed*dt/world.trackLength;const targetLane=aiCombat.inventory(r.key).canCollect?boxLane({id:r.key,t:r.t,lane:r.lane,speed:r.speed,stun:r.stun,immune:r.immune,finished:r.finish!==null},world.pickups.filter(p=>p.kind==='item').map(p=>({t:p.t,lane:p.lane,available:p.cooldown<=0})),world.trackLength):null;const upcomingRamp=currentRamps().find(ramp=>{const d=rampDistance(r.t,ramp,world.trackLength);return d>=-30&&d<ramp.length+3;});const rampLane=upcomingRamp?(i%2===1?upcomingRamp.lane:-3.5):null;r.lane=THREE.MathUtils.clamp(THREE.MathUtils.damp(r.lane,rampLane??targetLane??Math.sin(r.t*22+i*2)*4.9,rampLane!==null?4:1.5,dt),-world.widthAt(r.t)+2,world.widthAt(r.t)-2);if(!eliminationSelected&&r.t>=3&&r.finish===null)r.finish=raceTime;
+ racers.forEach((r,i)=>{if(i===0||raceMode==='time-trial'||!activeRacer(r))return;const beforeAi=world.sample(r.t,r.lane).position,beforeAiT=r.t;r.stun=Math.max(0,r.stun-dt);aiBoost.set(r.key,Math.max(0,(aiBoost.get(r.key)??0)-dt));const aiSurface=surfaceAt(activeTrack,r.t,r.lane,raceTime,world.trackLength);const aiSpeed=r.stun>0?9:starred(r)?59:(aiBoost.get(r.key)??0)>0?56:34+i*.9+Math.floor(r.t)*.5+Math.sin(raceTime*.5+i)*1.5;r.speed=THREE.MathUtils.damp(r.speed,aiSpeed*(starred(r)?1:aiSurface.speedScale),1.3,dt);r.t+=(r.speed+aiSurface.beltSpeed)*dt/world.trackLength;const targetLane=aiCombat.inventory(r.key).canCollect?boxLane({id:r.key,t:r.t,lane:r.lane,speed:r.speed,stun:r.stun,immune:r.immune,finished:r.finish!==null},world.pickups.filter(p=>p.kind==='item').map(p=>({t:p.t,lane:p.lane,available:p.cooldown<=0})),world.trackLength):null;const upcomingRamp=currentRamps().find(ramp=>{const d=rampDistance(r.t,ramp,world.trackLength);return d>=-30&&d<ramp.length+3;});const rampLane=upcomingRamp?(i%2===1?upcomingRamp.lane:-3.5):null;const tacticalLane=activeTrack==='castle'?surfaceLane(r.t,raceTime,r.lane,i,starred(r)):null;const bombLane=avoidBombLane(r);r.lane=THREE.MathUtils.clamp(THREE.MathUtils.damp(r.lane,bombLane??tacticalLane??rampLane??targetLane??Math.sin(r.t*22+i*2)*4.9,(bombLane!==null?5:tacticalLane!==null||rampLane!==null?4:1.5)*aiSurface.grip,dt),-world.widthAt(r.t)+2,world.widthAt(r.t)-2);if(!eliminationSelected&&r.t>=3&&r.finish===null)r.finish=raceTime;
  const aiRamp=rampMotions.get(r.key)!;const wantsTrick=aiRamp.trickReady&&r.stun<=0;
  aiRamp.step({beforeT:beforeAiT,routeT:r.t,lane:r.lane,speed:r.speed,hop:wantsTrick,valid:true,dt,trackLength:world.trackLength,ramps:currentRamps()});
  if(aiRamp.trickLanded&&r.stun<=0){aiBoost.set(r.key,Math.max(aiBoost.get(r.key)??0,1.05));techniqueStats.aiJumps++;}
  const rp=racerPosition(r);
- if(r.stun<=0&&r.finish===null)for(const box of world.pickups){if(box.kind!=='item'||box.cooldown>0||Math.abs(racerHeight(r)-box.object.position.y)>2.2||!aiCombat.inventory(r.key).canCollect)continue;if(segmentDistance(box.object.position,beforeAi,rp)<2.85&&aiCombat.collect(r.key,1+racers.filter(other=>activeRacer(other)&&other.t>r.t).length,random,raceTime)){box.cooldown=3.5;box.object.visible=false;breakBox(box.object.position);}}
+ if(r.stun<=0&&r.finish===null)for(const box of world.pickups){if(box.kind!=='item'||box.cooldown>0||Math.abs(racerHeight(r)-box.object.position.y)>2.2||!aiCombat.inventory(r.key).canCollect)continue;if(segmentDistance(box.object.position,beforeAi,rp)<2.85&&aiCombat.collect(r.key,1+racers.filter(other=>activeRacer(other)&&other.t>r.t).length,random,raceTime,Math.max(0,...racers.filter(activeRacer).map(other=>(other.t-r.t)*world.trackLength)))){box.cooldown=3.5;box.object.visible=false;breakBox(box.object.position);}}
  const delta=driving.position.clone().sub(rp);delta.y=0;
  const distance=delta.length(),separation=3.5;
- if(distance<separation&&Math.abs(racerHeight(player)-racerHeight(r))<1.5){trickKartContact=true;
+ if(distance<separation&&Math.abs(racerHeight(player)-racerHeight(r))<1.5){
+ if(starred(player)||starred(r)){starContact(player,r);starContact(r,player);return;}trickKartContact=true;
    if(distance<.001)delta.copy(world.sample(r.t).normal);else delta.divideScalar(distance);
    const overlap=separation-distance;
    const pushed=driving.position.clone().addScaledVector(delta,overlap*.65+.01);
@@ -448,11 +524,11 @@ function step(dt:number){
  if(driving.recovered||Math.abs(racerHeight(player)-p.object.position.y)>2.2||segmentDistance(p.object.position,beforeDrive,driving.position)>(p.kind==='item'?2.85:2.25))return;
  p.cooldown=p.kind==='item'?3.5:7;p.object.visible=false;
  if(p.kind==='coin'){challengeMetrics.coinsCollected++;coins=Math.min(10,coins+1);audio.tone(1040,.09);burst(p.object.position,0xffd249,10);el('coins').animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:180});}
- else{interactionStats.boxes++;breakBox(p.object.position);const position=1+racers.filter(r=>r!==player&&activeRacer(r)&&r.t>player.t).length;const acquired=inventory.acquire(position,random);toast(acquired?'获得道具箱 · 正在抽取…':'道具栏已满 · 按 E / Q 使用');audio.tone(660,.12);updateUI();}
+ else{interactionStats.boxes++;breakBox(p.object.position);const position=1+racers.filter(r=>r!==player&&activeRacer(r)&&r.t>player.t).length;const acquired=inventory.acquire(position,random,{time:raceTime,gap:Math.max(0,...racers.filter(activeRacer).map(r=>(r.t-player.t)*world.trackLength))});toast(acquired?'获得道具箱 · 正在抽取…':'道具栏已满 · 按 E / Q 使用');audio.tone(660,.12);updateUI();}
  });
  world.boostPads.forEach((p,i)=>{if(testDrive||racerHeight(player)>1)return;const pos=world.sample(p.t,p.lane).position;if(Math.hypot(pos.x-driving.position.x,pos.z-driving.position.z)<3.8&&(padLocks.get(i)??-100)<raceTime-3){padLocks.set(i,raceTime);driving.boost=Math.max(driving.boost,1.4);toast('加速带 · 全速前进！');audio.tone(740,.2);}});
- if(raceMode==='grand-prix'){const actions=aiCombat.plan(dt,{time:raceTime,difficulty,playerId:player.key,trackLength:world.trackLength,racers:racers.filter(activeRacer).map(r=>({id:r.key,t:r.t,lane:r.lane,speed:r.speed,stun:r===player?driving.stun:r.stun,immune:r.immune,finished:r.finish!==null})),playerProtected:raceTime<playerItemSafeUntil||player.immune>0||driving.recoveryFlash>0,hornThreatIds:racers.filter(r=>r!==player&&projectiles.some(p=>p.life>0&&p.owner!==r&&hornAffects(r,p.position,p.position.y))).map(r=>r.key),playerRedThreat:projectiles.some(p=>p.kind==='red-shell'&&p.target===player),canFire:action=>{if(isBoostItem(action.item)||action.item==='banana')return true;if(action.item==='super-horn')return canAiHorn(action.racerId,action.targetId);const owner=racers.find(r=>r.key===action.racerId)!,target=racers.find(r=>r.key===action.targetId);if(!target)return false;const from=racerPosition(owner),to=racerPosition(target),dx=to.x-from.x,dz=to.z-from.z;if(Math.hypot(dx,dz)<(action.item==='red-shell'?24:16))return false;if(action.item==='red-shell')return true;const heading=racerHeading(owner);return dx*Math.sin(heading)+dz*Math.cos(heading)>0&&Math.abs(dx*Math.cos(heading)-dz*Math.sin(heading))<4&&!sweepCircle(from,{x:dx,z:dz},.78,world.colliders);}});for(const action of actions){const owner=racers.find(r=>r.key===action.racerId)!;fireItem(owner,action.item,action.rear,racers.find(r=>r.key===action.targetId)??null);}}
- updateDrafts(dt);updateProjectiles(dt);syncDriving();
+ if(raceMode==='grand-prix'){const actions=aiCombat.plan(dt,{time:raceTime,difficulty,playerId:player.key,trackLength:world.trackLength,racers:racers.filter(activeRacer).map(r=>({id:r.key,t:r.t,lane:r.lane,speed:r.speed,stun:r===player?driving.stun:r.stun,immune:r.immune,finished:r.finish!==null,starred:starred(r)})),playerProtected:starred(player)||raceTime<playerItemSafeUntil||player.immune>0||driving.recoveryFlash>0,hornThreatIds:racers.filter(r=>r!==player&&projectiles.some(p=>p.life>0&&p.owner!==r&&hornAffects(r,p.position,p.position.y))).map(r=>r.key),playerRedThreat:projectiles.some(p=>p.kind==='red-shell'&&p.target===player),canFire:action=>{if(isBoostItem(action.item)||action.item==='banana'||action.item==='star')return true;if(action.item==='bomb'){const owner=racers.find(r=>r.key===action.racerId)!,target=racers.find(r=>r.key===action.targetId);return !!target&&racerPosition(owner).distanceTo(racerPosition(target))<70&&clearLine(racerPosition(owner),racerPosition(target));}if(action.item==='super-horn')return canAiHorn(action.racerId,action.targetId);const owner=racers.find(r=>r.key===action.racerId)!,target=racers.find(r=>r.key===action.targetId);if(!target)return false;const from=racerPosition(owner),to=racerPosition(target),dx=to.x-from.x,dz=to.z-from.z;if(Math.hypot(dx,dz)<(action.item==='red-shell'?24:16))return false;if(action.item==='red-shell')return true;const heading=racerHeading(owner);return dx*Math.sin(heading)+dz*Math.cos(heading)>0&&Math.abs(dx*Math.cos(heading)-dz*Math.sin(heading))<4&&!sweepCircle(from,{x:dx,z:dz},.78,world.colliders);}});for(const action of actions){const owner=racers.find(r=>r.key===action.racerId)!;fireItem(owner,action.item,action.rear,racers.find(r=>r.key===action.targetId)??null);}}
+ updateDrafts(dt);updateProjectiles(dt);updateBombs(dt);for(const a of racers)for(const b of racers)if(a!==player&&b!==player&&a!==b&&starred(a)&&activeRacer(a)&&activeRacer(b)&&racerPosition(a).distanceTo(racerPosition(b))<3.5)starContact(a,b);syncDriving();
  for(const event of pendingTricks)awardTrick(event.kind,event.key);
  const passes=nearPasses.step(dt,{progress:driving.routeT,x:driving.position.x,z:driving.position.z,speed:driving.speed,valid:trickValid()&&!trickKartContact,lap:driving.lap},raceMode==='grand-prix'?racers.filter(r=>r!==player&&activeRacer(r)).map(r=>{const p=racerPosition(r);return {id:r.key,progress:r.t,x:p.x,z:p.z,finished:r.finish!==null};}):[],world.trackLength);
  for(const id of passes)awardTrick('overtake',`pass:${id}:${driving.lap}`);
@@ -472,7 +548,8 @@ function updateModels(dt:number){
  if(r.hitTime>0)r.mesh.position.y+=Math.sin(Math.min(1,r.hitTime/(r.hitKind==='banana'?.85:1.1))*Math.PI)*(r.hitKind==='banana'?.25:1.25);
  const ramp=rampMotions.get(r.key)!;const s=world.sample(r.t);const heading=r===player?driving.heading:Math.atan2(s.tangent.x,s.tangent.z);
  r.mesh.rotation.set(r.hitTime>0&&r.hitKind!=='banana'?Math.sin(r.hitTime*15)*.3:-ramp.pitch,heading+(r.hitTime>0?r.hitTime/(r.hitKind==='banana'?.85:1.1)*Math.PI*4:0),ramp.roll+(r===player?steer*Math.min(Math.abs(player.speed)/45,1)*.055:0));
- if(r.immune>0&&r.hitTime<=0&&Math.floor(r.immune*16)%2===0)r.mesh.visible=false;
+ if(!starred(r)&&r.immune>0&&r.hitTime<=0&&Math.floor(r.immune*16)%2===0)r.mesh.visible=false;
+ tacticalEffects.star(r.key,pos,raceTime,['racing','paused'].includes(mode)&&activeRacer(r)?stars.get(r.key)??0:0);
  techniqueEffects.draft(r.key,pos,heading,mode==='racing'&&raceMode==='grand-prix'&&activeRacer(r)&&r.finish===null&&drafts.get(r.key)!.charge>0);
  const exitAt=eliminationExits.get(r.key);
  if(exitAt!==undefined&&r!==player){const amount=Math.min(1,(raceTime-exitAt)/.7);r.mesh.position.y+=amount*5;r.mesh.scale.setScalar(Math.max(.01,1-amount));r.mesh.visible=amount<1;}
@@ -500,7 +577,7 @@ function updateCombatUI(){
  const warning=document.getElementById('incoming-warning');if(!warning)return;
  let message='';let nearest=Infinity;
  if(mode==='racing'&&raceMode==='grand-prix')for(const p of projectiles){
-   if(p.owner===player||p.life<=0)continue;
+   if(starred(player)||p.owner===player||p.life<=0)continue;
    const dx=p.position.x-driving.position.x,dz=p.position.z-driving.position.z,d=Math.hypot(dx,dz);
    const forward=dx*Math.sin(driving.heading)+dz*Math.cos(driving.heading),side=dx*Math.cos(driving.heading)-dz*Math.sin(driving.heading);
    const closing=-dx*Math.sin(p.heading)-dz*Math.cos(p.heading);
@@ -547,12 +624,12 @@ function selectLoadout(value:LoadoutId){
  referenceGhost=personalGhost;reset();loadoutView?.refresh();if(cupSelected)refreshCupHistory();if(eliminationSelected)refreshEliminationHistory();if(!saved)toast('本机存储不可用，本次选择仍然有效');
 }
 const practiceHud=document.createElement('aside');practiceHud.id='practice-hud';practiceHud.hidden=true;app.append(practiceHud);
-function updatePracticeUI(){practiceHud.hidden=!testDrive||!['countdown','racing','paused'].includes(mode);if(testDrive)practiceHud.textContent=`${LOADOUTS[selectedLoadout].name} · 试驾 ${Math.max(0,Math.ceil(20-raceTime))} 秒`;}
-function startTestDrive(){
- if(mode!=='ready'||testDrive)return;practiceReturn={raceMode,cup:cupSelected,elimination:eliminationSelected};loadoutView?.close();selectRaceMode('time-trial');testDrive=true;app.classList.add('test-drive');start();
+function updatePracticeUI(){practiceHud.hidden=!testDrive||!['countdown','racing','paused'].includes(mode);if(testDrive)practiceHud.textContent=`${activeTrack==='castle'?'机关试驾':LOADOUTS[selectedLoadout].name} · 试驾 ${Math.max(0,Math.ceil(20-raceTime))} 秒`;}
+function startTestDrive(track:TrackId='mushroom'){
+ if(mode!=='ready'||testDrive)return;practiceReturn={raceMode,cup:cupSelected,elimination:eliminationSelected};loadoutView?.close();selectRaceMode('time-trial');practiceTrack=track;testDrive=true;app.classList.add('test-drive');start();
 }
 function endTestDrive(){
- const prior=practiceReturn;testDrive=false;practiceReturn=null;mode='ready';app.classList.remove('test-drive','racing');clearInputs();
+ const prior=practiceReturn;testDrive=false;practiceTrack='mushroom';practiceReturn=null;mode='ready';app.classList.remove('test-drive','racing');clearInputs();
  if(prior?.cup)selectCupMode();else if(prior?.elimination)selectEliminationMode();else selectRaceMode(prior?.raceMode??'grand-prix');loadoutView?.open();
 }
 function finishTestDrive(){
@@ -607,7 +684,7 @@ function finishTrial(){
  if(trialSplits.length){const table=document.createElement('div');table.className='trial-results';table.innerHTML='<table><thead><tr><th>分段</th><th>累计用时</th><th>对比此前最佳</th></tr></thead><tbody>'+trialSplits.map((s,i)=>{const diff=referenceGhost?s-referenceGhost.splits[i]:null;return `<tr><td>${Math.floor(i/4)+1}圈 · ${i%4+1}/4</td><td>${formatTime(s/1000)}</td><td>${diff===null?'首次记录':`${diff<0?'−':'+'}${Math.abs(diff/1000).toFixed(3)}s`}</td></tr>`;}).join('')+'</tbody></table>';el('result').append(table);}
  if(trialNotice){const note=document.createElement('p');note.className='trial-storage';note.textContent=trialNotice;el('result').append(note);}
 }
-function updateUI(){checkpointAssist.update(mode==='racing'&&driving.checkpointMissed&&driving.recoveryFlash<=0&&driving.recoverySeconds===0);updateTechniqueUI();loadoutView?.refresh();updatePracticeUI();eliminationView.render(eliminationSelected?elimination?.snapshot()??null:null,mode);cupView.render(cupSelected?cup?.snapshot()??null:null,mode);trickView.render(trickScore.snapshot(),{mode,raceMode,best:trickBest});
+function updateUI(){updateTacticsUI();checkpointAssist.update(mode==='racing'&&driving.checkpointMissed&&driving.recoveryFlash<=0&&driving.recoverySeconds===0);updateTechniqueUI();loadoutView?.refresh();updatePracticeUI();eliminationView.render(eliminationSelected?elimination?.snapshot()??null:null,mode);cupView.render(cupSelected?cup?.snapshot()??null:null,mode);trickView.render(trickScore.snapshot(),{mode,raceMode,best:trickBest});
  const sorted=eliminationSelected&&elimination?elimination.snapshot().order.map(id=>racers.find(r=>r.key===id)!):[...racers].sort((a,b)=>b.t-a.t);if(mode!=='finished')rank=raceMode==='time-trial'?1:sorted.indexOf(player)+1;
  (el('pause') as HTMLButtonElement).disabled=mode==='ready'||mode==='finished';el('position').textContent=String(rank);el('ordinal').textContent=['st','nd','rd','th','th','th'][rank-1];
  el('lap').textContent=String(driving.lap).padStart(2,'0');el('timer').textContent=formatTime(raceTime);el('speed').textContent=String(Math.round(Math.abs(player.speed)*3.1)).padStart(3,'0');el('coins').textContent=String(coins).padStart(2,'0');
@@ -647,7 +724,7 @@ function updateEliminationMarkers(){
  const order=eliminationSelected&&elimination&&mode==='racing'?elimination.snapshot().order:[];
  eliminationMarkers.forEach((mesh,i)=>{const r=racers.find(r=>r.key===order.at(-1-i));mesh.visible=!!r&&order.length>1;if(r){mesh.position.copy(racerPosition(r));mesh.position.y+=.12;}});
 }
-function eliminationStorageKey(){return `mushroom-elimination-v3-${selectedLoadout}-${difficulty}${qa?'-qa':''}`;}
+function eliminationStorageKey(){return `mushroom-elimination-v4-${selectedLoadout}-${difficulty}${qa?'-qa':''}`;}
 function eliminationBest(){try{const value=JSON.parse(localStorage.getItem(eliminationStorageKey())??'null');return value?.version===1&&Number.isInteger(value.bestPlace)&&value.bestPlace>=1&&value.bestPlace<=6?value.bestPlace as number:null;}catch{return null;}}
 function refreshEliminationHistory(){const best=eliminationBest();el('race-mode-note').textContent='第30秒首次淘汰，此后每20秒淘汰末位 · 不限圈数'+(best?` · 本机最佳第${best}名`:'');}
 function selectEliminationMode(){
@@ -666,7 +743,7 @@ function stepElimination(){
    eliminationPasses.set(r.key,prior);
  }
  const events=elimination.update(raceTime,racers.map(r=>({id:r.key,progress:r===player?driving.progress:r.t})));
- for(const dropped of events){const r=racers.find(r=>r.key===dropped.id)!;r.finish=dropped.at;r.speed=0;r.stun=0;r.immune=0;r.hitTime=0;eliminationExits.set(r.key,raceTime);aiBoost.delete(r.key);aiCombat.inventory(r.key).reset();
+ for(const dropped of events){const r=racers.find(r=>r.key===dropped.id)!;r.finish=dropped.at;r.speed=0;r.stun=0;r.immune=0;r.hitTime=0;eliminationExits.set(r.key,raceTime);stars.delete(r.key);starVictims.delete(r.key);for(let i=bombs.length-1;i>=0;i--)if(bombs[i].owner===r)clearBomb(i);aiBoost.delete(r.key);aiCombat.inventory(r.key).reset();
    for(let i=projectiles.length-1;i>=0;i--){const p=projectiles[i];if(p.owner===r||p.target===r){scene.remove(p.mesh);projectiles.splice(i,1);}}
    burst(racerPosition(r),0xffc95e,26);event(`${r.name} 被淘汰 · 第 ${dropped.place} 名`,1.5);audio.tone(190,.2);
  }
@@ -689,7 +766,7 @@ function finishElimination(){
 
 function selectCupMode(){if(mode!=='ready')return;selectRaceMode('grand-prix');cupSelected=true;cup=null;cupTimes=[];el('cup-select').setAttribute('aria-pressed','true');document.querySelectorAll('[data-race-mode]').forEach(b=>b.setAttribute('aria-pressed','false'));refreshCupHistory();el('combat-note').textContent='本机杯赛 · 不计单场用时榜及每日成长';reset();}
 function refreshCupHistory(){el('race-mode-note').textContent='蘑菇赛道 → 城堡夜赛 · 每站三圈，总积分争冠';try{const saved=JSON.parse(localStorage.getItem(cupStorageKey())??'null');const prior=saved?.version===1&&saved.snapshot?.complete&&Array.isArray(saved.snapshot.standings)?saved.snapshot.standings.find((r:{id:string})=>r.id===saved.snapshot.playerId):null;if(prior&&Number.isInteger(prior.rank)&&prior.rank>=1&&prior.rank<=6&&Number.isInteger(prior.points)&&prior.points<=30)el('race-mode-note').textContent+=` · 上届第${prior.rank}名 / ${prior.points}分`;}catch{}}
-function cupStorageKey(){return `mushroom-two-track-cup-v3-${selectedLoadout}-${difficulty}${qa?'-qa':''}`;}
+function cupStorageKey(){return `mushroom-two-track-cup-v4-${selectedLoadout}-${difficulty}${qa?'-qa':''}`;}
 function finishCupRound(){
  const ordered=[...racers].sort((a,b)=>a.finish!==null&&b.finish!==null?a.finish-b.finish:a.finish!==null?-1:b.finish!==null?1:b.t-a.t).map(r=>r.key);
  if(!cup!.finishRound(ordered))return;cupTimes[cup!.stageIndex]=raceTime;const snapshot=cup!.snapshot();el('result').innerHTML='';cupView.result(el('result'),snapshot);
@@ -719,7 +796,7 @@ window.addEventListener('keyup',e=>{keys.delete(e.code);if((e.code==='KeyE'||e.c
 function recoverPlayer(){
  if(mode!=='racing'||driving.recoveryFlash>0)return;
  const missed=driving.checkpointMissed,cost=Math.min(3,coins);
- clearInputs();breakTricks('救援中断');challengeMetrics.rescues++;playerRamp().reset();drafts.get(player.key)!.reset();driving.recover();coins-=cost;
+ clearInputs();breakTricks('救援中断');challengeMetrics.rescues++;playerRamp().reset();drafts.get(player.key)!.reset();stars.delete(player.key);driving.recover();coins-=cost;
  syncDriving();updateModels(0);updateCamera(1,true);updateUI();
  toast(`${missed?'已回到检查点前 · 向前加速继续':'已回到赛道'}${cost?` · 扣 ${cost} 金币`:''}`);
 }
@@ -733,7 +810,14 @@ window.addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);r
 const query=new URLSearchParams(location.search);
 const qa=query.has('test');
 const testWindow=window as unknown as Record<string,unknown>;
+function tacticalSnapshot(){return {stats:{...tacticStats},stars:Object.fromEntries(stars),bombs:bombs.map(b=>({owner:b.owner.key,age:b.motion.age,position:b.motion.position.toArray(),velocity:b.motion.velocity.toArray()})),surface:surfaceAt(activeTrack,driving.routeT,driving.lane,raceTime,world.trackLength),grip:driving.surfaceGrip,belt:driving.beltVelocity,ai:racers.slice(1).map(r=>({id:r.key,t:r.t,lane:r.lane,speed:r.speed,stun:r.stun,surface:surfaceAt(activeTrack,r.t,r.lane,raceTime,world.trackLength)}))};}
 if(qa){testWindow.__THREE_GAME_TEST_HOOKS__={
+ tactics:tacticalSnapshot,
+ tacticsFixture:({track='castle',t=.31,lane=5,speed=0,time=2}:{track?:TrackId;t?:number;lane?:number;speed?:number;time?:number}={})=>{mode='ready';selectRaceMode('grand-prix');activateTrack(track);reset();mode='racing';app.classList.add('racing');raceTime=time;playerItemSafeUntil=0;driving.reset(t,lane,speed);racers.slice(1).forEach((r,i)=>{r.t=.6+i*.04;r.lane=-4;r.speed=0;});freeze=false;syncDriving();updateModels(0);updateUI();updateCamera(1,true);},
+ tacticsBomb:({distance=0,age=0,wall=false}:{distance?:number;age?:number;wall?:boolean}={})=>{throwBomb(racers[1],false);const b=bombs.at(-1)!;b.motion.position.copy(driving.position).addScaledVector(world.sample(driving.routeT).tangent,distance);b.motion.position.y=.6;b.motion.velocity.set(0,0,0);b.motion.age=age;if(wall){const rail=world.colliders.find(c=>c.kind==='rail')!,mid=new THREE.Vector3((rail.a.x+rail.b.x)/2,.6,(rail.a.z+rail.b.z)/2),n=new THREE.Vector3(rail.b.z-rail.a.z,0,rail.a.x-rail.b.x).normalize();driving.position.copy(mid).addScaledVector(n,3);b.motion.position.copy(mid).addScaledVector(n,-3);freeze=true;explodeBomb(bombs.length-1);syncDriving();updateModels(0);updateUI();}},
+ tacticsContact:()=>{const r=racers[1];r.t=driving.routeT;r.lane=driving.lane;r.stun=r.immune=0;starContact(player,r);return {stun:r.stun,hits:tacticStats.starHits};},
+ tacticsAiStar:()=>activateStar(racers[1]),
+
  techniques:()=>({stats:{...techniqueStats},ramps:currentRamps(),draft:{...drafts.get(player.key)},ramp:{...playerRamp()},ai:racers.slice(1).map(r=>({id:r.key,t:r.t,lane:r.lane,height:rampMotions.get(r.key)!.height,draft:{...drafts.get(r.key)},ramp:{...rampMotions.get(r.key)}}))}),
  techniquePoint:({t,lane=0}:{t:number;lane?:number})=>{const p=world.sample(t,lane).position;return {x:p.x,z:p.z};},
  techniqueFixture:({kind='ramp',lane=3.5,speed=40}:{kind?:'ramp'|'horn'|'draft';lane?:number;speed?:number}={})=>{freeze=false;mode='ready';selectRaceMode(kind==='ramp'?'time-trial':'grand-prix');reset();mode='racing';app.classList.add('racing');raceTime=20;playerItemSafeUntil=0;const t=kind==='ramp'?.708:kind==='draft'?.03:.40;driving.reset(t,kind==='ramp'?lane:0,speed);racers.slice(1).forEach((r,i)=>{r.t=i===0&&kind!=='ramp'?t+(kind==='draft'?14:8)/world.trackLength:.15+i*.04;r.lane=0;r.speed=kind==='draft'?35:0;});syncDriving();updateModels(0);updateUI();updateCamera(1,true);},
@@ -811,6 +895,7 @@ const courseTip=document.createElement('p');courseTip.className='course-tip';cou
 const drivingStatus=document.createElement('div');drivingStatus.id='driving-status';app.append(drivingStatus);
 garage=mountGarage(roster,selectDriver);
 loadoutView=mountLoadoutView({getSelected:()=>selectedLoadout,onSelect:selectLoadout,onTestDrive:startTestDrive,canOpen:()=>mode==='ready'&&!testDrive});
+const practiceButton=document.createElement('button');practiceButton.id='tactics-practice';practiceButton.textContent='城堡机关 · 20 秒试驾';practiceButton.addEventListener('click',()=>startTestDrive('castle'));el('loadout-test-drive').parentElement!.append(practiceButton);
 progression=mountProgression({isTest:qa,onEquip:applyCosmetics,onOpen:()=>{clearInputs();if(mode==='racing'||mode==='countdown')showPause();}});
 cloud=mountCloud({isTest:qa,onAccount:id=>progression?.setAccount(id),onProgress:value=>progression?.acceptCloud(value),onOpen:()=>{clearInputs();if(mode==='racing'||mode==='countdown')showPause();}});
 selectRaceMode('grand-prix');reset();mode='ready';el('loading').remove();
@@ -818,6 +903,6 @@ let previous=performance.now(),accumulator=0;
 function loop(now:number){requestAnimationFrame(loop);const dt=Math.min((now-previous)/1000,.1);previous=now;pollGamepad();
  if(!freeze&&mode!=='paused'&&mode!=='finished'){accumulator+=dt;while(accumulator>=1/60){step(1/60);accumulator-=1/60;frame++;}}
  if(!freeze)updateCamera(dt);if(frame%3===0)updateUI();updateAudio();renderer.render(scene,camera);
- if(qa)testWindow.__THREE_GAME_DIAGNOSTICS__={techniques:{...techniqueStats,draft:{...drafts.get(player.key)},ramp:{height:playerRamp().height,airborne:playerRamp().airborne,trickReady:playerRamp().trickReady,trick:playerRamp().trick,activeRamp:playerRamp().activeRamp}},loadout:selectedLoadout,practice:testDrive?{...practiceStats}:null,audio:audio.snapshot(),elimination:elimination?.snapshot()??null,eliminationOvertakes,mode,raceMode,track:activeTrack,cup:cup?.snapshot()??null,trial:{splits:[...trialSplits],bestMs:personalGhost?.durationMs??null,referenceMs:referenceGhost?.durationMs??null,ghostVisible:ghostView.mesh?.visible??false,ghostPosition:ghostView.mesh?.position.toArray()??null,notice:trialNotice},frame,raceTime,coins,item:inventory.item,inventory:inventory.slots.map(s=>({...s})),rolling:inventory.rolling,interactions:{...interactionStats},shards:shards.filter(p=>p.life>0).length,boost,charge,rank,lap:driving.lap,projectiles:projectiles.map(p=>({kind:p.kind,x:p.position.x,z:p.position.z,age:p.age,routeT:p.routeT,roadDistance:p.position.distanceTo(world.sample(p.routeT).position)})),lookBack,course:{hits:courseStats.hits,clears:courseStats.clears,shortcut:driving.shortcutId,hazards:courseHazards.map(h=>({id:h.id,kind:h.kind,phase:h.phase,seconds:h.seconds,x:h.position.x,z:h.position.z}))},trackLength:world.trackLength,player:{t:player.t,lane:player.lane,speed:player.speed,heading:driving.heading,travelHeading:driving.travelHeading,hopHeight:driving.hopHeight,stun:driving.stun,driftDirection:driving.driftDirection,driftStage:driving.driftStage,nextGate:driving.nextGate,routeT:driving.routeT,offRoad:driving.offRoad,wrongWay:driving.wrongWay,recoverySeconds:driving.recoverySeconds,recoveryFlash:driving.recoveryFlash,checkpointMissed:driving.checkpointMissed,driver:player.key,hitTime:player.hitTime,immune:player.immune,modelYaw:player.mesh.rotation.y,impactFlash:driving.impactFlash,x:player.mesh.position.x,y:player.mesh.position.y,z:player.mesh.position.z},renderer:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures},render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},memory:renderer.info.memory,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles};
+ if(qa)testWindow.__THREE_GAME_DIAGNOSTICS__={tactics:tacticalSnapshot(),techniques:{...techniqueStats,draft:{...drafts.get(player.key)},ramp:{height:playerRamp().height,airborne:playerRamp().airborne,trickReady:playerRamp().trickReady,trick:playerRamp().trick,activeRamp:playerRamp().activeRamp}},loadout:selectedLoadout,practice:testDrive?{...practiceStats}:null,audio:audio.snapshot(),elimination:elimination?.snapshot()??null,eliminationOvertakes,mode,raceMode,track:activeTrack,cup:cup?.snapshot()??null,trial:{splits:[...trialSplits],bestMs:personalGhost?.durationMs??null,referenceMs:referenceGhost?.durationMs??null,ghostVisible:ghostView.mesh?.visible??false,ghostPosition:ghostView.mesh?.position.toArray()??null,notice:trialNotice},frame,raceTime,coins,item:inventory.item,inventory:inventory.slots.map(s=>({...s})),rolling:inventory.rolling,interactions:{...interactionStats},shards:shards.filter(p=>p.life>0).length,boost,charge,rank,lap:driving.lap,projectiles:projectiles.map(p=>({kind:p.kind,x:p.position.x,z:p.position.z,age:p.age,routeT:p.routeT,roadDistance:p.position.distanceTo(world.sample(p.routeT).position)})),lookBack,course:{hits:courseStats.hits,clears:courseStats.clears,shortcut:driving.shortcutId,hazards:courseHazards.map(h=>({id:h.id,kind:h.kind,phase:h.phase,seconds:h.seconds,x:h.position.x,z:h.position.z}))},trackLength:world.trackLength,player:{t:player.t,lane:player.lane,speed:player.speed,heading:driving.heading,travelHeading:driving.travelHeading,hopHeight:driving.hopHeight,stun:driving.stun,driftDirection:driving.driftDirection,driftStage:driving.driftStage,nextGate:driving.nextGate,routeT:driving.routeT,offRoad:driving.offRoad,wrongWay:driving.wrongWay,recoverySeconds:driving.recoverySeconds,recoveryFlash:driving.recoveryFlash,checkpointMissed:driving.checkpointMissed,driver:player.key,hitTime:player.hitTime,immune:player.immune,modelYaw:player.mesh.rotation.y,impactFlash:driving.impactFlash,x:player.mesh.position.x,y:player.mesh.position.y,z:player.mesh.position.z},renderer:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures},render:{calls:renderer.info.render.calls,triangles:renderer.info.render.triangles},memory:renderer.info.memory,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles};
 }
 requestAnimationFrame(loop);

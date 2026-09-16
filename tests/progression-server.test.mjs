@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createApplication} from '../server/app.mjs';
 import {readConfig} from '../server/config.mjs';
+import {rulesVersion} from '../server/store.mjs';
 import {dailyTasks,dayKey} from '../shared/progression.mjs';
 
 async function fixture(fn){
@@ -16,7 +17,7 @@ async function fixture(fn){
  const c={get app(){return app;},setNow:value=>now=value,advance:ms=>now+=ms,now:()=>now,
    async request(path,data,cookie=''){const res=await fetch(config.origin+path,{method:data===undefined?'GET':'POST',headers:{Origin:config.origin,'Content-Type':'application/json',Cookie:cookie},body:data===undefined?undefined:JSON.stringify(data)});return {status:res.status,json:await res.json(),cookie:res.headers.get('set-cookie')?.split(';')[0]};},
    async login(){return (await this.request('/api/auth/dev',{displayName:'成长测试'})).cookie;},
-   async start(cookie,mode='time-trial',difficulty='standard'){const response=await this.request('/api/races',{character:'mario',mode,difficulty,rulesVersion:mode==='time-trial'?4:5},cookie);assert.equal(response.status,201);return response.json.raceId;},
+   async start(cookie,mode='time-trial',difficulty='standard'){const response=await this.request('/api/races',{character:'mario',mode,difficulty,rulesVersion:rulesVersion(mode)},cookie);assert.equal(response.status,201);return response.json.raceId;},
    async finish(cookie,id,metrics={orangeDrifts:3,coinsCollected:10,rescues:0,shortcutClears:2}){return this.request(`/api/races/${id}/finish`,{character:'mario',timeMs:50000,position:1,coins:7,...(metrics===null?{}:{metrics})},cookie);},
    async reopen(){await app.close();app=createApplication({config,now:()=>now});await listen();},
  };

@@ -3,6 +3,7 @@ import {LEGACY_HANDLING,type Handling} from './loadouts.ts';
 import { moveCircle } from './collision.ts';
 import { projectShortcut, type Shortcut } from './routes.ts';
 import type { Collider, Contact } from './collision.ts';
+import {DRY_SURFACE,type SurfaceState} from './surfaces.ts';
 
 export type DriveInput = { throttle: boolean; brake: boolean; steer: number; hop: boolean };
 export type TrackSample = { position: THREE.Vector3; tangent: THREE.Vector3; normal: THREE.Vector3 };
@@ -42,6 +43,8 @@ export class KartDriving {
   recovered = false;
   contact: Contact | null = null;
   impactFlash = 0;
+  surfaceGrip=1;
+  beltVelocity=0;
   private bumpVelocity = new THREE.Vector3();
   private contactCooldown = 0;
   private hopWasHeld = false;
@@ -76,6 +79,7 @@ export class KartDriving {
     this.recoveryTimer = this.recoveryFlash = this.roadDistance = 0;
     this.releasedTurbo = 0; this.recovered = false; this.lastSafeT = t;
     this.shortcutId=null;this.contact=null;this.impactFlash=0;this.contactCooldown=0;this.bumpVelocity.set(0,0,0);
+    this.surfaceGrip=1;this.beltVelocity=0;
   }
 
   project() {
@@ -124,8 +128,10 @@ export class KartDriving {
 
   interruptDrift() { this.driftDirection = 0; this.charge = 0; this.hopWasHeld = true; }
 
-  step(input: DriveInput, coins: number, dt: number) {
+  step(input: DriveInput, coins: number, dt: number, surface:SurfaceState=DRY_SURFACE,starred=false) {
     this.releasedTurbo = 0; this.recovered = false; this.contact=null;
+    this.surfaceGrip=THREE.MathUtils.damp(this.surfaceGrip,surface.grip,4,dt);
+    this.beltVelocity=surface.beltSpeed;
     this.contactCooldown=Math.max(0,this.contactCooldown-dt);this.impactFlash=Math.max(0,this.impactFlash-dt);
     this.bumpVelocity.multiplyScalar(Math.exp(-7*dt));
     this.boost = Math.max(0, this.boost - dt); this.stun = Math.max(0, this.stun - dt);
@@ -154,11 +160,11 @@ export class KartDriving {
     if (drifting && !this.offRoad) this.charge = Math.min(3.8, this.charge + dt * this.handling.chargeRate * (.6 + .6 * Math.max(0, input.steer * this.driftDirection)));
     else if (this.offRoad) this.charge = Math.max(0, this.charge - dt * 1.7);
 
-    const top = this.stun > 0 ? 0 : this.boost > 0 ? DRIVE_TUNING.boostSpeed : this.offRoad ? DRIVE_TUNING.offRoadSpeed : this.handling.topSpeed + coins * .4;
+    const top = this.stun > 0 ? 0 : this.boost > 0 ? DRIVE_TUNING.boostSpeed : starred ? 59 : (this.offRoad ? DRIVE_TUNING.offRoadSpeed : this.handling.topSpeed + coins * .4)*surface.speedScale;
     let target = input.throttle ? top : 0;
     // Holding brake reaches reverse only after braking to a standstill. Accel+brake enables a tight spin turn.
     if (input.brake) target = input.throttle ? 0 : -DRIVE_TUNING.reverseSpeed;
-    if (this.boost > 0 && !input.brake && this.stun <= 0) target = top;
+    if ((this.boost > 0 || starred) && !input.brake && this.stun <= 0) target = top;
     if (this.stun > 0) target = 0;
     const rate = input.brake ? 3.0 : this.offRoad && this.boost <= 0 ? 2.6 : input.throttle ? this.handling.acceleration : .9;
     this.speed = THREE.MathUtils.damp(this.speed, target, rate, dt);
@@ -172,9 +178,10 @@ export class KartDriving {
     // Countersteering changes the drift radius without changing the latched drift side.
     const slip = drifting ? this.handling.slip * this.driftDirection * (.25 + .1 * Math.max(0, this.steer * this.driftDirection)) : 0;
     const desiredTravel = this.heading + slip;
-    this.travelHeading = wrapAngle(this.travelHeading + wrapAngle(desiredTravel - this.travelHeading) * (1 - Math.exp(-(drifting ? this.handling.driftGrip : this.handling.grip) * dt)));
+    this.travelHeading = wrapAngle(this.travelHeading + wrapAngle(desiredTravel - this.travelHeading) * (1 - Math.exp(-(drifting ? this.handling.driftGrip : this.handling.grip) * this.surfaceGrip * dt)));
     this.velocity.set(Math.sin(this.travelHeading) * this.speed, 0, Math.cos(this.travelHeading) * this.speed);
     this.velocity.add(this.bumpVelocity);
+    this.velocity.addScaledVector(this.track.sample(this.routeT).tangent,this.beltVelocity);
     const moved=moveCircle(this.position,this.velocity,dt,1.6,(this.track.colliders??[]).filter(c=>!c.rampId||c.rampId!==this.rampPassId));
     this.position.x=moved.position.x;this.position.z=moved.position.z;this.position.y=.14;
     const hit=moved.contacts.sort((a,b)=>b.impact-a.impact)[0];

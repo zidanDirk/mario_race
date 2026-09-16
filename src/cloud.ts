@@ -182,7 +182,7 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
     cancelRace();
     const active: Race = { loadout, mode, difficulty, sequence: raceSequence, userId: online ? account.user?.id ?? null : null, ticket: Promise.resolve(null), finished: false };
     race = active;
-    if (!isTest && active.userId) active.ticket = request<{ raceId: string; progression?:Snapshot }>('/api/races', { character, rulesVersion: mode === 'time-trial' ? 4 : 5, mode, difficulty, loadout }).then(ticket=>{
+    if (!isTest && active.userId) active.ticket = request<{ raceId: string; progression?:Snapshot }>('/api/races', { character, rulesVersion: mode === 'time-trial' ? 5 : 6, mode, difficulty, loadout }).then(ticket=>{
       if(active.sequence===raceSequence&&active.userId===account.user?.id&&ticket.progression)onProgress?.(ticket.progression);
       return ticket;
     }).catch(() => null);

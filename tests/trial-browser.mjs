@@ -3,7 +3,7 @@ const out='artifacts/time-trial-v1';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--use-gl=angle','--use-angle=metal']});
 const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
 const read=()=>page.evaluate(()=>window.__THREE_GAME_DIAGNOSTICS__);const hook=(name,arg)=>page.evaluate(({name,arg})=>window.__THREE_GAME_TEST_HOOKS__[name](arg),{name,arg});
-const key='mushroom-time-trial-ghost-v1-course2-handling1-techniques1-light-qa';
+const key='mushroom-time-trial-ghost-v1-course2-handling1-techniques1-tactics1-light-qa';
 const release=async()=>{for(const k of ['KeyW','KeyS','KeyA','KeyD','Space'])await page.keyboard.up(k);};const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
 async function follow(limit=100000){const end=Date.now()+limit;let samples=0;const laps=new Set();while(Date.now()<end){const d=await read();laps.add(d.lap);if(d.mode==='finished')return{finished:true,time:d.raceTime,samples,laps:[...laps],splits:d.trial.splits};const t=d.player.routeT+(9+Math.abs(d.player.speed)*.15)/d.trackLength;const p=await hook('trackPoint',t);const err=wrap(Math.atan2(p.x-d.player.x,p.z-d.player.z)-d.player.heading);await page.keyboard.up('KeyA');await page.keyboard.up('KeyD');if(Math.abs(err)>.05)await page.keyboard.down(err>0?'KeyA':'KeyD');if(Math.abs(err)>.5&&d.player.speed>30){await page.keyboard.up('KeyW');await page.keyboard.down('KeyS');}else{await page.keyboard.up('KeyS');await page.keyboard.down('KeyW');}samples++;await page.waitForTimeout(60);}return{finished:false,last:await read()};}
 try{

@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import * as THREE from 'three';
+import {BombMotion,blastAffects,BOMB_FUSE} from '../src/tactical-combat.ts';
+import {sweepCircle} from '../src/collision.ts';
+const wall={a:{x:-20,z:8},b:{x:20,z:8},radius:.3,kind:'rail'};
+const clear=(a,b)=>!sweepCircle(a,{x:b.x-a.x,z:b.z-a.z},.1,[wall]);
+const checks=[];
+const forward=new BombMotion(new THREE.Vector3(0,.14,0),0,false,30),back=new BombMotion(new THREE.Vector3(0,.14,0),Math.PI,true,30);
+for(let i=0;i<30;i++){forward.step(1/60,[]);back.step(1/60,[]);}assert(forward.position.z>15);assert(back.position.z<0);assert(forward.position.y>.6);checks.push('front lob and rear placement travel opposite directions with real airborne arc');
+const blocked=new BombMotion(new THREE.Vector3(0,.14,0),0,false,60);for(let i=0;i<180;i++)blocked.step(1/60,[wall]);assert(blocked.position.z<8);assert.equal(blocked.position.y,.6);assert(blocked.ready);checks.push('swept bomb stops before a solid rail and settles on ground');
+const bomb=new BombMotion(new THREE.Vector3(0,.14,0),0);for(let i=0;i<120;i++)bomb.step(1/60,[]);assert(!bomb.ready);bomb.step(0,[]);assert(!bomb.ready);for(let i=0;i<14;i++)bomb.step(1/60,[]);assert(bomb.age>=BOMB_FUSE&&bomb.ready);assert(bomb.detonate());assert(!bomb.detonate());const age=bomb.age;bomb.step(1,[]);assert.equal(bomb.age,age);checks.push('fuse advances only with simulation time; explosion resolves once');
+assert(blastAffects({x:0,y:.6,z:0},{x:0,y:.14,z:6},clear));assert(!blastAffects({x:0,y:.6,z:0},{x:0,y:.14,z:10},clear));assert(!blastAffects({x:0,y:.6,z:0},{x:13,y:.14,z:0},clear));assert(!blastAffects({x:0,y:.6,z:0},{x:0,y:5,z:0},clear));checks.push('blast respects actual range, height and wall line of sight');
+console.log(JSON.stringify({passed:true,checks},null,2));

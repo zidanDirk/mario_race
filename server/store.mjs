@@ -4,8 +4,8 @@ import {dirname} from 'node:path';
 import {emptyProgress, normalizeProgress} from '../shared/progression.mjs';
 
 export const TRACK = 'mushroom-circuit';
-export const RULES_VERSION = 5;
-export const rulesVersion = mode => mode === 'time-trial' ? 4 : RULES_VERSION;
+export const RULES_VERSION = 6;
+export const rulesVersion = mode => mode === 'time-trial' ? 5 : RULES_VERSION;
 export const LOADOUTS = ['light', 'speed', 'drift'];
 export const DIFFICULTIES = ['standard', 'casual'];
 export const RACE_MODES = ['grand-prix', 'time-trial'];

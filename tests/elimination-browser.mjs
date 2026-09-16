@@ -42,7 +42,7 @@ try{
   for(const [time,progress] of [[70,3.7],[90,4.7],[110,5.7]])await hook('eliminationFixture',{time,progress});
   const winner=await state();assert(winner.state.complete);assert.equal(winner.state.playerPlace,1);assert.equal(winner.state.winnerId,'peach');assert.deepEqual(winner.state.eliminated.map(e=>e.at),[30,50,70,90,110]);
   assert.equal(await page.locator('.elimination-timeline li').count(),5);assert.equal(await page.locator('.elimination-survivors').count(),0);await page.screenshot({path:out+'/winner-desktop.png'});
-  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('mushroom-elimination-v3-light-casual-qa')));assert.equal(saved.bestPlace,1);assert.equal(saved.last.survival,110);
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('mushroom-elimination-v4-light-casual-qa')));assert.equal(saved.bestPlace,1);assert.equal(saved.last.survival,110);
   checks.push('fourth and later laps continue; five deadlines yield one champion at110s; local elimination record remains separate');
   await page.click('#home');await hook('setPausedForScreenshot',false);await page.click('[data-race-mode=time-trial]');assert.equal((await state()).selected,false);assert.equal((await state()).lapLimit,3);assert.equal(await page.locator('#elimination-hud').isVisible(),false);await start();
   assert.equal((await hook('racerPositions')).filter(r=>r.key!=='peach'&&r.visible).length,0);await hook('setState','near-finish');await page.keyboard.down('KeyW');await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='finished');await page.keyboard.up('KeyW');assert.match(await page.locator('#dialog-eyebrow').textContent(),/TIME TRIAL/);

@@ -193,4 +193,56 @@ check('horn physical rejection never spends the item or attack interval', () => 
   assert.equal(ai.inventory('ai').item, 'super-horn'); assert.equal(ai.stats.used, 0);
   assert.equal(ai.plan(.01, context(30.01, racers, {canFire:()=>true})).length, 1);
 });
+check('star activates once while chasing or threatened, with no target and no redundant active-star use', () => {
+  const racers = [racer('ai'), racer('player', .04)];
+  const ai = armed('star', racers);
+  racers[0].starred = true;
+  assert.deepEqual(ai.plan(.01, context(30, racers)), []);
+  assert.equal(ai.inventory('ai').item, 'star');
+  racers[0].starred = false;
+  assert.deepEqual(ai.plan(.01, context(31, racers)), [{racerId:'ai',item:'star',targetId:null,rear:false}]);
+  assert.equal(ai.inventory('ai').item, null); assert.equal(ai.stats.playerAttacks, 0);
+  const leader = [racer('ai', .1), racer('player', 0)];
+  const defense = armed('star', leader);
+  assert.deepEqual(defense.plan(.01, context(30, leader)), []);
+  assert.equal(defense.plan(.01, context(31, leader, {hornThreatIds:['ai']}))[0].item, 'star');
+});
+check('bomb chooses a forward or rear target within its safe launch range and lane', () => {
+  for (const [t,rear] of [[.04,false],[-.03,true]]) {
+    const racers = [racer('ai'),racer('player',t,1)];
+    assert.deepEqual(armed('bomb',racers).plan(.01,context(30,racers)), [{racerId:'ai',item:'bomb',targetId:'player',rear}]);
+  }
+  for (const [t,lane] of [[.01,0],[.08,0],[-.01,0],[-.06,0],[.04,5],[-.03,4],[1.04,0]]) {
+    const racers=[racer('ai'),racer('player',t,lane)];
+    assert.deepEqual(armed('bomb',racers).plan(.01,context(30,racers)), []);
+  }
+});
+check('bomb splash budgets player attacks even when another AI is the nominal target', () => {
+  const racers = [racer('ai'),racer('ai2'),racer('rival',.035),racer('player',.045)];
+  const ai=armed('bomb',racers); ai.inventory('ai2').give('bomb'); ai.plan(.01,context(0,racers));
+  assert.deepEqual(ai.plan(.01,context(30,racers,{playerProtected:true})), []);
+  racers[3].starred=true; assert.deepEqual(ai.plan(.01,context(30,racers)), []); racers[3].starred=false;
+  const first=ai.plan(.01,context(30,racers));
+  assert.equal(first.length,1); assert.equal(first[0].targetId,'rival'); assert.equal(ai.stats.playerAttacks,1);
+  assert.deepEqual(ai.plan(.01,context(37.99,racers)), []);
+  assert.equal(ai.plan(.01,context(38,racers)).length,1); assert.equal(ai.stats.playerAttacks,2);
+});
+check('blocked bomb trajectory preserves the item and player budget, and starred targets are not attacked', () => {
+  const racers=[racer('ai'),racer('player',.04)]; const ai=armed('bomb',racers);
+  assert.deepEqual(ai.plan(.01,context(30,racers,{canFire:()=>false})),[]);
+  assert.equal(ai.inventory('ai').item,'bomb'); assert.equal(ai.stats.playerAttacks,0);
+  racers[1].starred=true; assert.deepEqual(ai.plan(.01,context(30,racers)),[]);
+  racers[1].starred=false; assert.equal(ai.plan(.01,context(30,racers,{canFire:()=>true})).length,1);
+  for (const item of ['green-shell','red-shell','super-horn']) {
+    const target=[racer('ai'),{...racer('player',item==='super-horn'?.005:.04),starred:true}];
+    assert.deepEqual(armed(item,target).plan(.01,context(30,target)),[]);
+  }
+});
+check('AI collects with the same gap-sensitive strong-item cooldown as the player', () => {
+  const ai=new AiCombat(); ai.reset(['ai']);
+  assert.equal(ai.collect('ai',6,()=>.84,20,50),true);
+  assert.equal(ai.inventory('ai').slots[0].pending,'star');
+  assert.equal(ai.collect('ai',6,()=>.84,20,50),true);
+  assert.notEqual(ai.inventory('ai').slots[1].pending,'star');
+});
 console.log(`\n${checks} AI combat checks passed.`);

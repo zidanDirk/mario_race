@@ -115,7 +115,7 @@ check('triple mushroom has three charges and preserves slot identity and reserve
   assert.deepEqual(inventory.step(1.5), ['red-shell']);
   assert.equal(inventory.consume(), 'red-shell');
 });
-check('six item types all appear, trailing catch-up weight rises, and leaders rarely get triples', () => {
+check('eight item types all appear, trailing catch-up weight rises, and leaders rarely get triples', () => {
   const sample = rank => {
     const count = {};
     for (let i = 0; i < 1000; i++) {
@@ -127,9 +127,63 @@ check('six item types all appear, trailing catch-up weight rises, and leaders ra
     return count;
   };
   const first = sample(1), last = sample(6);
-  assert.equal(Object.keys(first).length, 6); assert.equal(Object.keys(last).length, 6);
-  assert.equal(first['triple-mushroom'], 30); assert.equal(last['triple-mushroom'], 290);
+  assert.equal(Object.keys(first).length, 8); assert.equal(Object.keys(last).length, 8);
+  assert.equal(first['triple-mushroom'], 30); assert.equal(last['triple-mushroom'], 230);
   assert.ok(last.mushroom + last['triple-mushroom'] > first.mushroom + first['triple-mushroom']);
   inventory.give('super-horn'); assert.equal(inventory.consume(), 'super-horn'); assert.equal(inventory.consume(), null);
+});
+check('bomb and star are single-use, immediate items that preserve the reserve', () => {
+  for (const item of ['bomb', 'star']) {
+    inventory.give(item); inventory.acquire(1, () => .99); inventory.step(1.5);
+    assert.equal(inventory.consume(), item); assert.equal(inventory.item, 'red-shell');
+  }
+});
+check('star cooldown starts at award and blocks pending duplicates, use-and-recollect and clock rollback', () => {
+  const roll = .84; // Last place base star interval is .74-.90.
+  inventory.acquire(6, () => roll, {time: 10, gap: 50});
+  assert.equal(inventory.slots[0].pending, 'star');
+  inventory.acquire(6, () => roll, {time: 10, gap: 50});
+  assert.notEqual(inventory.slots[1].pending, 'star');
+  inventory.step(1.5); inventory.consume(); inventory.consume();
+  for (const time of [11.5, 0, 33.9]) {
+    inventory.acquire(6, () => roll, {time, gap: 50});
+    assert.notEqual(inventory.slots[0].pending, 'star');
+    inventory.step(.01); inventory.slots.length = 0;
+  }
+  inventory.acquire(6, () => roll, {time: 34, gap: 50});
+  assert.equal(inventory.slots[0].pending, 'star');
+});
+check('pending or reserve star cannot duplicate even after cooldown expires', () => {
+  inventory.acquire(6, () => .84, {time: 0, gap: 50});
+  inventory.acquire(6, () => .84, {time: 100, gap: 50});
+  assert.notEqual(inventory.slots[1].pending, 'star');
+});
+check('leader distance increases trailing star odds; reset restores cooldowns', () => {
+  const sample = gap => {
+    let stars = 0;
+    for (let i = 0; i < 1000; i++) {
+      inventory.reset(); inventory.acquire(6, () => (i + .5) / 1000, {time: 40, gap});
+      if (inventory.slots[0].pending === 'star') stars++;
+    }
+    return stars;
+  };
+  assert.ok(sample(100) > sample(0) * 3);
+  inventory.reset(); inventory.acquire(6, () => .84, {time: 0, gap: 50});
+  assert.equal(inventory.slots[0].pending, 'star');
+});
+check('bomb and triple cooldowns survive consumption, roulette hurry and invalid time steps', () => {
+  for (const [item, roll] of [['bomb', .70], ['triple-mushroom', .45]]) {
+    inventory.reset(); inventory.acquire(6, () => roll);
+    assert.equal(inventory.slots[0].pending, item);
+    inventory.hurry(); inventory.step(.22);
+    while (inventory.item) inventory.consume();
+    inventory.step(0); inventory.step(-1); inventory.step(Infinity);
+    inventory.acquire(6, () => roll);
+    assert.notEqual(inventory.slots[0].pending, item);
+    inventory.step(1.5); while (inventory.item) inventory.consume();
+    inventory.step(10);
+    inventory.acquire(6, () => roll);
+    assert.equal(inventory.slots[0].pending, item);
+  }
 });
 console.log(`Item inventory: ${checks} checks passed.`);

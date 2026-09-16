@@ -41,7 +41,7 @@ try{
  await page.click('[data-loadout=drift]');await page.keyboard.press('Escape');await page.click('[data-race-mode=time-trial]');await page.click('#start');
  await page.waitForFunction(()=>window.__THREE_GAME_DIAGNOSTICS__.mode==='racing');const race=await drive();runs.push(race);
  assert.deepEqual(race.laps,[1,2,3]);assert.equal(race.rescues,0);assert(race.trial.bestMs>0);
- const selected=await hook('loadout');assert.match(selected.ghostKey,/handling1-techniques1-drift-qa/);
+ const selected=await hook('loadout');assert.match(selected.ghostKey,/handling1-techniques1-tactics1-drift-qa/);
  assert(await page.evaluate(key=>Boolean(localStorage.getItem(key)),selected.ghostKey));
  await page.screenshot({path:out+'/drift-three-laps.png'});assert.deepEqual(errors,[]);
  const report={passed:true,method:'Real keyboard input only; diagnostics and track geometry are read-only. No time, position or finish injection.',runs,errors};
