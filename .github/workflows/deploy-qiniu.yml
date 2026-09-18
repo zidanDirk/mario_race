@@ -18,13 +18,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build H5 game
+        env:
+          VITE_API_ORIGIN: https://backend.zhangzidan.com
         run: npm run build
 
       - name: Setup Qshell

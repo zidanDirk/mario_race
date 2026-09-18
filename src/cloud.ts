@@ -14,13 +14,15 @@ type Result = { timeMs: number; character: string; position: number; coins: numb
 type Receipt = { progression?:Snapshot; mode: RaceMode; difficulty: RaceDifficulty; saved: true; bestTimeMs: number | null; rank: number | null };
 const drivers: Record<string, string> = { mario: '马里奥', luigi: '路易吉', peach: '碧姬', yoshi: '耀西', toad: '奇诺比奥', wario: '瓦力欧' };
 const providers: Record<string, string> = { google: 'Google', wechat: '微信', dev: '本地测试' };
+const apiOrigin = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/+$/, '');
+const apiUrl = (path: string) => `${apiOrigin}${path}`;
 const time = (ms: number | null | undefined) => ms == null ? '—' : `${String(Math.floor(ms / 60000)).padStart(2, '0')}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}.${String(Math.floor(ms) % 1000).padStart(3, '0')}`;
 class ApiError extends Error { constructor(public status: number, public code: string) { super(code); } }
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), 10000);
   try {
-    const response = await fetch(path, { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', headers: body === undefined ? { Accept: 'application/json' } : { Accept: 'application/json', 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body), signal: controller.signal });
+    const response = await fetch(apiUrl(path), { method: body === undefined ? 'GET' : 'POST', credentials: 'include', headers: body === undefined ? { Accept: 'application/json' } : { Accept: 'application/json', 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body), signal: controller.signal });
     const data = await response.json().catch(() => null);
     if (!response.ok || data === null) throw new ApiError(response.status, typeof data?.error === 'string' ? data.error : data?.error?.code ?? 'unavailable');
     return data as T;
@@ -66,7 +68,7 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
     <header class="cloud-heading"><div><span class="cloud-eyebrow">MUSHROOM CUP · ONLINE</span><h2 id="cloud-title">每一圈，都值得上榜。</h2></div><button class="cloud-close" type="button" aria-label="关闭排行榜">×</button></header>
     <div class="cloud-mode-tabs" role="group" aria-label="排行榜模式"><button type="button" data-mode="grand-prix" aria-pressed="true">标准道具竞速榜</button><button type="button" data-mode="time-trial" aria-pressed="false">计时挑战榜</button></div>
     <p class="cloud-notice" role="status" aria-live="polite"></p>
-    <div class="cloud-columns"><section class="cloud-account" aria-label="用户信息"><div class="cloud-profile"></div><div class="cloud-login"></div><p class="cloud-privacy">登录后，新比赛成绩会保存到服务器。昵称、头像和最佳成绩会在排行榜公开展示。微信与 Google 暂为独立账号。</p></section>
+    <div class="cloud-columns"><section class="cloud-account" aria-label="用户信息"><div class="cloud-profile"></div><div class="cloud-login"></div><p class="cloud-privacy">登录后，新比赛成绩会保存到服务器。昵称、头像和最佳成绩会在排行榜公开展示。微信与 Google 暂为独立账号。<a href="./privacy.html" target="_blank" rel="noopener">查看隐私政策</a></p></section>
     <section class="cloud-ranking" aria-labelledby="cloud-board-title"><div class="cloud-board-heading"><div><span class="cloud-eyebrow">TOP 10 / 150cc / COURSE 02</span><h3 id="cloud-board-title">蘑菇赛道 · 全球前十</h3></div><button class="cloud-refresh" type="button" aria-label="刷新排行榜">↻</button></div><p class="cloud-board-caption">标准难度 · 每位用户最佳三圈用时 · 休闲成绩不计排名</p><div class="cloud-board" aria-live="polite"></div></section></div>
     <footer class="cloud-footer"><span>先登录，再开始一场新的比赛。</span><button type="button" class="cloud-done">返回赛道 →</button></footer>`;
   document.querySelector('#app')!.append(dialog);
@@ -122,7 +124,7 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
     }
     for (const provider of ['wechat', 'google'] as const) {
       const enabled = !!config?.providers[provider] && online;
-      const button = actionButton(`${provider === 'wechat' ? '微信扫码登录' : '使用 Google 登录'}${enabled ? '' : ' · 待配置'}`, `cloud-provider cloud-${provider}`, () => { location.assign(`/api/auth/${provider}`); });
+      const button = actionButton(`${provider === 'wechat' ? '微信扫码登录' : '使用 Google 登录'}${enabled ? '' : ' · 待配置'}`, `cloud-provider cloud-${provider}`, () => { location.assign(apiUrl(`/api/auth/${provider}`)); });
       button.disabled = !enabled || pendingAction; button.title = enabled ? `使用${providers[provider]}登录` : '管理员配置应用凭据后开放登录';
       const mark = document.createElement('span'); mark.className = 'cloud-provider-mark'; mark.setAttribute('aria-hidden', 'true'); mark.textContent = provider === 'wechat' ? '◉' : 'G'; button.prepend(mark); login.append(button);
     }

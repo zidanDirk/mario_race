@@ -12,6 +12,10 @@ export function readConfig(env = process.env) {
   };
   const app = checkOrigin('APP_ORIGIN', env.APP_ORIGIN || legacyOrigin || 'http://localhost:5173');
   const api = checkOrigin('API_ORIGIN', env.API_ORIGIN || legacyOrigin || 'http://localhost:5173');
+  const appPathValue = env.APP_RETURN_PATH || '/';
+  if (!appPathValue.startsWith('/')) throw new Error('APP_RETURN_PATH must start with /');
+  const appReturn = new URL(appPathValue, app.url);
+  if (appReturn.origin !== app.url.origin || appReturn.search || appReturn.hash || !appReturn.pathname.endsWith('/')) throw new Error('APP_RETURN_PATH must be an absolute directory path without query or hash');
   const devLogin = env.DEV_AUTH_ENABLED === 'true';
   if (devLogin && (production || !app.loopback || !api.loopback)) throw new Error('Development login is allowed only on local development origins');
   const cookieSameSite = env.COOKIE_SAME_SITE || 'Lax';
@@ -20,7 +24,7 @@ export function readConfig(env = process.env) {
   const pairs = [['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'], ['WECHAT_APP_ID', 'WECHAT_APP_SECRET']];
   for (const [id, secret] of pairs) if (Boolean(env[id]) !== Boolean(env[secret])) throw new Error(`${id} and ${secret} must be set together`);
   return {
-    production, appOrigin: app.url.origin, apiOrigin: api.url.origin,
+    production, appOrigin: app.url.origin, appPath: appReturn.pathname, apiOrigin: api.url.origin,
     // Kept as an alias for existing local tools; new server code uses apiOrigin/appOrigin explicitly.
     origin: api.url.origin, secure: api.url.protocol === 'https:', cookieSameSite, devLogin,
     host: env.HOST || '127.0.0.1', port: Number(env.PORT || 3001),

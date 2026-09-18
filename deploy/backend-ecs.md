@@ -7,6 +7,8 @@
 - `DOMAIN`：Caddy 对外域名，当前为 `backend.zhangzidan.com`。
 - `API_ORIGIN`：API 的完整 HTTPS Origin，决定 Google/微信回调地址。
 - `APP_ORIGIN`：Kodo 静态网站最终 HTTPS Origin，只允许这一个来源带凭据访问 API，OAuth 完成后也回到这里。
+- `APP_RETURN_PATH`：OAuth 完成后返回的游戏目录，当前为 `/marace/`。
+- `VITE_API_ORIGIN`：构建 Kodo 静态文件时写入的 API Origin，当前为 `https://backend.zhangzidan.com`；它不是密钥。
 - `COOKIE_SAME_SITE`：前后端使用同一主域名下的子域名时保持 `Lax`。若使用无关的七牛测试域名，浏览器可能阻止第三方 Cookie；正式环境应为 Kodo 绑定 `zhangzidan.com` 下的自定义前端域名。
 - `SERVE_STATIC=false`：关闭 ECS 静态文件服务。
 - OAuth Secret 只保存在 ECS 的 `.env.production`，不进入镜像和前端构建。
@@ -16,7 +18,7 @@
 ```sh
 cp .env.production.example .env.production
 chmod 600 .env.production
-# 编辑 APP_ORIGIN 和 OAuth 凭据
+# 编辑 APP_ORIGIN、APP_RETURN_PATH 和 OAuth 凭据；构建静态站点时保留 VITE_API_ORIGIN
 sudo docker compose --env-file .env.production up -d --build
 sudo docker compose --env-file .env.production ps
 curl --fail https://backend.zhangzidan.com/api/health

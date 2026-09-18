@@ -41,7 +41,7 @@ Client Secret / AppSecret 只放服务器环境文件或密钥管理中；可告
 Google 创建 Web application OAuth 客户端，将下面的 URI **完整且精确地**添加到 Authorized redirect URIs。相关要求见 [Google OAuth Web Server 文档](https://developers.google.com/identity/protocols/oauth2/web-server)；用户标识来自 [Google UserInfo](https://developers.google.com/identity/openid-connect/reference)。
 
 ```text
-https://你的域名/api/auth/google/callback
+https://backend.zhangzidan.com/api/auth/google/callback
 ```
 
 Google 本地测试可另加 `http://localhost:5173/api/auth/google/callback`。本项目使用 `openid profile` 和 PKCE，服务端处理 code 与 userinfo，不会把 Client Secret 放进 Vite 构建。
@@ -54,25 +54,31 @@ https://你的域名/api/auth/wechat/callback
 
 配置入口与应用资质以 [微信开放平台](https://open.weixin.qq.com/) 及其 [网站应用微信登录指南](https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html) 为准。本次环境无法读取微信指南全文，真实应用的审核状态、回调域名与授权兼容性需凭据到位后联调确认。此版本未实现微信内置浏览器的公众号网页授权；如需该体验，需要额外提供对应公众号资料。
 
-## 部署到单台 ECS
+## 七牛静态站点 + 单台 ECS 后端
 
-已提供 `Dockerfile`、`compose.yaml` 与 `deploy/Caddyfile`。架构为 Caddy HTTPS → Node API/静态页面 → SQLite 持久化卷。数据库没有公网端口。正式环境将接口与网页放在同一个域名，避免跨域 Cookie 配置。
+当前架构为 `https://games.zhangzidan.com/marace/` 托管 Vite 静态文件，`https://backend.zhangzidan.com` 运行 Caddy → Node API → SQLite。两个地址属于同一主域名，浏览器请求使用带凭据 CORS，OAuth 完成后返回 `/marace/`。数据库没有公网端口。
+
+构建静态文件前，在 `.env.production` 中保留：
+
+```text
+VITE_API_ORIGIN=https://backend.zhangzidan.com
+```
+
+运行 `npm run build` 后，将 `dist/` 的内容发布到七牛站点的 `marace/` 目录。`Client Secret` 不会进入前端构建；只有 `VITE_API_ORIGIN` 会写入浏览器代码。
 
 服务器先安装 Docker Engine 与 Compose 插件，然后在项目根目录：
 
 ```sh
 cp .env.production.example .env.production
 chmod 600 .env.production
-# 编辑 DOMAIN、PUBLIC_ORIGIN 和两家登录凭据
-# DOMAIN=kart.example.com
-# PUBLIC_ORIGIN=https://kart.example.com
+# 编辑 OAuth 凭据；域名与返回目录使用示例中的正式值
 
 docker compose --env-file .env.production up -d --build
 docker compose --env-file .env.production ps
-curl --fail https://kart.example.com/api/health
+curl --fail https://backend.zhangzidan.com/api/health
 ```
 
-将域名 DNS 指向服务器，开放公网 80/443，让 Caddy 申请和续期 TLS 证书。SSH 仅向管理来源开放；3001 与数据库不需要公网开放。[阿里云安全组说明](https://www.alibabacloud.com/help/zh/ecs/user-guide/start-using-security-groups)介绍了端口规则。`TRUST_PROXY=true` 仅配合随附 Caddy 使用，Caddy 覆盖真实 IP 请求头；若改用其他代理，需同步调整可信代理设置。
+将 `backend.zhangzidan.com` 的 DNS 指向服务器，开放公网 80/443，让 Caddy 申请和续期 TLS 证书。SSH 仅向管理来源开放；3001 与数据库不需要公网开放。[阿里云安全组说明](https://www.alibabacloud.com/help/zh/ecs/user-guide/start-using-security-groups)介绍了端口规则。`TRUST_PROXY=true` 仅配合随附 Caddy 使用，Caddy 覆盖真实 IP 请求头；若改用其他代理，需同步调整可信代理设置。
 
 本次本机没有 Docker，未实跑镜像/Compose，也未部署到阿里云。拿到 ECS 后需要验证镜像构建、卷权限、证书、真实 OAuth 回调，以及 ECS 到两家 OAuth 端点的网络连通性。
 

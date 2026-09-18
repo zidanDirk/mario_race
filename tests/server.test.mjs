@@ -84,6 +84,9 @@ test('configuration forbids production/public dev authentication, insecure origi
     {PUBLIC_ORIGIN:'https://user:pass@race.example'}, {GOOGLE_CLIENT_ID:'only-id'}, {WECHAT_APP_SECRET:'only-secret'},
     {NODE_ENV:'production',APP_ORIGIN:'https://game.example',API_ORIGIN:'http://api.example'},
     {APP_ORIGIN:'https://game.example/path',API_ORIGIN:'https://api.example'},
+    {APP_ORIGIN:'https://game.example',APP_RETURN_PATH:'marace/',API_ORIGIN:'https://api.example'},
+    {APP_ORIGIN:'https://game.example',APP_RETURN_PATH:'/marace',API_ORIGIN:'https://api.example'},
+    {APP_ORIGIN:'https://game.example',APP_RETURN_PATH:'/marace/?x=1',API_ORIGIN:'https://api.example'},
     {APP_ORIGIN:'https://game.example',API_ORIGIN:'https://api.example',COOKIE_SAME_SITE:'invalid'},
     {APP_ORIGIN:'http://localhost:5173',API_ORIGIN:'http://localhost:3001',COOKIE_SAME_SITE:'None'},
   ]) assert.throws(()=>readConfig(env));
@@ -266,7 +269,7 @@ test('public config excludes secrets, unconfigured providers fail gracefully, st
 test('backend-only deployment allows one exact Kodo app origin and returns OAuth callbacks to it', async t => {
   const appOrigin='https://game.example';
   const apiOrigin='https://api.example';
-  const f=await fixture(t,{appOrigin,apiOrigin,origin:apiOrigin,secure:true,serveStatic:false}),c=f.client();
+  const f=await fixture(t,{appOrigin,appPath:'/marace/',apiOrigin,origin:apiOrigin,secure:true,serveStatic:false}),c=f.client();
   const config=await c.request('/api/config',{headers:{Origin:appOrigin}});
   assert.equal(config.status,200);
   assert.equal(config.headers.get('access-control-allow-origin'),appOrigin);
@@ -284,7 +287,7 @@ test('backend-only deployment allows one exact Kodo app origin and returns OAuth
   const authorization=new URL(begin.headers.get('location'));
   assert.equal(authorization.searchParams.get('redirect_uri'),`${apiOrigin}/api/auth/google/callback`);
   const callback=await c.request(`/api/auth/google/callback?state=${authorization.searchParams.get('state')}&code=split-host`);
-  assert.equal(callback.headers.get('location'),`${appOrigin}/?auth=success`);
+  assert.equal(callback.headers.get('location'),`${appOrigin}/marace/?auth=success`);
 });
 
  test('course revision isolates historical best scores and rejects stale clients/tickets',async t=>{

@@ -62,7 +62,7 @@ export function createApplication({config = readConfig(), now = Date.now, fetchI
   }
   function json(res, status, data) {res.writeHead(status, {'Content-Type': 'application/json; charset=utf-8'});res.end(JSON.stringify(data));}
   function redirect(res, location) {res.writeHead(302, {Location: location});res.end();}
-  function appRedirect(res, query) {redirect(res, new URL(`/?${query}`, config.appOrigin).href);}
+  function appRedirect(res, query) {const target = new URL(config.appPath || '/', config.appOrigin);target.search = query;redirect(res, target.href);}
   function allowCors(req, res) {
     if (req.headers.origin !== config.appOrigin) return false;
     res.setHeader('Access-Control-Allow-Origin', config.appOrigin);

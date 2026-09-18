@@ -1,0 +1,5 @@
+.course-footer{display:flex;align-items:center;gap:14px}
+.course-footer a{color:inherit;text-underline-offset:3px;pointer-events:auto}
+.course-footer a:focus-visible{outline:2px solid #fffdf3;outline-offset:4px;border-radius:2px}
+.cloud-privacy a{color:#087b78;font-weight:700;text-underline-offset:2px}
+.cloud-privacy a:focus-visible{outline:2px solid #087b78;outline-offset:3px;border-radius:2px}
