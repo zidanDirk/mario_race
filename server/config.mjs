@@ -37,7 +37,22 @@ export function readConfig(env = process.env) {
     }
     if (googleRelaySecret.length < 32) throw new Error('GOOGLE_RELAY_SECRET must be at least 32 characters');
   }
-  if (Boolean(env.WECHAT_APP_ID) !== Boolean(env.WECHAT_APP_SECRET)) throw new Error('WECHAT_APP_ID and WECHAT_APP_SECRET must be set together');
+  const emailUser = env.EMAIL_SMTP_USER || '';
+  const emailPassword = env.EMAIL_SMTP_PASSWORD || '';
+  const emailAuthSecret = env.EMAIL_AUTH_SECRET || '';
+  const emailParts = [emailUser, emailPassword, emailAuthSecret];
+  if (emailParts.some(Boolean) && !emailParts.every(Boolean)) throw new Error('EMAIL_SMTP_USER, EMAIL_SMTP_PASSWORD and EMAIL_AUTH_SECRET must be set together');
+  const emailHost = env.EMAIL_SMTP_HOST || 'smtpdm.aliyun.com';
+  const emailPort = Number(env.EMAIL_SMTP_PORT || 465);
+  const emailSecure = env.EMAIL_SMTP_SECURE !== 'false';
+  const emailDailyLimit = Number(env.EMAIL_DAILY_LIMIT || 200);
+  if (emailUser && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailUser)) throw new Error('EMAIL_SMTP_USER must be an email address');
+  if (emailAuthSecret && emailAuthSecret.length < 32) throw new Error('EMAIL_AUTH_SECRET must be at least 32 characters');
+  if (!/^[A-Za-z0-9.-]+$/.test(emailHost) || emailHost.startsWith('.') || emailHost.endsWith('.')) throw new Error('EMAIL_SMTP_HOST must be a hostname');
+  if (!Number.isInteger(emailPort) || emailPort < 1 || emailPort > 65535) throw new Error('EMAIL_SMTP_PORT must be a valid port');
+  if (!Number.isInteger(emailDailyLimit) || emailDailyLimit < 1 || emailDailyLimit > 10_000) throw new Error('EMAIL_DAILY_LIMIT must be between 1 and 10000');
+  const emailFromName = (env.EMAIL_FROM_NAME || '游戏星球').trim();
+  if (!emailFromName || emailFromName.length > 40 || /[\r\n]/.test(emailFromName)) throw new Error('EMAIL_FROM_NAME is invalid');
   return {
     production, appOrigin: app.url.origin, appPath: appReturn.pathname, apiOrigin: api.url.origin,
     // Kept as an alias for existing local tools; new server code uses apiOrigin/appOrigin explicitly.
@@ -46,6 +61,7 @@ export function readConfig(env = process.env) {
     dbPath: resolve(env.DATABASE_PATH || (production ? 'data/race.sqlite' : 'data/development.sqlite')),
     staticDir: resolve('dist'), serveStatic: env.SERVE_STATIC !== 'false', trustProxy: env.TRUST_PROXY === 'true',
     google: {id: googleId, secret: googleSecret, relayUrl: googleRelayUrl, relaySecret: googleRelaySecret},
-    wechat: {id: env.WECHAT_APP_ID || '', secret: env.WECHAT_APP_SECRET || ''},
+    email: {enabled: emailParts.every(Boolean), host: emailHost, port: emailPort, secure: emailSecure,
+      user: emailUser, password: emailPassword, authSecret: emailAuthSecret, fromName: emailFromName, dailyLimit: emailDailyLimit},
   };
 }

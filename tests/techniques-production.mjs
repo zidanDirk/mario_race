@@ -16,7 +16,7 @@ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method
 async function start(){const res=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/races'));await page.click('#start');const response=await res;assert.equal(response.status(),201);return response.json();}
 try{
  await page.goto(config.origin);await page.locator('#loading').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>typeof window.__THREE_GAME_TEST_HOOKS__),'undefined');
- await page.getByRole('button',{name:'用户登录与云端排行榜'}).click();await page.getByLabel('本地开发测试（非微信 / Google 登录）').fill('配置联调车手');await page.getByRole('button',{name:'测试登录',exact:true}).click();await page.getByRole('heading',{name:'配置联调车手',exact:true}).waitFor();await page.getByRole('button',{name:'关闭排行榜'}).click();
+ await page.getByRole('button',{name:'用户登录与云端排行榜'}).click();await page.getByLabel('本地开发测试（非邮箱 / Google 登录）').fill('配置联调车手');await page.getByRole('button',{name:'测试登录',exact:true}).click();await page.getByRole('heading',{name:'配置联调车手',exact:true}).waitFor();await page.getByRole('button',{name:'关闭排行榜'}).click();
  await page.click('#loadout-open');await page.click('[data-loadout=speed]');await page.keyboard.press('Escape');const ticket=await start();assert.equal(ticket.loadout,'speed');assert.equal(starts[0].rulesVersion,6);assert.equal(starts[0].loadout,'speed');
  await page.keyboard.press('Escape');await page.click('#home');await page.click('#loadout-open');const before=await page.evaluate(()=>({...localStorage}));await page.click('#loadout-test-drive');
  // Let production practice expire without test hooks, input or clock injection.

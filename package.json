@@ -35,6 +35,7 @@
     "test:tactics": "npm run build && npm run test:unit && npm run test:server && node tests/tactics-browser.mjs && node tests/tactics-race.mjs && node tests/tactics-production.mjs"
   },
   "dependencies": {
+    "nodemailer": "^10.0.10",
     "three": "^0.180.0"
   },
   "devDependencies": {

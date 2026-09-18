@@ -9,10 +9,7 @@ export function authorizationUrl(provider, config, state, verifier) {
       code_challenge: createHash('sha256').update(verifier).digest('base64url'), code_challenge_method: 'S256'}).toString();
     return url.href;
   }
-  const url = new URL('https://open.weixin.qq.com/connect/qrconnect');
-  url.search = new URLSearchParams({appid: config.wechat.id, redirect_uri: callback, response_type: 'code', scope: 'snsapi_login', state}).toString();
-  url.hash = 'wechat_redirect';
-  return url.href;
+  throw new Error('Unsupported OAuth provider');
 }
 
 async function getJson(fetchImpl, url, options = {}) {
@@ -57,14 +54,5 @@ export async function exchangeIdentity(provider, config, code, verifier, fetchIm
     if (typeof profile.sub !== 'string' || !profile.sub) throw new Error('Missing subject');
     return googleIdentity({subject: profile.sub, name: profile.name, avatar: profile.picture});
   }
-  const url = new URL('https://api.weixin.qq.com/sns/oauth2/access_token');
-  url.search = new URLSearchParams({appid: config.wechat.id, secret: config.wechat.secret, code, grant_type: 'authorization_code'}).toString();
-  const token = await getJson(fetchImpl, url);
-  if (typeof token.access_token !== 'string' || typeof token.openid !== 'string' || !token.openid) throw new Error('Missing WeChat identity');
-  const info = new URL('https://api.weixin.qq.com/sns/userinfo');
-  info.search = new URLSearchParams({access_token: token.access_token, openid: token.openid, lang: 'zh_CN'}).toString();
-  const profile = await getJson(fetchImpl, info);
-  if (profile.openid !== token.openid) throw new Error('WeChat identity mismatch');
-  // Website-app scoped OpenID is stable. No automatic cross-provider/account merging.
-  return {subject: token.openid, name: profile.nickname || '微信车手', avatar: profile.headimgurl};
+  throw new Error('Unsupported OAuth provider');
 }

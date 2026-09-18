@@ -10,8 +10,8 @@ import {createApplication} from '../server/app.mjs';
 import {readConfig} from '../server/config.mjs';
 
 const ORIGIN = 'http://localhost:5173';
-const credentials = {GOOGLE_CLIENT_ID:'google-client', GOOGLE_CLIENT_SECRET:'google-private-secret', WECHAT_APP_ID:'wechat-client', WECHAT_APP_SECRET:'wechat-private-secret'};
-async function fixture(t, extra = {}) {
+const credentials = {GOOGLE_CLIENT_ID:'google-client', GOOGLE_CLIENT_SECRET:'google-private-secret', EMAIL_SMTP_USER:'login@example.com', EMAIL_SMTP_PASSWORD:'email-private-secret', EMAIL_AUTH_SECRET:'email-auth-secret-that-is-at-least-32-characters'};
+async function fixture(t, extra = {}, application = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'mario-server-test-'));
   await mkdir(join(directory, 'public'));
   await writeFile(join(directory, 'public/index.html'), '<!doctype html><title>Race test</title>');
@@ -19,6 +19,7 @@ async function fixture(t, extra = {}) {
   await writeFile(join(directory, 'outside.txt'), 'OUTSIDE_SECRET');
   let time = 1_800_000_000_000;
   const calls = [];
+  const emails = [];
   const fetchImpl = async (input, options) => {
     const url = new URL(input);
     calls.push({url, options});
@@ -32,19 +33,14 @@ async function fixture(t, extra = {}) {
     } else if (url.hostname === 'openidconnect.googleapis.com') {
       const subject = options.headers.Authorization.slice('Bearer google-access-'.length);
       data = {sub:subject, name:`Google ${subject}`, picture:'https://example.com/avatar.png', email:'private@example.com'};
-    } else if (url.pathname.endsWith('/access_token')) {
-      const code = url.searchParams.get('code');
-      data = code === 'fail' ? {errcode:40029, errmsg:'private-provider-detail'} : {access_token:`wechat-access-${code}`, openid:`wechat-openid-${code}`};
-    } else {
-      data = {openid:url.searchParams.get('openid').endsWith('-mismatch') ? 'unexpected-openid' : url.searchParams.get('openid'), nickname:'微信车手', headimgurl:'http://insecure.example/avatar.png', unionid:'private-union-id'};
-    }
+    } else throw new Error('Unexpected OAuth URL');
     return {ok:true, json:async () => data};
   };
   const config = {...readConfig({PUBLIC_ORIGIN:ORIGIN, DEV_AUTH_ENABLED:'true', ...credentials}), dbPath:join(directory,'race.sqlite'), staticDir:join(directory,'public'), ...extra};
   let app;
   let base;
   async function start() {
-    app = createApplication({config, now:() => time, fetchImpl});
+    app = createApplication({config, now:() => time, fetchImpl, sendEmail:application.sendEmail || (async message => emails.push(message))});
     await new Promise((resolve, reject) => {app.server.once('error',reject);app.server.listen(0,'127.0.0.1',resolve);});
     base = `http://127.0.0.1:${app.server.address().port}`;
   }
@@ -60,7 +56,7 @@ async function fixture(t, extra = {}) {
     }
     return {request,jar};
   }
-  return {client, calls, config, advance:ms=>{time+=ms;}, restart:async()=>{await app.close();await start();}, get db(){return app.db;}};
+  return {client, calls, emails, config, advance:ms=>{time+=ms;}, restart:async()=>{await app.close();await start();}, get db(){return app.db;}};
 }
 async function login(client, provider='google', code='test-subject') {
   const begin=await client.request(`/api/auth/${provider}`);
@@ -84,7 +80,10 @@ test('configuration forbids production/public dev authentication, insecure origi
     {PUBLIC_ORIGIN:'https://race.example',DEV_AUTH_ENABLED:'true'},
     {NODE_ENV:'production',PUBLIC_ORIGIN:'http://localhost:5173'},
     {PUBLIC_ORIGIN:'http://race.example'}, {PUBLIC_ORIGIN:'https://race.example/path'},
-    {PUBLIC_ORIGIN:'https://user:pass@race.example'}, {GOOGLE_CLIENT_ID:'only-id'}, {WECHAT_APP_SECRET:'only-secret'},
+    {PUBLIC_ORIGIN:'https://user:pass@race.example'}, {GOOGLE_CLIENT_ID:'only-id'},
+    {EMAIL_SMTP_USER:'login@example.com'}, {EMAIL_SMTP_PASSWORD:'only-secret'}, {EMAIL_AUTH_SECRET:'short'},
+    {EMAIL_SMTP_USER:'invalid',EMAIL_SMTP_PASSWORD:'secret',EMAIL_AUTH_SECRET:'x'.repeat(32)},
+    {EMAIL_SMTP_HOST:'https://smtp.example.com'}, {EMAIL_SMTP_PORT:'70000'}, {EMAIL_DAILY_LIMIT:'0'},
     {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'https://relay.example/google/exchange'},
     {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_SECRET:'x'.repeat(32)},
     {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'http://relay.example/google/exchange',GOOGLE_RELAY_SECRET:'x'.repeat(32)},
@@ -103,6 +102,8 @@ test('configuration forbids production/public dev authentication, insecure origi
   const relay=readConfig({GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'https://relay.example/google/exchange',GOOGLE_RELAY_SECRET:'x'.repeat(32)});
   assert.equal(relay.google.secret,'');
   assert.equal(relay.google.relayUrl,'https://relay.example/google/exchange');
+  const email=readConfig({EMAIL_SMTP_USER:'login@example.com',EMAIL_SMTP_PASSWORD:'secret',EMAIL_AUTH_SECRET:'x'.repeat(32)}).email;
+  assert.equal(email.enabled,true); assert.equal(email.host,'smtpdm.aliyun.com'); assert.equal(email.port,465); assert.equal(email.secure,true);
 });
 
 test('guest access, CSRF, local dev login, session privacy and logout', async t => {
@@ -170,29 +171,51 @@ test('Google OAuth relay receives only the one-time exchange inputs and returns 
   assert.ok(!response.headers.get('location').includes('relay'));
 });
 
-test('WeChat QR OAuth verifies OpenID and never returns private provider identifiers', async t => {
+test('email codes are hashed, rate limited, single use and create a stable private identity', async t => {
   const f=await fixture(t),c=f.client();
-  const {authorization}=await login(c,'wechat','wechat-person');
-  assert.equal(authorization.origin,'https://open.weixin.qq.com');
-  assert.equal(authorization.pathname,'/connect/qrconnect');
-  assert.equal(authorization.searchParams.get('scope'),'snsapi_login');
-  assert.equal(authorization.searchParams.get('appid'),credentials.WECHAT_APP_ID);
-  assert.equal(f.calls[0].url.searchParams.get('secret'),credentials.WECHAT_APP_SECRET);
+  const sent=await c.request('/api/auth/email/send',{method:'POST',data:{email:' Driver+Cup@Example.COM '}});
+  assert.equal(sent.status,200,sent.text);
+  assert.deepEqual(sent.json,{ok:true,expiresInSeconds:300,retryAfterSeconds:60});
+  assert.equal(f.emails.length,1); assert.equal(f.emails[0].to,'driver+cup@example.com'); assert.match(f.emails[0].code,/^\d{6}$/);
+  assert.ok(!sent.text.includes(f.emails[0].code)); assert.ok(!sent.text.includes('driver'));
+  assert.equal((await c.request('/api/auth/email/send',{method:'POST',data:{email:'driver+cup@example.com'}})).status,429);
+  assert.equal((await c.request('/api/auth/email/verify',{method:'POST',data:{email:'driver+cup@example.com',code:'111111'}})).status,400);
+  const verified=await c.request('/api/auth/email/verify',{method:'POST',data:{email:'DRIVER+CUP@example.com',code:f.emails[0].code}});
+  assert.equal(verified.status,200,verified.text);
   const me=await c.request('/api/me');
-  assert.equal(me.json.user.provider,'wechat');
-  assert.equal(me.json.user.avatarUrl,'','unsafe avatar protocols are rejected');
-  for (const privateValue of ['openid','unionid','wechat-private-secret','wechat-access','private-union-id']) assert.ok(!me.text.includes(privateValue));
+  assert.equal(me.json.user.provider,'email'); assert.match(me.json.user.displayName,/^邮箱车手 [A-F0-9]{4}$/);
+  assert.ok(!me.text.includes('driver+cup')); assert.equal(me.json.user.avatarUrl,'');
+  assert.equal((await c.request('/api/auth/email/verify',{method:'POST',data:{email:'driver+cup@example.com',code:f.emails[0].code}})).status,400);
+  const stored=f.db.prepare("SELECT subject FROM users WHERE provider='email'").get();
+  assert.ok(stored && !stored.subject.includes('@')); assert.equal(f.db.prepare('SELECT COUNT(*) n FROM email_login_codes').get().n,0);
+  const events=JSON.stringify(f.db.prepare('SELECT * FROM email_send_events').all()); assert.ok(!events.includes('driver+cup'));
+  const id=me.json.user.id; f.advance(60_001);
+  assert.equal((await c.request('/api/auth/email/send',{method:'POST',data:{email:'driver+cup@example.com'}})).status,200);
+  assert.equal((await c.request('/api/auth/email/verify',{method:'POST',data:{email:'driver+cup@example.com',code:f.emails[1].code}})).status,200);
+  assert.equal((await c.request('/api/me')).json.user.id,id);
 });
 
-test('OAuth rejects missing, wrong, cross-provider, expired and replayed state; consumes cancellation/error', async t => {
+test('email login rejects invalid and expired codes and hides delivery failures', async t => {
+  const f=await fixture(t),c=f.client();
+  for (const email of ['', 'missing-at.example', 'a@localhost', 'a\n@example.com']) {
+    assert.equal((await c.request('/api/auth/email/send',{method:'POST',data:{email}})).status,400);
+  }
+  await c.request('/api/auth/email/send',{method:'POST',data:{email:'expires@example.com'}}); f.advance(300_001);
+  assert.equal((await c.request('/api/auth/email/verify',{method:'POST',data:{email:'expires@example.com',code:f.emails[0].code}})).status,400);
+  const failed=await fixture(t,{}, {sendEmail:async()=>{throw new Error('private SMTP failure');}}), failedClient=failed.client();
+  const response=await failedClient.request('/api/auth/email/send',{method:'POST',data:{email:'private@example.com'}});
+  assert.equal(response.status,503); assert.equal(response.text,'{"error":"验证码暂时无法发送，请稍后重试"}');
+  assert.ok(!response.text.includes('private@example.com'));
+});
+
+test('OAuth rejects missing, wrong, expired and replayed state; consumes cancellation/error', async t => {
   const f=await fixture(t), c=f.client(), other=f.client();
   const start=async()=>new URL((await c.request('/api/auth/google')).headers.get('location')).searchParams.get('state');
-  const callback=(client,state,query='code=person',provider='google')=>client.request(`/api/auth/${provider}/callback?state=${state}&${query}`);
+  const callback=(client,state,query='code=person')=>client.request(`/api/auth/google/callback?state=${state}&${query}`);
   assert.equal((await callback(c,'')).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
   let state=await start();
   assert.equal((await callback(c,'wrong')).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
   assert.equal((await callback(other,state)).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
-  assert.equal((await callback(c,state,'code=person','wechat')).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
   assert.equal(f.calls.length,0);
   assert.equal((await callback(c,state)).headers.get('location'),`${ORIGIN}/?auth=success`);
   assert.equal((await callback(c,state)).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
@@ -206,20 +229,6 @@ test('OAuth rejects missing, wrong, cross-provider, expired and replayed state; 
   assert.equal((await callback(c,state)).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
   state=await start();
   assert.equal((await callback(c,state,'')).headers.get('location'),`${ORIGIN}/?auth=error&reason=invalid`);
-});
-
-test('WeChat rejects failed token exchange and mismatched profile identity without creating a session', async t => {
-  const f=await fixture(t), c=f.client();
-  for (const code of ['fail','mismatch']) {
-    const begin=await c.request('/api/auth/wechat');
-    const state=new URL(begin.headers.get('location')).searchParams.get('state');
-    const callback=await c.request(`/api/auth/wechat/callback?state=${state}&code=${code}`);
-    assert.equal(callback.headers.get('location'),`${ORIGIN}/?auth=error&reason=provider`);
-    assert.equal((await c.request('/api/me')).json.user,null);
-    assert.ok(!callback.text.includes('private-provider-detail'));
-    assert.equal((await c.request(`/api/auth/wechat/callback?state=${state}&code=valid`)).headers.get('location'),`${ORIGIN}/?auth=error&reason=expired`);
-  }
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users').get().n,0);
 });
 
 test('race tickets enforce identity, session, timing, schema and idempotent immutable results', async t => {
@@ -288,9 +297,11 @@ test('production disables dev endpoint, hides legacy dev scores, and sets secure
 });
 
 test('public config excludes secrets, unconfigured providers fail gracefully, static paths cannot expose dotfiles/outside files', async t => {
-  const f=await fixture(t,{google:{id:'',secret:''},wechat:{id:'',secret:''}}), c=f.client();
-  assert.deepEqual((await c.request('/api/config')).json,{providers:{google:false,wechat:false},devLogin:true});
+  const f=await fixture(t,{google:{id:'',secret:''},email:{enabled:false}}), c=f.client();
+  assert.deepEqual((await c.request('/api/config')).json,{providers:{google:false,email:false},devLogin:true});
   assert.equal((await c.request('/api/auth/google')).headers.get('location'),`${ORIGIN}/?auth=error&reason=unconfigured`);
+  assert.equal((await c.request('/api/auth/wechat')).status,404);
+  assert.equal((await c.request('/api/auth/email/send',{method:'POST',data:{email:'x@example.com'}})).status,404);
   assert.equal((await c.request('/')).status,200);
   for (const path of ['/.env','/%2eenv','/..%2foutside.txt','/%2e%2e%2foutside.txt','/server/config.mjs','/data/race.sqlite']) {
     const response=await c.request(path);assert.equal(response.status,404,path);

@@ -1,11 +1,12 @@
 import {createServer} from 'node:http';
-import {randomBytes, randomUUID, createHash} from 'node:crypto';
+import {randomBytes, randomUUID, randomInt, createHash, createHmac, timingSafeEqual} from 'node:crypto';
 import {readFile, stat} from 'node:fs/promises';
 import {resolve, extname, sep} from 'node:path';
 import {readConfig} from './config.mjs';
 import {openStore, leaderboard, stats, readProgress, writeProgress, TRACK, rulesVersion, CHARACTERS, RACE_MODES, DIFFICULTIES, LOADOUTS} from './store.mjs';
 import {dayKey, snapshot, applyRace, equipProgress, validateMetrics} from '../shared/progression.mjs';
 import {authorizationUrl, exchangeIdentity} from './oauth.mjs';
+import {createEmailSender} from './email.mjs';
 
 const token = () => randomBytes(32).toString('base64url');
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -37,8 +38,9 @@ async function body(req) {
   catch { throw failure(400, '请求格式错误'); }
 }
 
-export function createApplication({config = readConfig(), now = Date.now, fetchImpl = fetch} = {}) {
+export function createApplication({config = readConfig(), now = Date.now, fetchImpl = fetch, sendEmail} = {}) {
   const db = openStore(config.dbPath);
+  const deliverEmail = sendEmail || (config.email.enabled ? createEmailSender(config.email) : null);
   const sessionName = config.secure ? '__Host-mario_session' : 'mario_session';
   const stateName = provider => config.secure ? `__Host-mario_oauth_${provider}` : `mario_oauth_${provider}`;
   const limits = new Map();
@@ -48,6 +50,8 @@ export function createApplication({config = readConfig(), now = Date.now, fetchI
     lastCleanup = now();
     db.prepare('DELETE FROM sessions WHERE expires_at<?').run(now());
     db.prepare('DELETE FROM oauth_states WHERE expires_at<?').run(now());
+    db.prepare('DELETE FROM email_login_codes WHERE expires_at<?').run(now());
+    db.prepare('DELETE FROM email_send_events WHERE sent_at<?').run(now() - 86400_000);
     db.prepare('DELETE FROM races WHERE finished_at IS NULL AND expires_at<?').run(now());
     for (const [key, value] of limits) if (value.until < now()) limits.delete(key);
   }
@@ -56,6 +60,19 @@ export function createApplication({config = readConfig(), now = Date.now, fetchI
     if (!entry || entry.until <= now()) { entry = {n: 0, until: now() + windowMs}; limits.set(key, entry); }
     if (++entry.n > max) throw failure(429, '操作过于频繁，请稍后重试');
   }
+  function normalizeEmail(value) {
+    if (typeof value !== 'string') throw failure(400, '邮箱地址格式不正确');
+    const email = value.trim().toLowerCase();
+    if (email.length < 3 || email.length > 254 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(email)) {
+      throw failure(400, '邮箱地址格式不正确');
+    }
+    return email;
+  }
+  const emailDigest = (purpose, value) => createHmac('sha256', config.email.authSecret).update(`${purpose}:${value}`).digest('hex');
+  const equalDigest = (left, right) => {
+    const a = Buffer.from(left || '', 'hex'), b = Buffer.from(right || '', 'hex');
+    return a.length === b.length && a.length > 0 && timingSafeEqual(a, b);
+  };
   function cookie(res, name, value, maxAge) {
     const current = res.getHeader('Set-Cookie') || [];
     res.setHeader('Set-Cookie', [...current, `${name}=${value}; Path=/; HttpOnly; SameSite=${config.cookieSameSite}; Max-Age=${maxAge}${config.secure ? '; Secure' : ''}`]);
@@ -127,7 +144,7 @@ export function createApplication({config = readConfig(), now = Date.now, fetchI
           try{next=equipProgress(readProgress(db,user.id),data);}catch(error){throw failure(400,error.message);}
           writeProgress(db,user.id,next);return json(res,200,snapshot(next,dayKey(now())));
         }
-        if (path === '/api/config' && req.method === 'GET') return json(res, 200, {providers: {google: !!config.google.id, wechat: !!config.wechat.id}, devLogin: config.devLogin});
+        if (path === '/api/config' && req.method === 'GET') return json(res, 200, {providers: {google: !!config.google.id, email: config.email.enabled}, devLogin: config.devLogin});
         if (path === '/api/me' && req.method === 'GET') {
           const mode = raceMode(url.searchParams.has('mode') ? url.searchParams.get('mode') : undefined);
           const user = session(req);
@@ -146,6 +163,57 @@ export function createApplication({config = readConfig(), now = Date.now, fetchI
           login(req, res, 'dev', {subject: randomUUID(), name: data.displayName || '本地测试车手', avatar: ''});
           return json(res, 200, {ok: true});
         }
+        if (path === '/api/auth/email/send' && req.method === 'POST') {
+          if (!config.email.enabled || !deliverEmail) throw failure(404, '未开放此登录方式');
+          rate(`email-send:${ip}`, 5, 10 * 60_000);
+          const data = await body(req), email = normalizeEmail(data.email);
+          const emailHash = emailDigest('address', email), ipHash = emailDigest('ip', String(ip));
+          const count = (sql, ...params) => db.prepare(sql).get(...params).n;
+          if (count('SELECT COUNT(*) n FROM email_send_events WHERE email_hash=? AND sent_at>=?', emailHash, now() - 60_000) >= 1 ||
+              count('SELECT COUNT(*) n FROM email_send_events WHERE email_hash=? AND sent_at>=?', emailHash, now() - 3600_000) >= 5 ||
+              count('SELECT COUNT(*) n FROM email_send_events WHERE email_hash=? AND sent_at>=?', emailHash, now() - 86400_000) >= 10 ||
+              count('SELECT COUNT(*) n FROM email_send_events WHERE ip_hash=? AND sent_at>=?', ipHash, now() - 3600_000) >= 20 ||
+              count('SELECT COUNT(*) n FROM email_send_events WHERE sent_at>=?', now() - 86400_000) >= config.email.dailyLimit) {
+            throw failure(429, '验证码发送过于频繁，请稍后重试');
+          }
+          const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+          const codeHash = emailDigest('code', `${email}:${code}`), eventId = randomUUID();
+          db.exec('BEGIN IMMEDIATE');
+          try {
+            db.prepare(`INSERT INTO email_login_codes(email_hash,code_hash,attempts,expires_at) VALUES(?,?,0,?)
+              ON CONFLICT(email_hash) DO UPDATE SET code_hash=excluded.code_hash,attempts=0,expires_at=excluded.expires_at`)
+              .run(emailHash, codeHash, now() + 5 * 60_000);
+            db.prepare('INSERT INTO email_send_events(id,email_hash,ip_hash,sent_at) VALUES(?,?,?,?)').run(eventId, emailHash, ipHash, now());
+            db.exec('COMMIT');
+          } catch (error) { db.exec('ROLLBACK'); throw error; }
+          try { await deliverEmail({to: email, code}); }
+          catch {
+            console.warn('Email login: delivery failed');
+            throw failure(503, '验证码暂时无法发送，请稍后重试');
+          }
+          return json(res, 200, {ok: true, expiresInSeconds: 300, retryAfterSeconds: 60});
+        }
+        if (path === '/api/auth/email/verify' && req.method === 'POST') {
+          if (!config.email.enabled) throw failure(404, '未开放此登录方式');
+          rate(`email-verify:${ip}`, 20, 10 * 60_000);
+          const data = await body(req), email = normalizeEmail(data.email);
+          if (typeof data.code !== 'string' || !/^\d{6}$/.test(data.code)) throw failure(400, '验证码格式不正确');
+          const emailHash = emailDigest('address', email);
+          const pending = db.prepare('SELECT * FROM email_login_codes WHERE email_hash=?').get(emailHash);
+          if (!pending || pending.expires_at < now() || pending.attempts >= 5) {
+            if (pending) db.prepare('DELETE FROM email_login_codes WHERE email_hash=?').run(emailHash);
+            throw failure(400, '验证码无效或已过期');
+          }
+          db.prepare('UPDATE email_login_codes SET attempts=attempts+1 WHERE email_hash=?').run(emailHash);
+          if (!equalDigest(pending.code_hash, emailDigest('code', `${email}:${data.code}`))) {
+            if (pending.attempts + 1 >= 5) db.prepare('DELETE FROM email_login_codes WHERE email_hash=?').run(emailHash);
+            throw failure(400, '验证码无效或已过期');
+          }
+          db.prepare('DELETE FROM email_login_codes WHERE email_hash=?').run(emailHash);
+          const subject = emailDigest('identity', email);
+          login(req, res, 'email', {subject, name: `邮箱车手 ${subject.slice(0, 4).toUpperCase()}`, avatar: ''});
+          return json(res, 200, {ok: true});
+        }
         if (path === '/api/logout' && req.method === 'POST') {
           await body(req);
           const raw = cookies(req)[sessionName];
@@ -153,7 +221,7 @@ export function createApplication({config = readConfig(), now = Date.now, fetchI
           cookie(res, sessionName, '', 0);
           return json(res, 200, {ok: true});
         }
-        const auth = path.match(/^\/api\/auth\/(google|wechat)(\/callback)?$/);
+        const auth = path.match(/^\/api\/auth\/(google)(\/callback)?$/);
         if (auth && req.method === 'GET') {
           const provider = auth[1];
           rate(`oauth:${ip}`, 60);

@@ -7,13 +7,13 @@ export type RaceMode = 'grand-prix' | 'time-trial';
 const modeNames: Record<RaceMode, string> = { 'grand-prix': '标准道具竞速', 'time-trial': '计时挑战' };
 type User = { id: string; displayName: string; avatarUrl: string | null; provider: string };
 type Account = { mode?: RaceMode; user: User | null; stats: { bestTimeMs: number | null; totalRaces: number; rank: number | null } | null };
-type Config = { providers: { google: boolean; wechat: boolean }; devLogin: boolean };
+type Config = { providers: { google: boolean; email: boolean }; devLogin: boolean };
 type Entry = { rank: number; userId: string; displayName: string; avatarUrl: string | null; bestTimeMs: number; character: string; loadout?:string; title?:'rookie'|'star' };
 type Board = { mode: RaceMode; entries: Entry[]; track: string; rulesVersion: number };
 type Result = { timeMs: number; character: string; position: number; coins: number; metrics?:Metrics };
 type Receipt = { progression?:Snapshot; mode: RaceMode; difficulty: RaceDifficulty; saved: true; bestTimeMs: number | null; rank: number | null };
 const drivers: Record<string, string> = { mario: '马里奥', luigi: '路易吉', peach: '碧姬', yoshi: '耀西', toad: '奇诺比奥', wario: '瓦力欧' };
-const providers: Record<string, string> = { google: 'Google', wechat: '微信', dev: '本地测试' };
+const providers: Record<string, string> = { google: 'Google', email: '邮箱', dev: '本地测试' };
 const apiOrigin = (import.meta.env.VITE_API_ORIGIN || '').replace(/\/+$/, '');
 const apiUrl = (path: string) => `${apiOrigin}${path}`;
 const time = (ms: number | null | undefined) => ms == null ? '—' : `${String(Math.floor(ms / 60000)).padStart(2, '0')}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}.${String(Math.floor(ms) % 1000).padStart(3, '0')}`;
@@ -30,6 +30,7 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
 }
 function failure(error: unknown): string {
   if (error instanceof ApiError) {
+    if (/邮箱|验证码|登录方式/.test(error.code)) return error.code;
     if (error.status === 401) return '登录已过期，请重新登录后开始新比赛。';
     if (error.status === 404 || error.status === 410) return '本场比赛凭证不存在或已过期，请重新开始比赛。';
     if (error.status === 429) return '操作有些频繁，请稍后重试。';
@@ -68,7 +69,7 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
     <header class="cloud-heading"><div><span class="cloud-eyebrow">MUSHROOM CUP · ONLINE</span><h2 id="cloud-title">每一圈，都值得上榜。</h2></div><button class="cloud-close" type="button" aria-label="关闭排行榜">×</button></header>
     <div class="cloud-mode-tabs" role="group" aria-label="排行榜模式"><button type="button" data-mode="grand-prix" aria-pressed="true">标准道具竞速榜</button><button type="button" data-mode="time-trial" aria-pressed="false">计时挑战榜</button></div>
     <p class="cloud-notice" role="status" aria-live="polite"></p>
-    <div class="cloud-columns"><section class="cloud-account" aria-label="用户信息"><div class="cloud-profile"></div><div class="cloud-login"></div><p class="cloud-privacy">登录后，新比赛成绩会保存到服务器。昵称、头像和最佳成绩会在排行榜公开展示。微信与 Google 暂为独立账号。<a href="./privacy.html" target="_blank" rel="noopener">查看隐私政策</a></p></section>
+    <div class="cloud-columns"><section class="cloud-account" aria-label="用户信息"><div class="cloud-profile"></div><div class="cloud-login"></div><p class="cloud-privacy">登录后，新比赛成绩会保存到服务器。昵称、头像和最佳成绩会在排行榜公开展示。邮箱与 Google 暂为独立账号。<a href="./privacy.html" target="_blank" rel="noopener">查看隐私政策</a></p></section>
     <section class="cloud-ranking" aria-labelledby="cloud-board-title"><div class="cloud-board-heading"><div><span class="cloud-eyebrow">TOP 10 / 150cc / COURSE 02</span><h3 id="cloud-board-title">蘑菇赛道 · 全球前十</h3></div><button class="cloud-refresh" type="button" aria-label="刷新排行榜">↻</button></div><p class="cloud-board-caption">标准难度 · 每位用户最佳三圈用时 · 休闲成绩不计排名</p><div class="cloud-board" aria-live="polite"></div></section></div>
     <footer class="cloud-footer"><span>先登录，再开始一场新的比赛。</span><button type="button" class="cloud-done">返回赛道 →</button></footer>`;
   document.querySelector('#app')!.append(dialog);
@@ -77,6 +78,7 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
   let viewedMode: RaceMode = 'grand-prix';
   let account: Account = { user: null, stats: null }; let config: Config | null = null;
   let online = false; let refreshing = false; let pendingAction = false; let revision = 0; let raceSequence = 0; let offlineNotice = false;
+  let emailDraft = ''; let emailCodeDraft = '';
   type Race = { loadout:LoadoutId; mode: RaceMode; difficulty: RaceDifficulty; sequence: number; userId: string | null; ticket: Promise<{ raceId: string } | null>; finished: boolean };
   let race: Race | null = null;
   let previousFocus: HTMLElement | null = null;
@@ -122,15 +124,41 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
       const logout = actionButton('退出登录', 'cloud-secondary', () => void perform(async () => { await request('/api/logout', {}); cancelRace(); account = { user: null, stats: null }; setNotice('已退出登录，仍可作为游客比赛。'); await refresh(true); }));
       logout.disabled = pendingAction; login.append(logout); return;
     }
-    for (const provider of ['wechat', 'google'] as const) {
-      const enabled = !!config?.providers[provider] && online;
-      const button = actionButton(`${provider === 'wechat' ? '微信扫码登录' : '使用 Google 登录'}${enabled ? '' : ' · 待配置'}`, `cloud-provider cloud-${provider}`, () => { location.assign(apiUrl(`/api/auth/${provider}`)); });
-      button.disabled = !enabled || pendingAction; button.title = enabled ? `使用${providers[provider]}登录` : '管理员配置应用凭据后开放登录';
-      const mark = document.createElement('span'); mark.className = 'cloud-provider-mark'; mark.setAttribute('aria-hidden', 'true'); mark.textContent = provider === 'wechat' ? '◉' : 'G'; button.prepend(mark); login.append(button);
-    }
+    const googleEnabled = !!config?.providers.google && online;
+    const google = actionButton(`使用 Google 登录${googleEnabled ? '' : ' · 待配置'}`, 'cloud-provider cloud-google', () => { location.assign(apiUrl('/api/auth/google')); });
+    google.disabled = !googleEnabled || pendingAction; google.title = googleEnabled ? '使用 Google 登录' : '管理员配置应用凭据后开放登录';
+    const googleMark = document.createElement('span'); googleMark.className = 'cloud-provider-mark'; googleMark.setAttribute('aria-hidden', 'true'); googleMark.textContent = 'G'; google.prepend(googleMark); login.append(google);
+    const emailEnabled = !!config?.providers.email && online;
+    const emailForm = document.createElement('form'); emailForm.className = 'cloud-email';
+    emailForm.innerHTML = `<label for="cloud-email-address">邮箱验证码登录${emailEnabled ? '' : ' · 待配置'}</label>
+      <input id="cloud-email-address" name="email" type="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required />
+      <div><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="6 位验证码" required /><button type="button" data-send-code>发送验证码</button></div>
+      <button type="submit" class="cloud-provider">使用邮箱登录</button>`;
+    const emailInput = emailForm.elements.namedItem('email') as HTMLInputElement;
+    const codeInput = emailForm.elements.namedItem('code') as HTMLInputElement;
+    emailInput.value = emailDraft; codeInput.value = emailCodeDraft;
+    emailInput.addEventListener('input', () => { emailDraft = emailInput.value; });
+    codeInput.addEventListener('input', () => { emailCodeDraft = codeInput.value.replace(/\D/g, '').slice(0, 6); codeInput.value = emailCodeDraft; });
+    emailForm.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input,button').forEach(control => control.disabled = !emailEnabled || pendingAction);
+    emailForm.querySelector<HTMLButtonElement>('[data-send-code]')!.addEventListener('click', () => {
+      if (!emailInput.reportValidity()) return;
+      void perform(async () => {
+        await request('/api/auth/email/send', {email: emailInput.value});
+        setNotice('验证码已发送，请在 5 分钟内完成登录。', 'success');
+      });
+    });
+    emailForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!emailForm.reportValidity()) return;
+      void perform(async () => {
+        await request('/api/auth/email/verify', {email: emailInput.value, code: codeInput.value});
+        emailDraft = ''; emailCodeDraft = ''; cancelRace(); setNotice('邮箱登录成功，开始新比赛即可保存云端成绩。', 'success'); await refresh(true);
+      });
+    });
+    login.append(emailForm);
     if (config?.devLogin && online) {
       const form = document.createElement('form'); form.className = 'cloud-dev';
-      form.innerHTML = '<label for="cloud-dev-name">本地开发测试（非微信 / Google 登录）</label><div><input id="cloud-dev-name" name="displayName" autocomplete="nickname" maxlength="24" placeholder="输入测试昵称" required /><button type="submit">测试登录</button></div>';
+      form.innerHTML = '<label for="cloud-dev-name">本地开发测试（非邮箱 / Google 登录）</label><div><input id="cloud-dev-name" name="displayName" autocomplete="nickname" maxlength="24" placeholder="输入测试昵称" required /><button type="submit">测试登录</button></div>';
       form.querySelector('button')!.disabled = pendingAction;
       form.addEventListener('submit', event => { event.preventDefault(); const value = form.querySelector('input')!.value.trim(); if (!value) return; void perform(async () => { await request('/api/auth/dev', { displayName: value }); cancelRace(); setNotice('已登录本地测试账号，成绩仅保存在当前服务器。'); await refresh(true); }); });
       login.append(form);

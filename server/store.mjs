@@ -27,6 +27,13 @@ export function openStore(path) {
       hash TEXT PRIMARY KEY, provider TEXT NOT NULL, browser_hash TEXT NOT NULL,
       verifier TEXT NOT NULL, expires_at INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS email_login_codes (
+      email_hash TEXT PRIMARY KEY, code_hash TEXT NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0, expires_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS email_send_events (
+      id TEXT PRIMARY KEY, email_hash TEXT NOT NULL, ip_hash TEXT NOT NULL, sent_at INTEGER NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS races (
       id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), session_hash TEXT NOT NULL,
       track TEXT NOT NULL, rules_version INTEGER NOT NULL, character TEXT NOT NULL,
@@ -36,6 +43,9 @@ export function openStore(path) {
     );
     CREATE INDEX IF NOT EXISTS race_best ON races(track, rules_version, user_id, time_ms);
     CREATE INDEX IF NOT EXISTS session_expiry ON sessions(expires_at);
+    CREATE INDEX IF NOT EXISTS email_send_time ON email_send_events(sent_at);
+    CREATE INDEX IF NOT EXISTS email_send_address ON email_send_events(email_hash, sent_at);
+    CREATE INDEX IF NOT EXISTS email_send_ip ON email_send_events(ip_hash, sent_at);
 
   `);
   // Existing race histories remain Grand Prix records when adding time trials.

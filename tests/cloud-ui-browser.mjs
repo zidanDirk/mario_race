@@ -13,7 +13,7 @@ await page.route('**/api/**', async route => {
   const path = new URL(route.request().url()).pathname;
   if (offline) return route.fulfill({ status: 503, json: { error: 'unavailable' } });
   let json;
-  if (path === '/api/config') json = { providers: { google: false, wechat: false }, devLogin: true };
+  if (path === '/api/config') json = { providers: { google: false, email: false }, devLogin: true };
   else if (path === '/api/me') { json = account; if (delayedMe) { delayedMe = false; await new Promise(resolve => setTimeout(resolve, 700)); } }
   else if (path === '/api/leaderboard') json = { entries: leader, track: 'mushroom-circuit', rulesVersion: 1 };
   else if (path === '/api/auth/dev') { const name = route.request().postDataJSON().displayName; account = { user: { id: 'self', displayName: name, avatarUrl: 'javascript:alert(1)', provider: 'dev' }, stats: { bestTimeMs: 50001, totalRaces: 12, rank: 2 } }; json = { ok: true }; }
@@ -27,7 +27,7 @@ try {
   await page.goto(`${origin}/cloud-fixture`); await page.waitForFunction(() => !!window.cloud);
   await page.getByRole('button', { name: '用户登录与云端排行榜', exact: true }).click();
   await page.getByText('冠军席位，虚位以待').waitFor();
-  assert.equal(await page.locator('.cloud-provider:disabled').count(), 2); checks.push('游客空榜、未配置 OAuth 按钮禁用、明确开发登录');
+  assert.equal(await page.locator('.cloud-provider:disabled').count(), 2); checks.push('游客空榜、未配置 Google 与邮箱登录禁用、明确开发登录');
   const name = '<img src=x onerror=alert(1)>很长的测试车手昵称';
   await page.locator('#cloud-dev-name').fill(name);
   await page.getByRole('button', { name: '测试登录', exact: true }).click();

@@ -20,10 +20,11 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:900}});page.on('pageerror',error=>errors.push(error.message));
  await page.goto(config.origin);await page.locator('#loading').waitFor({state:'detached'});
  await page.getByRole('button',{name:'用户登录与云端排行榜'}).click();
- await page.getByLabel('本地开发测试（非微信 / Google 登录）').fill('云端验证车手');
+ assert.equal(await page.locator('.cloud-email').count(),1);
+ assert.equal(await page.locator('.cloud-email input:disabled').count(),2);
+ await page.getByLabel('本地开发测试（非邮箱 / Google 登录）').fill('云端验证车手');
  await page.getByRole('button',{name:'测试登录',exact:true}).click();
  await page.getByRole('heading',{name:'云端验证车手',exact:true}).waitFor();
- assert.equal(await page.getByRole('button',{name:/微信扫码登录/}).count(),0);
  const cookies=await page.context().cookies();assert(cookies.some(c=>c.name==='mario_session'&&c.httpOnly&&c.sameSite==='Lax'));
  checks.push('real game login and HttpOnly session cookie');
  await page.screenshot({path:`${out}/desktop-account-empty.png`});

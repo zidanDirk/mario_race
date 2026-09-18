@@ -5,7 +5,7 @@ const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/A
 page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()!=='POST')return;if(r.url().endsWith('/api/races'))starts.push(r.url());if(r.url().includes('/finish'))finishes.push(r.url());});
 try{
   await page.goto(config.origin);await page.locator('#loading').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>typeof window.__THREE_GAME_TEST_HOOKS__),'undefined');
-  await page.getByRole('button',{name:'用户登录与云端排行榜'}).click();await page.getByLabel('本地开发测试（非微信 / Google 登录）').fill('淘汰赛隔离验证');await page.getByRole('button',{name:'测试登录',exact:true}).click();await page.getByRole('heading',{name:'淘汰赛隔离验证',exact:true}).waitFor();await page.getByRole('button',{name:'关闭排行榜'}).click();
+  await page.getByRole('button',{name:'用户登录与云端排行榜'}).click();await page.getByLabel('本地开发测试（非邮箱 / Google 登录）').fill('淘汰赛隔离验证');await page.getByRole('button',{name:'测试登录',exact:true}).click();await page.getByRole('heading',{name:'淘汰赛隔离验证',exact:true}).waitFor();await page.getByRole('button',{name:'关闭排行榜'}).click();
   const ticket=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/races'));await page.click('#start');assert.equal((await ticket).status(),201);
   await page.keyboard.press('Escape');await page.click('#home');await page.click('#elimination-select');await page.click('#start');
   // A real idle loss proves failure and record isolation without QA state mutation.
