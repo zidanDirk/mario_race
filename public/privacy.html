@@ -19,7 +19,7 @@
 <body>
   <header><div><h1>游戏星球隐私政策</h1><p>Privacy Policy · Playscape</p></div></header>
   <main>
-    <p class="date">生效日期：2026 年 9 月 17 日　最近更新：2026 年 9 月 17 日</p>
+    <p class="date">生效日期：2026 年 9 月 17 日　最近更新：2026 年 9 月 18 日</p>
     <p class="summary">本政策适用于游戏星球网站中的用户登录、游戏成绩保存、个人资料与排行榜功能。无需登录也可以游玩；只有在你主动登录后，我们才会把新比赛成绩保存到服务器。</p>
 
     <h2>1. 我们收集的信息</h2>
@@ -36,7 +36,7 @@
     <p>符合排名规则的最佳成绩可能公开显示昵称、头像、比赛成绩、所选角色和本站生成的随机用户编号。排行榜不会公开 Google 账号标识、会话令牌或其他登录凭据。</p>
 
     <h2>4. 第三方服务</h2>
-    <p>Google 登录由 Google 提供。你在 Google 授权页面上的操作同时受 <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google 隐私政策</a>约束。本站仅在服务器端使用一次性授权码读取上述公开资料。</p>
+    <p>Google 登录由 Google 提供。你在 Google 授权页面上的操作同时受 <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google 隐私政策</a>约束。登录时，一次性授权码、PKCE 校验值和 Google 返回的临时访问令牌会由 Cloudflare Pages Function 代为处理，以读取稳定账号标识、公开昵称和头像；该服务不保存这些数据，临时访问令牌也不会写入本站数据库。该处理同时受 <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener noreferrer">Cloudflare 隐私政策</a>约束。账号、成绩、进度和排行榜数据仍保存在本站的阿里云服务器。</p>
 
     <h2>5. 保存期限与删除</h2>
     <p>账号资料、有效比赛成绩和游戏进度会在提供账户与排行榜功能期间保存；过期会话、OAuth 状态和未完成比赛会定期清理。你可以通过下方邮箱请求查询、更正或删除账号及相关成绩。我们核验请求人与账号关系后处理。</p>
@@ -51,7 +51,7 @@
     <p>隐私或账号数据请求请发送至 <a href="mailto:danielcheung41@gmail.com">danielcheung41@gmail.com</a>。</p>
 
     <h2>English summary</h2>
-    <p>Playscape uses Google OAuth to receive a stable account identifier, public display name, and avatar. We do not request your Google email or password. When you sign in, we store game results and progress so we can provide personal records and leaderboards. A leaderboard may publicly display your name, avatar, best result, selected character, and a random site user ID. We do not sell personal data or use it for personalized advertising. Contact <a href="mailto:danielcheung41@gmail.com">danielcheung41@gmail.com</a> to request access, correction, or deletion.</p>
+    <p>Playscape uses Google OAuth to receive a stable account identifier, public display name, and avatar. We do not request your Google email or password. A Cloudflare Worker transiently processes the one-time authorization code, PKCE verifier, temporary Google access token, and public profile; it does not store them. Account, race, progress, and leaderboard data remain on our Alibaba Cloud server. When you sign in, we store game results and progress so we can provide personal records and leaderboards. A leaderboard may publicly display your name, avatar, best result, selected character, and a random site user ID. We do not sell personal data or use it for personalized advertising. Contact <a href="mailto:danielcheung41@gmail.com">danielcheung41@gmail.com</a> to request access, correction, or deletion.</p>
   </main>
   <footer><a href="./">返回游戏</a><span>© 2026 游戏星球</span></footer>
 </body>

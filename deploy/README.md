@@ -1,6 +1,6 @@
 # 登录、云端成绩与阿里云部署
 
-已实现 Google / 微信网站扫码 OAuth、七天登录会话、用户资料、成绩保存、用户前十排行榜。本地可启动完整服务；真实第三方应用与阿里云实例尚未配置，不能把本地测试当成真实登录或云端部署验收。
+已实现 Google / 微信网站扫码 OAuth、七天登录会话、用户资料、成绩保存、用户前十排行榜。生产前端位于七牛，账户与成绩 API 以及 SQLite 位于阿里云轻量应用服务器。由于该阿里云节点无法连接 Google 的 token 与 UserInfo 端点，Google 生产登录通过一个最小权限 Cloudflare Worker 完成服务端交换。
 
 计时挑战与道具竞速按模式独立保存成绩、个人统计和前十用户排行榜。启动时自动为旧数据库添加比赛模式字段，旧记录归入道具竞速；更新部署前按下文备份数据库。幽灵录像仅保存在用户当前浏览器，不上传服务器，现阶段无需对象存储或新增云服务配置。
 
@@ -46,6 +46,20 @@ https://backend.zhangzidan.com/api/auth/google/callback
 
 Google 本地测试可另加 `http://localhost:5173/api/auth/google/callback`。本项目使用 `openid profile` 和 PKCE，服务端处理 code 与 userinfo，不会把 Client Secret 放进 Vite 构建。
 
+生产环境设置 `GOOGLE_CLIENT_ID`、`GOOGLE_RELAY_URL` 和 `GOOGLE_RELAY_SECRET`，不要在阿里云保留 `GOOGLE_CLIENT_SECRET`。中继源码位于 `cloudflare/google-oauth-relay/`，通过 Cloudflare Pages Functions（Workers 运行时）发布；它只接受携带共享密钥的 `POST /google/exchange`，并锁定上面的正式回调地址。Pages production Secrets 为 `GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET`、`RELAY_SECRET`、`GOOGLE_REDIRECT_URI`；其中 `RELAY_SECRET` 与阿里云的 `GOOGLE_RELAY_SECRET` 必须一致且至少 32 个字符，`GOOGLE_REDIRECT_URI` 使用上面的正式回调地址。用 Cloudflare 官方 Wrangler 部署时，在该目录执行：
+
+```sh
+npm install
+npx wrangler login
+npx wrangler pages secret put GOOGLE_CLIENT_ID --project-name mario-google-oauth-relay-pages
+npx wrangler pages secret put GOOGLE_CLIENT_SECRET --project-name mario-google-oauth-relay-pages
+npx wrangler pages secret put RELAY_SECRET --project-name mario-google-oauth-relay-pages
+npx wrangler pages secret put GOOGLE_REDIRECT_URI --project-name mario-google-oauth-relay-pages
+npm run deploy
+```
+
+密钥只通过 Wrangler 的交互式输入或 Cloudflare Secrets 配置，不写入仓库、命令参数或日志。正式中继地址为 `https://mario-google-oauth-relay-pages.pages.dev/google/exchange`。Google Cloud 已登记的回调 URI 保持为阿里云回调，无需改成 Cloudflare 地址。
+
 微信使用开放平台网站应用 `snsapi_login` 扫码流程，跳转到微信页面展示二维码。应用后台设置授权回调域名，实际回调路径为：
 
 ```text
@@ -54,9 +68,9 @@ https://你的域名/api/auth/wechat/callback
 
 配置入口与应用资质以 [微信开放平台](https://open.weixin.qq.com/) 及其 [网站应用微信登录指南](https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html) 为准。本次环境无法读取微信指南全文，真实应用的审核状态、回调域名与授权兼容性需凭据到位后联调确认。此版本未实现微信内置浏览器的公众号网页授权；如需该体验，需要额外提供对应公众号资料。
 
-## 七牛静态站点 + 单台 ECS 后端
+## 七牛静态站点 + 阿里云轻量应用服务器后端
 
-当前架构为 `https://games.zhangzidan.com/marace/` 托管 Vite 静态文件，`https://backend.zhangzidan.com` 运行 Caddy → Node API → SQLite。两个地址属于同一主域名，浏览器请求使用带凭据 CORS，OAuth 完成后返回 `/marace/`。数据库没有公网端口。
+当前架构为 `https://games.zhangzidan.com/marace/` 托管 Vite 静态文件，`https://backend.zhangzidan.com` 运行 Caddy → Node API → SQLite。两个地址属于同一主域名，浏览器请求使用带凭据 CORS，OAuth 完成后返回 `/marace/`。Google token 与 UserInfo 请求由 Cloudflare Pages Function 中继，浏览器不会访问中继。数据库没有公网端口。
 
 构建静态文件前，在 `.env.production` 中保留：
 

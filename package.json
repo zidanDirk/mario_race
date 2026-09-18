@@ -17,7 +17,7 @@
     "dev:client": "vite",
     "dev:server": "node --env-file-if-exists=.env --watch server/index.mjs",
     "start": "node --env-file-if-exists=.env server/index.mjs",
-    "test:server": "node --test tests/server.test.mjs tests/progression-server.test.mjs tests/loadout-server.test.mjs",
+    "test:server": "node --test tests/server.test.mjs tests/progression-server.test.mjs tests/loadout-server.test.mjs tests/google-oauth-relay.test.mjs",
     "test:cloud": "node tests/cloud-browser.mjs",
     "test:cloud:ui": "node tests/cloud-ui-browser.mjs",
     "backup": "node --env-file-if-exists=.env scripts/backup.mjs",

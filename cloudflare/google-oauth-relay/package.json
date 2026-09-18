@@ -1,0 +1,13 @@
+{
+  "name": "mario-google-oauth-relay",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "types": "wrangler types worker-configuration.d.ts",
+    "deploy": "wrangler pages deploy pages --project-name mario-google-oauth-relay-pages --branch master",
+    "deploy:worker": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

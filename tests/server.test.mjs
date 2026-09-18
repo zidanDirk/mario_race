@@ -23,7 +23,10 @@ async function fixture(t, extra = {}) {
     const url = new URL(input);
     calls.push({url, options});
     let data;
-    if (url.hostname === 'oauth2.googleapis.com') {
+    if (url.hostname === 'relay.example') {
+      const request = JSON.parse(options.body);
+      data = request.code === 'fail' ? {error:'provider-private-error'} : {subject:request.code, name:`Relay ${request.code}`, avatar:'https://example.com/relay-avatar.png', email:'private@example.com'};
+    } else if (url.hostname === 'oauth2.googleapis.com') {
       const code = options.body.get('code');
       data = code === 'fail' ? {error:'provider-private-error'} : {access_token:`google-access-${code}`};
     } else if (url.hostname === 'openidconnect.googleapis.com') {
@@ -82,6 +85,12 @@ test('configuration forbids production/public dev authentication, insecure origi
     {NODE_ENV:'production',PUBLIC_ORIGIN:'http://localhost:5173'},
     {PUBLIC_ORIGIN:'http://race.example'}, {PUBLIC_ORIGIN:'https://race.example/path'},
     {PUBLIC_ORIGIN:'https://user:pass@race.example'}, {GOOGLE_CLIENT_ID:'only-id'}, {WECHAT_APP_SECRET:'only-secret'},
+    {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'https://relay.example/google/exchange'},
+    {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_SECRET:'x'.repeat(32)},
+    {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'http://relay.example/google/exchange',GOOGLE_RELAY_SECRET:'x'.repeat(32)},
+    {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'https://relay.example',GOOGLE_RELAY_SECRET:'x'.repeat(32)},
+    {GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'https://relay.example/google/exchange',GOOGLE_RELAY_SECRET:'short'},
+    {GOOGLE_CLIENT_ID:'id',GOOGLE_CLIENT_SECRET:'secret',GOOGLE_RELAY_URL:'https://relay.example/google/exchange',GOOGLE_RELAY_SECRET:'x'.repeat(32)},
     {NODE_ENV:'production',APP_ORIGIN:'https://game.example',API_ORIGIN:'http://api.example'},
     {APP_ORIGIN:'https://game.example/path',API_ORIGIN:'https://api.example'},
     {APP_ORIGIN:'https://game.example',APP_RETURN_PATH:'marace/',API_ORIGIN:'https://api.example'},
@@ -91,6 +100,9 @@ test('configuration forbids production/public dev authentication, insecure origi
     {APP_ORIGIN:'http://localhost:5173',API_ORIGIN:'http://localhost:3001',COOKIE_SAME_SITE:'None'},
   ]) assert.throws(()=>readConfig(env));
   assert.equal(readConfig({PUBLIC_ORIGIN:'https://race.example',NODE_ENV:'production'}).devLogin,false);
+  const relay=readConfig({GOOGLE_CLIENT_ID:'id',GOOGLE_RELAY_URL:'https://relay.example/google/exchange',GOOGLE_RELAY_SECRET:'x'.repeat(32)});
+  assert.equal(relay.google.secret,'');
+  assert.equal(relay.google.relayUrl,'https://relay.example/google/exchange');
 });
 
 test('guest access, CSRF, local dev login, session privacy and logout', async t => {
@@ -134,6 +146,28 @@ test('Google OAuth uses state binding, PKCE, server token exchange and private i
   await login(c);
   assert.equal((await c.request('/api/me')).json.user.id,id,'same provider identity keeps the same user');
   assert.equal((await c.request('/api/me',{cookie:`mario_session=${oldSession}`})).json.user,null,'login rotates and revokes old session');
+});
+
+test('Google OAuth relay receives only the one-time exchange inputs and returns a private identity', async t => {
+  const relaySecret='relay-secret-that-is-at-least-32-characters';
+  const f=await fixture(t,{google:{id:'google-client',secret:'',relayUrl:'https://relay.example/google/exchange',relaySecret}}),c=f.client();
+  const {authorization,response}=await login(c,'google','relay-subject');
+  assert.equal(f.calls.length,1);
+  const exchange=f.calls[0];
+  assert.equal(exchange.url.href,'https://relay.example/google/exchange');
+  assert.equal(exchange.options.method,'POST');
+  assert.equal(exchange.options.headers.Authorization,`Bearer ${relaySecret}`);
+  assert.equal(exchange.options.headers['Content-Type'],'application/json');
+  assert.equal(exchange.options.redirect,'error');
+  const payload=JSON.parse(exchange.options.body);
+  assert.deepEqual(Object.keys(payload).sort(),['code','codeVerifier','redirectUri']);
+  assert.equal(payload.code,'relay-subject');
+  assert.equal(payload.redirectUri,`${ORIGIN}/api/auth/google/callback`);
+  assert.equal(createHash('sha256').update(payload.codeVerifier).digest('base64url'),authorization.searchParams.get('code_challenge'));
+  const me=await c.request('/api/me');
+  assert.equal(me.json.user.displayName,'Relay relay-subject');
+  for (const value of [relaySecret,'private@example.com','relay-secret']) assert.ok(!me.text.includes(value));
+  assert.ok(!response.headers.get('location').includes('relay'));
 });
 
 test('WeChat QR OAuth verifies OpenID and never returns private provider identifiers', async t => {
