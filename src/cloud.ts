@@ -79,6 +79,7 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
   let account: Account = { user: null, stats: null }; let config: Config | null = null;
   let online = false; let refreshing = false; let pendingAction = false; let revision = 0; let raceSequence = 0; let offlineNotice = false;
   let emailDraft = ''; let emailCodeDraft = '';
+  let emailRetryUntil = 0; let emailRetryTimer: number | null = null;
   type Race = { loadout:LoadoutId; mode: RaceMode; difficulty: RaceDifficulty; sequence: number; userId: string | null; ticket: Promise<{ raceId: string } | null>; finished: boolean };
   let race: Race | null = null;
   let previousFocus: HTMLElement | null = null;
@@ -92,6 +93,26 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
   for (const eventName of ['keydown', 'keyup'] as const) window.addEventListener(eventName, event => { if (dialog.open) event.stopImmediatePropagation(); }, true);
   function actionButton(label: string, className: string, action: () => void) {
     const button = document.createElement('button'); button.type = 'button'; button.className = className; button.textContent = label; button.addEventListener('click', action); return button;
+  }
+  function stopEmailRetry() {
+    emailRetryUntil = 0;
+    if (emailRetryTimer !== null) window.clearInterval(emailRetryTimer);
+    emailRetryTimer = null;
+  }
+  function syncEmailRetryButton() {
+    const button = login.querySelector<HTMLButtonElement>('[data-send-code]');
+    const seconds = Math.max(0, Math.ceil((emailRetryUntil - Date.now()) / 1000));
+    if (button) {
+      button.textContent = seconds > 0 ? `重新发送（${seconds}s）` : '发送验证码';
+      button.disabled = !config?.providers.email || !online || pendingAction || seconds > 0;
+    }
+    if (seconds > 0 && emailRetryTimer === null) emailRetryTimer = window.setInterval(syncEmailRetryButton, 250);
+    if (seconds === 0 && emailRetryTimer !== null) stopEmailRetry();
+  }
+  function startEmailRetry(seconds: number) {
+    const duration = Number.isFinite(seconds) ? Math.min(300, Math.max(1, Math.ceil(seconds))) : 60;
+    emailRetryUntil = Date.now() + duration * 1000;
+    syncEmailRetryButton();
   }
   function renderMode() {
     dialog.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === viewedMode)));
@@ -143,7 +164,8 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
     emailForm.querySelector<HTMLButtonElement>('[data-send-code]')!.addEventListener('click', () => {
       if (!emailInput.reportValidity()) return;
       void perform(async () => {
-        await request('/api/auth/email/send', {email: emailInput.value});
+        const result = await request<{retryAfterSeconds?:number}>('/api/auth/email/send', {email: emailInput.value});
+        startEmailRetry(result.retryAfterSeconds ?? 60);
         setNotice('验证码已发送，请在 5 分钟内完成登录。', 'success');
       });
     });
@@ -152,10 +174,11 @@ export function mountCloud({ onOpen, isTest, onAccount, onProgress }: { onOpen: 
       if (!emailForm.reportValidity()) return;
       void perform(async () => {
         await request('/api/auth/email/verify', {email: emailInput.value, code: codeInput.value});
-        emailDraft = ''; emailCodeDraft = ''; cancelRace(); setNotice('邮箱登录成功，开始新比赛即可保存云端成绩。', 'success'); await refresh(true);
+        stopEmailRetry(); emailDraft = ''; emailCodeDraft = ''; cancelRace(); setNotice('邮箱登录成功，开始新比赛即可保存云端成绩。', 'success'); await refresh(true);
       });
     });
     login.append(emailForm);
+    syncEmailRetryButton();
     if (config?.devLogin && online) {
       const form = document.createElement('form'); form.className = 'cloud-dev';
       form.innerHTML = '<label for="cloud-dev-name">本地开发测试（非邮箱 / Google 登录）</label><div><input id="cloud-dev-name" name="displayName" autocomplete="nickname" maxlength="24" placeholder="输入测试昵称" required /><button type="submit">测试登录</button></div>';
